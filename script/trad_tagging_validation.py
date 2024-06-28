@@ -45,29 +45,39 @@ def process_json(input_file, prompt_file):
         prompt = f.read()
     
     with open(input_file, 'r') as f:
-        data = json.load(f)
+        data = [json.loads(line) for line in f]
 
-    for area in data:
-        for route in area['routes']:
-            if 'Trad' in route['type']:
-                try:
-                    route['trad_protection_tags'] = get_gear_tags(route['protection'], prompt)
-                    print(f"Processed route {route['route_name']}")
-                except Exception as e:
-                    print(f"Error processing route {route['route_name']}: {e}")
-                    route['trad_protection_tags'] = []
-            else:
-                route['trad_protection_tags'] = []
+    discrepancies = []
 
-    output_file = input_file.replace('.json', '_tagged.json')
-    with open(output_file, 'w') as f:
-        json.dump(data, f, indent=4)
+    for item in data:
+        input_text = item['input']
+        expected_output = item['expected_output']
+        actual_output = get_gear_tags(input_text, prompt)
+        result = {
+            'input': input_text,
+            'expected_output': expected_output,
+            'actual_output': actual_output
+        }
+        if sorted(actual_output) != sorted(expected_output):
+            discrepancies.append(result)
+        
+        # Write the result to the output file
+        output_file = input_file.replace('.jsonl', '_results.jsonl')
+        with open(output_file, 'a') as f:
+            json.dump(result, f)
+            f.write('\n')
 
     print(f"Processed data saved to {output_file}")
+    if discrepancies:
+        print(f"Found {len(discrepancies)} discrepancies.")
+        for discrepancy in discrepancies:
+            print(json.dumps(discrepancy, indent=4))
+    else:
+        print("No discrepancies found.")
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print("Usage: python trad-tagging.py <input_json_file> <prompt_file>")
+        print("Usage: python trad-tagging.py <validation_jsonl_file> <prompt_file>")
         sys.exit(1)
 
     input_file = sys.argv[1]

@@ -1,0 +1,134 @@
+{"input": "Rack: set of nuts, many cams from Camalot .5 to 2.  Two bolt anchor at top.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "Gear to 2 inches.  Two-bolt anchor on top.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Gear to 2 or 2.5 inches.  There are placements for larger gear, but there are also small placements right next to those.  Two bolts at the top.  Walk off right to get to the main trail, left to get to the big ledge system.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Every thing from small cams and nuts to a number 2 camalot", "expected_output": ["finger-size", "standard-rack", "nuts"]}
+{"input": "A few pieces .5 to 1 inch protect the lower section before reaching the first bolt. Four bolts will see you to the anchor with chains and rap rings 5 ft. left of Quarryman.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "gear to 4\"", "expected_output": ["standard-rack", "wide"]}
+{"input": "TCUs, cams to 2.5 inches or so, set of nuts.  Fixed anchors at the top with rap rings, and you can TR and rap with a 60, but it will be close, so knot the ends of your rope!", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "This climb will take plenty of medium to large stoppers as well as doubles or triples of the finger and tight hand sized cams.  The largest piece you could place would be a #1 camalot at the overlap, but there are many alternatives.  There is one very old bolt near the top and then a good two bolt anchor with chains.   NOTE: with a 70m rope you can get down, but you have to be careful to take advantage of the base sloping up to the left and rope stretch.  With anything shorter, you'll need to use two ropes to get down.  Alternatively, the leader can top belay (on a very nice ledge) and the second can bring up the second rope.   If you're SUPER careful, you can rap with a single 60m rope if you land to the left, where the ground slopes upward.  Use knots!", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "Cams: doubles to 2\", nuts.", "expected_output": ["standard-rack", "nuts"]}
+{"input": "Cams to 1.5 inches, med. nuts.  There are anchors with chains at the top.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "The route takes a variety of gear from Metolius 2 (yellow) up to Black Diamond 4 or equivalent. Double up on  mid-size (BD 0.5 to 1).", "expected_output": ["standard-rack", "wide"]}
+{"input": "Cams .5 to #2 Camelots and nuts. Save a #1 or #2 for the top. Can be rapped to a treed gully above and to the right of the start with a 60m rope.Copied from comments below so people don\u00e2\u20ac\u2122t miss it: \u00e2\u20ac\u0153TIE KNOTS AT THE END OF THE ROPE IF YOU PLAN ON BEING LOWERED OR RAPPING\u00e2\u20ac\u009d", "expected_output": ["standard-rack", "nuts"]}
+{"input": "Gear to 3 inches, rap rings at top", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Gear to 2\", emphasize wires and small cams. The gear is great to the top, but every placement looks like it will be your last.", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Standard rack to 3/4 in.", "expected_output": ["standard-rack", "wide"]}
+{"input": "Many pieces in the .5 and .75 camalot size. You would probably be ok with doubles if you are comfortable with short runouts. Singles of smaller cams and a #1, and #2 (BD Sizes) will round out the rack. There are nice new  fixed carabiners at the top of the route, don't run endless TR laps through them though.", "expected_output": ["standard-rack"]}
+{"input": "Small finger-tip-sized Stoppers and a small cam or two for the crux. A few medium Stoppers to finish. Bolted anchor with chains can be found near the top of the cliff.", "expected_output": ["tiny-finger-size", "finger-size", "nuts", "gear-anchor"]}
+{"input": "gear to 4\"", "expected_output": ["standard-rack", "wide"]}
+{"input": "Fingers to tight hand size cams.  I placed two pieces between the bolts up top, but they aren't totally neccessary.", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Gear to 3-4\", primarily finger and hand size pieces.  I had two #3 camalots and was pleased to have them near the end of the pitch.", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Standard rack to 2\".  The lower section of the climb eats nuts, saving finger-sized cams for the final section.", "expected_output": ["finger-size", "standard-rack", "nuts"]}
+{"input": "Medium nuts and cams will get you through the initial corner and flare.  The upper crack takes hand sized gear, but note that it widens a bit inside, so choose your gear wisely: what enters the crack may tip out once it's inside.  Don't let  that comment worry you too much, the protection is excellent.", "expected_output": ["standard-rack", "nuts"]}
+{"input": "A rack of small cams to 2\" and a set or two of stoppers and 10 draws or slings gets you to a bolt and chain anchor.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "This crack will take one or two every size of cam from .75\" to 5\" but it's not so long that doubles are warranted. You can gauge it from the bottom.  Bolted rap anchor.", "expected_output": ["standard-rack", "wide", "gear-anchor"]}
+{"input": "Gear to 1.5 inches.  Belay off tree at the top.  Walk off the wall to the right, or back down to the ledge to the left.", "expected_output": ["standard-rack"]}
+{"input": "Finger to hand sized cams and nuts.  Bolted anchor.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "TCUs, cams to 2.5\", set of nuts.  Fixed anchor at the top, from which you can rap or TR with a 60.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "Double cams from fingers to hands....one #3 camalot is useful. Stoppers", "expected_output": ["finger-size", "standard-rack", "nuts"]}
+{"input": "Cams, nuts, or hexes to 2 inches. Bolts at the top with chains.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "Gear to 3\"", "expected_output": ["standard-rack"]}
+{"input": "small to 3\"", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Aside from the traverse to the base of the crack, the protection is excellent throughout.  A standard rack up to a 3\" cam will suffice.", "expected_output": ["standard-rack"]}
+{"input": "Standard Squamish rack, small nuts to hand size cams.  Some long slings and/or double ropes.", "expected_output": ["finer-size", "standard-rack", "nuts"]}
+{"input": "You can protect the crux with a orange Metollius cam, or a DMM walnut.", "expected_output": ["standard-rack", "nuts"]}
+{"input": "Gear to 3\"", "expected_output": ["standard-rack"]}
+{"input": "Cams to 2 inches. Two bolts with quicklinks at the top for lowering.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "singles to #2 Camalot,doubles of yellow and green aliens, stoppers.", "expected_output": ["standard-rack", "finger-size", "nuts"]}
+{"input": "A double set of cams and nuts and a some long slings will get you to a bolt and chain anchor that can be lowered off of with a 70M rope.\u00c2\u00a0 A 60M is also reported to work, but I did not try it.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "Small gear to 2\";  some easy runout to bolted anchor.  Rappel with one rope from chains.", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Finger sized nuts or cams for the start.  A small selection of larger nuts and hand sized cams for the rest.", "expected_output": ["finger-size", "standard-rack", "nuts"]}
+{"input": "Gear to hand sized.", "expected_output": ["standard-size"]}
+{"input": "Standard Rack to 3 inches.  Belay off trees, or (with a directional) off the two bolts to the right (above Bilbo Baggins).", "expected_output": ["standard-size"]}
+{"input": "Standard trad rack to 3\".  Anchor is bolted and a 60m rope is long enough to TR.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "A standard rack, with a few doubles of cams in the finger to tight hand sizes and a good selection of small to medium nuts is sufficient.  There is a two bolt rap station at the top.  Double ropes will take you down, otherwise go to the chains on the ledge and make a second rap.  Watch then ends of the rope, even from this intermediate station.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "A standard rack will be entirely sufficient.  Bolts at the top.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Good selection of hand to finger sized gear. Chained rap anchor. 60m rope works nicely.", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Gear to 1\"", "expected_output": ["standard-size"]}
+{"input": "Single rack to 2\". Bolted anchor. Walk off.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "It gets wide, but you don't need wide gear because when it's wide it's kind of flary and unprotectable anyways. I have an inkling that if you were to take up a nut tool and scrape away at the non-vascular plant life you'd be able to place some bomber thin gear (blue/purple metolius?) in the back of the wide. Try it. Worst comes to worst you cleaned out the crack and performed a public service to all.   You're looking at a rack ranging from fingers to hands. There's bolts and rap rings at the top", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Gear to 1.5 inches.  Belay off trees or blocks at the top.  Walk left to get back to the ledge, or right to get to the bottom of the wall.", "expected_output": ["standard-rack"]}
+{"input": "small gear (including small nuts and 0, 00 TCUs) and all the rest to 3\"", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "nuts"]}
+{"input": "Gear to 1.5\"", "expected_output": ["standard-rack"]}
+{"input": "standard rack with double in the hand sizes", "expected_output": ["standard-rack"]}
+{"input": "finger to hand size pieces", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Fingers to hands; bolted anchor at top", "expected_output": ["finger-size", "standard-size", "gear-anchor"]}
+{"input": "A single set of hand and wide hands cams... more if continuing onto 'Asleep At the Wheel.'", "expected_output": ["standard-rack", "wide"]}
+{"input": "thin gear to #2 camalot", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Mostly large nuts and cams to 3 inches.  Bolted anchor at the top.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "Standard rack up to #2 Camalot.", "expected_output": ["standard-rack"]}
+{"input": "Tight hands to hands.  You don't need much as the crux is short, and the rest is either solid jams, or very easy, or pinched off so it doesn't accept pro.  It's still a reasonably protected climb unless you're maxed out at 5.8.", "expected_output": ["standard-rack"]}
+{"input": "Small rack to 2 inches.  Two bolts at the top, though I recommend a directional if you are going to top-rope the route (to keep the rope out of the crack).  You can walk off right (with a spotter at the bottom), or rappel off of trees.", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Gear up to 1\", maybe two .75s for the traverse. Small nut protects the crux well.", "expected_output": ["standard-rack", "nuts"]}
+{"input": "Camalots: 1-#2, 2-#3, 1 or 2 #4, 1 #4.5.  A #5 C4 would probably work instead of the 4.5.  A #6 will not fit throughout most, if not all, of the crux.", "expected_output": ["standard-rack", "wide"]}
+{"input": "RPs/HP offsets (bring a few of the medium to bigger sizes) to #2 camalot. Gear is excellent despite appearances.  Rap anchors on top.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "Two bolt anchor at top.\u00c2\u00a0 Gear to 3\"", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Nothing bigger than Camalot #1. Heavy on small cams and stoppers. Draws for the start.", "expected_output": ["finger-size", "standard-rack", "nuts"]}
+{"input": "Chain anchors, standard rack, mostly thin hands and smaller.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Gear to red camalot. Ends on two bolt anchor with mussy hooks.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Double set of cams to 1\" and a set of nuts.", "expected_output": ["standard-rack", "nuts"]}
+{"input": "Mostly hand size cams and larger, but there are a few smaller cracks for nuts and smaller cams.  Bolted belay.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "Gear to 2\"", "expected_output": ["standard-rack"]}
+{"input": "gear to 3\"", "expected_output": ["standard-rack"]}
+{"input": "thin gear to 3\"", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "SR to #2, chains on top", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "input:Gear to 2 inches (though there is one placement that could take a 3 inch piece if you've got it).", "expected_output": ["standard-rack"]}
+{"input": "standard rack to #3, extra in small cams (optional #4).Shares anchor with Popsickle", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Chain anchors. Two #3 Camalots and one #1 Camalot... you could bring more I suppose.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Gear to 3 inches.", "expected_output": ["standard-rack"]}
+{"input": "standard nuts and cams to 1.5\" or Easily toproped via backside approach. Single anchor bolt and a conveniently positioned tree at the top.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "plenty of cams for this long pitch, many small cams and offset brass nuts good for upper half.  Gonch pull takes medium to large nuts, so you can conserve cams for up higher.  The top out is a bit run-out after the tiny gear seam runs out.", "expected_output": ["finger-size", "tiny-finger-size", "nuts"]}
+{"input": "Anything you want for the bottom section, small stuff (wires, cams as small as blue metolius...maybe you could place smaller if you wanted). Chains at the top.", "expected_output": ["tiny-finger-size", "finger-size", "gear-anchor"]}
+{"input": "Gear is present but rarely a gimme on this climb. A single rack will do. Bolt anchors at the top.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "SR. 2-bolt anchors with rappel at the top. So you can rappel off or walk off.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Three bolts, maybe and nut or two and a #3 and/or #4 Camalot for the start.", "expected_output": ["standard-rack", "nuts", "gear-anchor"]}
+{"input": "Chain anchors, doubles in finger sized gear.", "expected_output": ["gear-anchor", "finger-size"]}
+{"input": "SR, chains on top", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "mostly hand to fist size cams, and some smaller cams work.", "expected_output": ["standard-rack"]}
+{"input": "Originally a gear climb with 2 bolts. Additional bolts were added by the FA party in the early 2000s - there are now a total of 3. Some additional gear can be useful, particularly a purple (#0) TCU or #3 Rock, and red Tricam.", "expected_output": ["tiny-finger-size", "nuts"]}
+{"input": "Standard rack. I used medium nuts and cams from a blue Alien to #3 Camalot. There is a bolted rappel anchor at the top.", "expected_output": ["standard-rack", "nuts", "finger-size", "", "tiny-finger-size", "gear-anchor"]}
+{"input": "1 set of nuts, Cams from 06-3.5 . Bolted anchor at top with rap rings.", "expected_output": ["finger-size", "tiny-finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "P1. All that is required is a yellow, grey, red alien and a .5 camalot. You could also drag up a #1 and/or a .75 and or a second yellow alien, but it's not runout to do the whole pitch on 3 - 4 pieces of gear.  P2 has bolts.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack"]}
+{"input": "Small gear from purple Metolius/green C3 to #1 Camalot. Doubles in tips/fingers pieces. Chains at the top.   Takes good small gear. I fiddled with small wires my first time up this, but climbed it again last weekend and didn't waste my time with any nuts, took solid cams at comforting intervals.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Take at least doubles of .75camalot to #2 camalot. And at least a #3. You could take 2x #3 and 1x #4 camalot too. Also bring a set of nuts and some finger pieces (although you don't need to place finger gear if you dont want)", "expected_output": ["standard-rack", "wide", "nuts", "finger-size"]}
+{"input": "Some draws and nuts or small cams. A two-bolt anchor and chains are up top.", "expected_output": ["finger-size", "nuts", "gear-anchor"]}
+{"input": "Nuts and cams to 2 inches. Rap rings at top.", "expected_output": ["finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "1 set of nuts and cams from 0.6-3.5\"", "expected_output": ["standard-rack", "nuts"]}
+{"input": "Thin gear protects the crux moves. Hand-sized and a bolt after the corner.", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Standard Rack with an emphasis on large hand size pieces. Easy to protect throughout, except when the crack becomes clogged with roots and grime. Crux protects beautifully. Two-bolt anchor at the top right, easy to miss.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Doubles of green alien (blue tcu) to .75 camalot. Single #1 and #2 camalot. You could get by with just one green alien too. Like lots of Squamish, you could use 3 or 4 in the off fingers size. I usually roll with doubles of both grey and red alien. Bolt at the top. Two bolt anchor.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "It is 40- 45 Meter pitch so having many finger size is recommended. Double rack to 3\", maybe 3 each in the 1/4\"-  1/2\" size or lots of nuts work too. Bolted belay on ledge at base and tree belay at top. There is a 2 bolt anchor about 10' north but I came up the OW finish which seems to make sense with a tree right there.I was not prepared for the OW, placed a #2 at start of it and layback up to top, could use a #4, but not really needed.I was informed by a local that the OW finish used to be full of vegetation and I guess that is why there is the bolted anchor off left at the top.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "nuts", "gear-anchor", "wide"]}
+{"input": "Singles from fingers to 3\", with some extra padding in the #0.75 camalot range. Bolts and rings at the top", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "A single set of cams, with small gear most helpful. 6-8 Quickdraws.", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Standard set of cams to #1 with 2-3 green #0.75s. Steel clip-and-lower carabiners at the anchor.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "A set of cams from .4\" to 2\" including extra .6\" to .1\" (I found green to red Aliens to be a nice fit), small to medium nuts/offsets, some runners, attentive belayer", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "nuts"]}
+{"input": "Mostly thin up to a 0.5 camalot.  Stoppers.  You can place a #1, but it will get in the way of the only real hand jam!  Fixed anchors.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "Thin gear- nothing bigger than a purple camalot.", "expected_output": ["tiny-finger-size", "finger-size"]}
+{"input": "BD-sized cams .5-3 should do it. Protects great, just don't get your cams sucked into the crack!", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Single set small, medium nuts; single set .5\" (green alien) to 4\" cams (C4 #5 camalot).  Optional extra .33\" cam (black alien), 1\" cam (#.75 camalot), 4\" cam (C4 #5 camalot).", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "wide", "nuts"]}
+{"input": "fingers at the bottom and 0.75-1 camalot at the top.  A #2 can be placed halfway, but there are other options.  Most will want at least two each 0.75-1.", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Cams from tips to thin hands, a single set should be fine, with maybe two .75s.\u00c2\u00a0chains at the top.", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Either a short batman up a fixed line to 4 bolts (dirty 5.10) to an anchor at the base, or do a messy scramble from the left to the base, then:  Two 1.5\" cams, (or 2 purple camalots)  Three 2.0\" cams (or 3 green camalots)  Three 2.5\" cams (or 3 red camalots)  two 3\" cams (or two yellow camalots)  and finally a 1\" or a .75\" cam or two for the top. (or a blue or grey micro camalot)   To reach a set of chains.  That should put in pretty tightly spaced pro.  YMMV.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Single rack from fingers to hands with an extra 1\" piece should do it. Bolts with rings at the top", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "4 bolts, a small cam or two for the undercling (red or green c3), a few cams in the range from #0.5-#2 c4 for the finish. Sport Anchors.", "expected_output": ["finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Gear to 2 inches...", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "The gear I used in order was:   gold BD nut  silver BD nut (big one)  0.5 camalot  #1 camalot  #1 camalot  red DMM offset nut  blue DMM offset nut  red BD nut  blue BD nut (big one)  yellow metolius  #2 camalot  0.75 camalot", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "nuts"]}
+{"input": "Cams and Nuts....single set from #3 Camalot to .5 (possible to place #4 as well) and a selection of small cams. Small-Med Stoppers. 6 slings/draws. Fixed 'biners on the chains. Those not on-sighting are encouraged to scope the gear, which is not always obvious (in the overhang anyway).", "expected_output": ["finger-size", "standard-rack", "wide", "nuts", "gear-anchor"]}
+{"input": "SR from tips to thin hands. Bolts and rings at the top.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "Standard rack with bolts at the top.  You might want to set a directional to reduce rope drag over a sharp corner if you're planning on setting up a toprope.", "expected_output": ["standard-rack", "gear-anchor"]}
+{"input": "Standard single rack plus Small gear blue, green alien to protect the slab at the top. Piton. Anchors at the top.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "input:Lots of big cams. Bolted anchors", "expected_output": ["wide", "very-wide"]}
+{"input": "Gear to 2\" but some people may want doubles around finger sizes...", "expected_output": ["finger-size", "standard-rack"]}
+{"input": "Bolts and 1-2 each size Aliens or TCU's etc in the .6\" & .75\" range protect tricky moves.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack"]}
+{"input": "Protection is found in the crack of Crime of the Century and then, after the traverse, in the thin splitter. Good small tcu's and nuts. Use a few long slings to reduce rope drag. Chain anchors suitable for lowering at top.", "expected_output": ["tiny-finger-size", "nuts", "gear-anchor"]}
+{"input": "It was originally climbed with fixed pins, then retro bolted after the removal of the pins.  The climb has been done (twice) by my knowledge on gear (I watched my partner send skipping the bolts and placing 25 pieces.)  However, if you don't have the time to figure out the gear and are less inclined for that challenge, there are 8 bolts.  The climb still requires a set of micro nuts, 1 purple tcu, 2 blue tcu's, 2 yellow tcu's, 2 purple camalots, and one each from green camalot to gold.  An all gear ascent will require the full gamet including brass nuts, 000 c3s etc.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "nuts", "gear-anchor"]}
+{"input": "Doubles from fingers - #2 camalot should be fine.  I placed one #3 before the finger crack.  Stoppers.  A 60 m rope JUST gets you down.  Tie knots!!", "expected_output": ["finger-size", "standard-rack", "nuts"]}
+{"input": "one set of nuts and a double set of cams to 2\" will be enough. The line is pretty straight and doesn't require many runners. There are two newly placed rap rings at the top.", "expected_output": ["nuts", "finger-size", "standard-rack", "gear-anchor"]}
+{"input": "You don't need a lot of pieces but you do need the right ones.  I remember red Camalot, small nut, fixed pin, #5 Rock, 3 Camalot, 4 Friend. FP, green Alien and #2 Camalot. to get through the difficulties.  I placed a piece or two higher up but don't remember what they were.  Use runners judiciously as the climb weaves around roofs.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack", "wide", "nuts"]}
+{"input": "Gear up to 2\" for starting the corner. Above there are 2 bolts and available placements for a small cam down to a medium offset brass nut. The book says SR but I took some doubles which I was happy to have.", "expected_output": ["finger-size", "standard-rack", "tiny-finger-size", "nuts", "gear-anchor"]}
+{"input": "Gear to a #4 camalot ought to do.", "expected_output": ["standard-rack", "wide"]}
+{"input": "4 bolts, standard rack.", "expected_output": ["standard-rack"]}
+{"input": "A single rack should do it, but a second #2 camalot might be handy", "expected_output": ["standard-rack"]}
+{"input": "Gear - fingers at mostHangars at top", "expected_output": ["finger-size", "standard-size", "gear-anchor"]}
+{"input": "5 bolts plus a couple trad pieces for the start.", "expected_output": ["output:"]}
+{"input": "Single rack blue alien to #2, doubles from green alien to #0.75. Fixed biners on top.", "expected_output": ["tiny-finger-size", "finger-size", "standard-rack"]}
