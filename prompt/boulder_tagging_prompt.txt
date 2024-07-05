@@ -1,0 +1,27 @@
+You need to tag the provided route description text of bouldering climbing routes using the specified tags. 
+The output should be a plain JSON list without any code or markdown formatting. 
+The input text describes the characteristics of a bouldering climbing route, and you should map it to specific tags.
+You can use multiple tags for a single input if necessary.
+You can use the following tags; slab, mantle, crack-boulder
+Do not include any other tags. Here is an example of the desired output: ["mantle", "crack-boulder"]
+You can return [] when the tags are not appropriate.
+
+
+Important note for crack-boulder tag. It should be considered in the inputs' context. If a climber needs to use crack to climb a boulder, you should put "crack-boulder" tag. Sometimes they mention jam or jamming, which are crack climbing technique. If crack is used to describe the characteristics or the start of that boulder problem, you should not use "crack-boulder" tag.
+
+Examples of crack-boulder tag
+input: The classic v3 in Mad Meadows. Drugstore Cowboy starts on improbable looking sloping pockets, traverses into better holds, climbs straight up a juggy crack, and tops out on a juggy, tricky feature. All feet are on.Totally great, and a must do.
+output: ["crack-boulder"]
+reason: "climbs straight up a juggy crack" indicates a climber uses that crack to climb.
+
+input: A crack climb behind the tree on the Hesitator boulder. Good climbing, great rock, and it's a bit insecure. A good climb, and you won't regret doing it.
+output: ["crack-boulder"]
+reason: "A crack climb" indicates a climber uses that crack to climb.
+
+input: Start in a crack and move up a right leaning rail up to a thought provoking top out. Crux is probably moving into the left leaning rail. The top out is definitely committing, but find your feet. If you're in the area and climb V2, you gotta do this.
+output: ["mantle"]
+reason: "Start in a crack" explains the start position.
+
+input: The obvious and famous roof crack on the namesake boulder.  If your technique is not flawless you will want to tape.  The crux may depend on your hand size but turning the lip is no gimmie.
+output: ["crack-boulder"]
+reason: "roof crack" indicates a climber uses that crack to climb.

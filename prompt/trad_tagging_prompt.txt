@@ -2,17 +2,26 @@ You need to tag the provided protection gear text of trad climbing routes using 
 The output should be a plain JSON list without any code or markdown formatting. 
 The input text describes the required protection gear, and you should map it to specific tags based on the sizes mentioned. 
 You can use multiple tags for a single input if necessary.
-You can use the following tags; tiny-finger-size, finger-size, standard-rack, wide, very-wide, nuts, gear-anchor.
-Do not include any other tags. Here is an example of the desired output: ["finger-size", "standard-rack"]
+You can use the following tags; tiny-finger-size, finger-size, wide, very-wide, nuts, gear-anchor.
+Do not include any other tags. Here is an example of the desired output: ["finger-size", "nuts"]
+finger-size includes tiny-finger-size, so if you put tiny-finger-size tag, then add finger-size tag as well.
+
+Important rules:
+1. If `tiny-finger-size` is tagged, then `finger-size` must also be tagged.
+2. Sizes like ".5" should be considered in context. If mentioned as ".5 inch or .5"," it should be tagged as `tiny-finger-size`. If mentioned in the context of Camalots (e.g., "#.5 Camalot"), it should be tagged as `finger-size`.
 
 Definitions for the tags based on sizes (all in inches) or protection type:
 tiny-finger-size: 0.0 - 0.75, or if the protection mentions "ball nut" or "ballnut" or "tiny" or "tips" or "micro" or "offset brass"
 finger-size: 0.0 - 1.35
-standard-rack: 1.35 - 3.4
 wide: 3.5 - 6.0
 very-wide: 6.1 or larger. if the protection mentions "big bro" or "off-width"
 nuts: if the protection mentions "nuts" or "stoppers"
 gear-anchor: if the protection mentions "gear anchor" or "anchor" or "bolts" or "chain"
+Consider the following rules:
+1. If `.5 inch` is mentioned, it should be tagged as `tiny-finger-size`. 
+2. If `#.5 Camalot` or similar context is mentioned, it should be tagged as `finger-size`.
+3. TCU sizes and specific cam sizes should be mapped to `tiny-finger-size` and `finger-size` appropriately.
+4. TCUs mean the full set of TCUs from the smallest one to the largest one. It should be tagged as `tiny-finger-size` and `finger-size`.
 
 Consider the following cam sizes from different manufacturers:
 Black Diamond Camalot (BD):
@@ -53,30 +62,29 @@ Red Size Range: 1.0 in
 Friends
 xxx
 
+Tricam
+xxx
+
 Example input and output:
 Input: "Standard rack up to 2 inches, doubles in finger sized gear."
-Output: ["finger-size", "standard-rack"]
+Output: ["finger-size"]
 Input: "LOTS of small cams!!! Nuts don't work in this crack very well. I think I may have used 4 yellow aliens."
 Output: ["finger-size"]
 Input: "Protection to 0.5 camalot, with extras in the blue and yellow tcu size. There is a good 2 bolt anchor at the top."
 Output: ["tiny-finger-size", "finger-size", "gear-anchor"]
 Input: "Standard rack with gear to 4-5 inches."
-Output: ["standard-rack", "wide"]
+Output: ["wide"]
 Input: "#.75 Friend and below, medium nuts, 2 bolts. You could fit in something big in the flaring off-width on the right, but the left crack is sufficient. Anchor is 1 chain and 1 shut."
-Output: ["finger-size", "standard-rack", "nuts", "gear-anchor"]
+Output: ["finger-size", "nuts", "gear-anchor"]
 Input: "Gear to 3", with the bulk of it in small sizes, especially small nuts.  There are many bolts at the top, and this route (along with every other route here) is easily top-roped."
-Output: ["finger-size", "standard-rack", "nuts"]
+Output: ["finger-size", "nuts"]
 Input: "Single rack with gear to 3" and doubles in the small finger to finger range. Optional larger pieces can be placed in the begining of the first pitch. Some bolts as well."
-Output: ["finger-size", "standard-rack"]
+Output: ["finger-size", "tiny-finger-size"]
 Input: "Gear to 3", with the bulk of it in small sizes, especially small nuts.  There are many bolts at the top, and this route (along with every other route here) is easily top-roped."
-Output: ["finger-size", "standard-rack", "nuts", "gear-anchor"]
+Output: ["finger-size", "nuts", "gear-anchor"]
 Input: "gear .2-#3. 4 bolts. Anchor w/ chains."
 Output: ["tiny-finger-size", "finger-size", "gear-anchor"]
 Input: "The first placements takeÂ red ballnuts.Â After that,Â it is about 100' of #.3- #.5 with a couple of hand jams that would take #2- #3. There are constrictions that would work for medium/large nuts. A couple 0.2 sized cams are very helpful.Â Bolted rap anchor.70 meter rope is not long enough to TR or rappel."
-Output: ["tiny-finger-size", "finger-size", "standard-rack", "nuts", "gear-anchor"]
+Output: ["tiny-finger-size", "finger-size", "nuts", "gear-anchor"]
 Intput: Gear to 8" Two shiny bolts on top to rig a top rope.
 Output: ["wide", "very-wide", "gear-anchor"]
-
-Note on examples: Please do not tag if the protection say optional. Fifth input and Seventh example are the example of this.
-
-Generate the protection_gear tags as a plain JSON list without any code or markdown formatting for the following text:
