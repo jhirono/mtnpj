@@ -26,7 +26,7 @@ def process_json(input_file):
     ] + hierarchy_headers + hierarchy_url_headers + [
         "Route Name", "Route URL", "Grade", "Stars", "Votes",
         "Type", "Length", "FA", "Route Description",
-        "Location", "Protection", "trad_protection_tags"
+        "Location", "Protection", "trad_protection_tags", "boulder_tags"
     ]
     
     for area in data:
@@ -57,7 +57,8 @@ def process_json(input_file):
             route_description = route.get('description', 'N/A')
             location = route.get('location', 'N/A')
             protection = route.get('protection', 'N/A')
-            trad_protection_tags = ", ".join(route.get('trad_protection_tags', []))
+            trad_protection_tags = ", ".join(route.get('protection_tags', []))
+            boulder_tags = ", ".join(route.get('boulder_tags', []))
             
             csv_data.append([
                 area_name, url, gps, description, getting_there,
@@ -65,7 +66,7 @@ def process_json(input_file):
             ] + hierarchy_names + hierarchy_urls + [
                 route_name, route_url, grade, stars, votes,
                 route_type, length, fa, route_description,
-                location, protection, trad_protection_tags
+                location, protection, trad_protection_tags, boulder_tags
             ])
 
     output_file = input_file.replace('.json', '.csv')

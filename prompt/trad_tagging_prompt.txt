@@ -2,7 +2,7 @@ You need to tag the provided protection gear text of trad climbing routes using 
 The output should be a plain JSON list without any code or markdown formatting. 
 The input text describes the required protection gear, and you should map it to specific tags based on the sizes mentioned. 
 You can use multiple tags for a single input if necessary.
-You can use the following tags; tiny-finger-size, finger-size, wide, very-wide, nuts, gear-anchor.
+You can use the following tags; tiny-finger-size, finger-size, wide, very-wide, nuts.
 Do not include any other tags. Here is an example of the desired output: ["finger-size", "nuts"]
 finger-size includes tiny-finger-size, so if you put tiny-finger-size tag, then add finger-size tag as well.
 
@@ -16,7 +16,6 @@ finger-size: 0.0 - 1.35
 wide: 3.5 - 6.0
 very-wide: 6.1 or larger. if the protection mentions "big bro" or "off-width"
 nuts: if the protection mentions "nuts" or "stoppers"
-gear-anchor: if the protection mentions "gear anchor" or "anchor" or "bolts" or "chain"
 Consider the following rules:
 1. If `.5 inch` is mentioned, it should be tagged as `tiny-finger-size`. 
 2. If `#.5 Camalot` or similar context is mentioned, it should be tagged as `finger-size`.
@@ -71,20 +70,30 @@ Output: ["finger-size"]
 Input: "LOTS of small cams!!! Nuts don't work in this crack very well. I think I may have used 4 yellow aliens."
 Output: ["finger-size"]
 Input: "Protection to 0.5 camalot, with extras in the blue and yellow tcu size. There is a good 2 bolt anchor at the top."
-Output: ["tiny-finger-size", "finger-size", "gear-anchor"]
+Output: ["tiny-finger-size", "finger-size"]
 Input: "Standard rack with gear to 4-5 inches."
 Output: ["wide"]
 Input: "#.75 Friend and below, medium nuts, 2 bolts. You could fit in something big in the flaring off-width on the right, but the left crack is sufficient. Anchor is 1 chain and 1 shut."
-Output: ["finger-size", "nuts", "gear-anchor"]
+Output: ["finger-size", "nuts"]
 Input: "Gear to 3", with the bulk of it in small sizes, especially small nuts.  There are many bolts at the top, and this route (along with every other route here) is easily top-roped."
 Output: ["finger-size", "nuts"]
 Input: "Single rack with gear to 3" and doubles in the small finger to finger range. Optional larger pieces can be placed in the begining of the first pitch. Some bolts as well."
 Output: ["finger-size", "tiny-finger-size"]
 Input: "Gear to 3", with the bulk of it in small sizes, especially small nuts.  There are many bolts at the top, and this route (along with every other route here) is easily top-roped."
-Output: ["finger-size", "nuts", "gear-anchor"]
+Output: ["finger-size", "nuts"]
 Input: "gear .2-#3. 4 bolts. Anchor w/ chains."
-Output: ["tiny-finger-size", "finger-size", "gear-anchor"]
+Output: ["tiny-finger-size", "finger-size"]
 Input: "The first placements takeÂ red ballnuts.Â After that,Â it is about 100' of #.3- #.5 with a couple of hand jams that would take #2- #3. There are constrictions that would work for medium/large nuts. A couple 0.2 sized cams are very helpful.Â Bolted rap anchor.70 meter rope is not long enough to TR or rappel."
-Output: ["tiny-finger-size", "finger-size", "nuts", "gear-anchor"]
+Output: ["tiny-finger-size", "finger-size", "nuts"]
 Intput: Gear to 8" Two shiny bolts on top to rig a top rope.
-Output: ["wide", "very-wide", "gear-anchor"]
+Output: ["wide", "very-wide"]
+Input: singles to #2 Camalot,doubles of yellow and green aliens, stoppers.
+Output: [finger-size, tiny-finger-size, nuts]
+Input: A single set of hand and wide hands cams... more if continuing onto 'Asleep At the Wheel.
+Output: ["wide"]
+Input: Camalots: 1-#2, 2-#3, 1 or 2 #4, 1 #4.5.  A #5 C4 would probably work instead of the 4.5.  A #6 will not fit throughout most, if not all, of the crux.
+Output: ["wide"]
+Input: Chain anchors. Two #3 Camalots and one #1 Camalot... you could bring more I suppose.
+Output: []
+Input: Lots of big cams. Bolted anchors
+Output: ["wide", "very-wide"]
