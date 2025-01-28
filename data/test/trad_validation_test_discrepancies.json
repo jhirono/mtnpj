@@ -1,0 +1,112 @@
+[
+    {
+        "input": "Rack: set of nuts, many cams from Camalot .5 to 2.  Two bolt anchor at top.",
+        "expected_output": [
+            "finger-size",
+            "gear-anchor",
+            "nuts"
+        ],
+        "actual_output": [
+            "finger-size",
+            "gear-anchor",
+            "nuts",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "Every thing from small cams and nuts to a number 2 camalot",
+        "expected_output": [
+            "finger-size",
+            "nuts"
+        ],
+        "actual_output": [
+            "finger-size",
+            "nuts",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "TCUs, cams to 2.5 inches or so, set of nuts.  Fixed anchors at the top with rap rings, and you can TR and rap with a 60, but it will be close, so knot the ends of your rope!",
+        "expected_output": [
+            "finger-size",
+            "gear-anchor",
+            "nuts",
+            "tny-finger-size"
+        ],
+        "actual_output": [
+            "finger-size",
+            "gear-anchor",
+            "nuts",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "This climb will take plenty of medium to large stoppers as well as doubles or triples of the finger and tight hand sized cams.  The largest piece you could place would be a #1 camalot at the overlap, but there are many alternatives.  There is one very old bolt near the top and then a good two bolt anchor with chains.   NOTE: with a 70m rope you can get down, but you have to be careful to take advantage of the base sloping up to the left and rope stretch.  With anything shorter, you'll need to use two ropes to get down.  Alternatively, the leader can top belay (on a very nice ledge) and the second can bring up the second rope.   If you're SUPER careful, you can rap with a single 60m rope if you land to the left, where the ground slopes upward.  Use knots!",
+        "expected_output": [
+            "finger-size",
+            "gear-anchor",
+            "nuts"
+        ],
+        "actual_output": [
+            "finger-size",
+            "gear-anchor",
+            "nuts",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "Cams .5 to #2 Camelots and nuts. Save a #1 or #2 for the top. Can be rapped to a treed gully above and to the right of the start with a 60m rope.Copied from comments below so people don\u00e2\u20ac\u2122t miss it: \u00e2\u20ac\u0153TIE KNOTS AT THE END OF THE ROPE IF YOU PLAN ON BEING LOWERED OR RAPPING\u00e2\u20ac\u009d",
+        "expected_output": [
+            "finger-size",
+            "nuts"
+        ],
+        "actual_output": [
+            "finger-size",
+            "nuts",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "Gear to 3 inches, rap rings at top",
+        "expected_output": [
+            "finger-size",
+            "gear-anchor"
+        ],
+        "actual_output": [
+            "finger-size"
+        ]
+    },
+    {
+        "input": "Gear to 2\", emphasize wires and small cams. The gear is great to the top, but every placement looks like it will be your last.",
+        "expected_output": [
+            "finger-size",
+            "nuts"
+        ],
+        "actual_output": [
+            "finger-size",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "Standard rack to 3/4 in.",
+        "expected_output": [
+            "finger-size",
+            "wide"
+        ],
+        "actual_output": [
+            "finger-size",
+            "tiny-finger-size"
+        ]
+    },
+    {
+        "input": "Many pieces in the .5 and .75 camalot size. You would probably be ok with doubles if you are comfortable with short runouts. Singles of smaller cams and a #1, and #2 (BD Sizes) will round out the rack. There are nice new  fixed carabiners at the top of the route, don't run endless TR laps through them though.",
+        "expected_output": [
+            "finger-size",
+            "gear-anchor"
+        ],
+        "actual_output": [
+            "finger-size",
+            "tiny-finger-size"
+        ]
+    }
+]
