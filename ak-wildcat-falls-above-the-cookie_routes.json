@@ -1,0 +1,250 @@
+[
+    {
+        "area_id": "070c391a-8e3d-4d6f-896e-d3251c7fb858",
+        "area_url": "https://www.mountainproject.com/area/105874587/ak-wildcat-falls-above-the-cookie",
+        "area_name": "ak-wildcat-falls-above-the-cookie",
+        "area_gps": "http://maps.google.com/maps?q=37.7202,-119.71946&t=h&hl=en",
+        "area_description": "This area encompasses several small crags that are home to some good, hard crack lines, perhaps most popularly Separate Reality (12a) & Tales of Power (12b).",
+        "area_getting_there": "Approaches vary, but generally these cliffs are approached from above via Hwy 120.",
+        "area_tags": [],
+        "area_hierarchy": [
+            {
+                "level": 1,
+                "area_hierarchy_name": "All Locations",
+                "area_hierarchy_url": "https://www.mountainproject.com/route-guide"
+            },
+            {
+                "level": 2,
+                "area_hierarchy_name": "California",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/105708959/california"
+            },
+            {
+                "level": 3,
+                "area_hierarchy_name": "Yosemite NP",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/105833381/yosemite-national-park"
+            },
+            {
+                "level": 4,
+                "area_hierarchy_name": "Yosemite Valley",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/105833388/yosemite-valley"
+            },
+            {
+                "level": 5,
+                "area_hierarchy_name": "Lower Merced River Canyon",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/110464982/lower-merced-river-canyon"
+            }
+        ],
+        "routes": [
+            {
+                "route_grade": "5.11b",
+                "route_stars": 2.0,
+                "route_votes": 2,
+                "route_type": "Trad, 6 pitches",
+                "route_length": "N/A",
+                "route_fa": "Eric Gabel, Linda Jarit. February 2004",
+                "route_description": "Chill, interesting, dirty day out with a mindset for keeping it real. Our experience was slightly chossy but the surprise gloryhole descent really loosened us up for adventure. Get on this route and to clean it up for an epic line in a neat area.pitch 1: choose your own adventure through loose blocks and trees on easy terrain. pass a giant pine tree and a bolted belay (dont use). walk up and left on a bushy, dirty ledge to the base of obvious right facing sick hand crack. sling a tree for an anchor. 5.6pitch 2: starts same as edge of absurdity - shoot up the epic mcsplitter but short, right facing hand crack. We found this to be the route finding crux. the way we ended up going was up and left, up discontinuous cracks and a couple traversing face moves out to a *sweet* plushy ledge with a tree to belay from. 5.8 (the way we went)pitch 3: couldnt find any 10c that the topo called out, but from the plush ledge go up the big flake, using it as good hands while traversing right on smearing feet. clip a bolt and pull this pitch's crux (5.9+), then up past a tree, then belay from the bolted anchors or second tree (to avoid rope drag) just below the HUGE right facing corner crux pitch.\u00a0pitch 4: 5.11b crux. jam and lieback for a while up to the epic mantling exit. felt similar to the moratorium but quite dirty and mossy and ferny. continue up past some dirty 5.9 #3s low angle ledgey corner for 20 feet or so to a tree to belay from. you should be looking up at a little corner with an underclinging exit. this pitch has a lot of cleaning to be done as of May 2024.pitch 5: go up the short corner, surmount it and go up the LOW angle slab to a 2 bolt anchor. its very hard to see, but its JUST to the right of all the dirt, and just below an undercling. short pitch, but would be bad to combine with p4. could be combined with p6. 50ft, 5.8.pitch 6: traverse right for ~20 feet on 5.5 slab out to a single bolt almost even with the belay. go up (commit!), and a bit right towards the skyline to find where the gear starts about 15 feet up and right from the bolt. the further up you go the easier it gets. once you get up on a ledge, you should be at a 2 bolt anchor that's also pretty tough to spot. if you miss it, then just build an anchor on something that isnt lose (godspeed). 5.5.pitch 7: 4th/5th class scrambling up to the top. pick a tree and belay on terra firma.same descent as edge of absurdity. hunt around for the bolts with chains to rap down to the vent tunnel. they felt about 100 feet to the right of the top out.",
+                "route_location": "Same as Edge of Absurdity. Follow the gulley down from the pullout east of the tunnel, staying right of the power lines. Don't follow directly along the buttress, stay in the gulley.",
+                "route_protection": "Doubles 0.3\" to 3\" and a brush for cleaning moss. Perhaps a trowel for digging out dirty cracks if you're an earlier ascent crew.",
+                "route_id": "7d9fcb5c-272f-4483-a304-6e8c1d030af2",
+                "route_tags": [],
+                "route_composite_tags": [],
+                "route_comments": [
+                    {
+                        "comment_author": "Eric Gabel",
+                        "comment_text": "Nice job sending that. It wasn\u2019t to dirty when we put that up 20 years ago. Just some thin moss at the crux, and a little dirt in the finger crack down below. Where you couldn\u2019t find the 5.10c part, I think it was on the right, and you may have taken the left option, which both lead to the same place. We put that up ground-up onsite starting at 1:00pm in the afternoon in February, and... more Nice job sending that. It wasn\u2019t to dirty when we put that up 20 years ago. Just some thin moss at the crux, and a little dirt in the finger crack down below. Where you couldn\u2019t find the 5.10c part, I think it was on the right, and you may have taken the left option, which both lead to the same place. We put that up ground-up onsite starting at 1:00pm in the afternoon in February, and barely made it off as it was getting dark around 6:00pm. Glad you are doing some obscurity\u2019s. - Eric Gabel Jun 25, 2024",
+                        "comment_time": "Jun 25, 2024"
+                    },
+                    {
+                        "comment_author": "Eric Gabel",
+                        "comment_text": "I think the bolts on the second pitch were part of a Sean Jones exploration he was doing. His route ended going up the face to the left of ours. The last pitch exit is his also. We put no bolts in on our route. -Eric Gabel Jun 25, 2024",
+                        "comment_time": "Jun 25, 2024"
+                    }
+                ],
+                "route_name": "Adventures With Linda",
+                "route_url": "https://www.mountainproject.com/route/126195103/adventures-with-linda"
+            },
+            {
+                "route_grade": "5.9",
+                "route_stars": 2.7,
+                "route_votes": 3,
+                "route_type": "Trad, 7 pitches",
+                "route_length": "1000 ft (303 m)",
+                "route_fa": "Eric Gabel, Linda Jarit, Chad Noble, Brent Botta... 01/05",
+                "route_description": "This is a pretty unique route. The climbing and rock are pretty good in a few spots (and dirty in many others) but what really makes it worthwhile is the position. It climbs right along the lip of a really steep wall and, combined with the slab of the Cookie Sheet below, makes for a really exposed endeavor. There are some decent runouts on traversing terrain and route finding issues to deal with. The cherry on top is the descent, unique in all the valley. Altogether, a great adventure.Here's a thread with some more beta: Supertopo\u00a0P1 - this is a total junker up through choss and dirt. Fire activity has mostly burned all the PO but has also made the soil very unstable. Anyway, aim up and right for a large, living pine tree. Pass this then head up and left through some mantles and bushes to the base of a nice hand crack.P2 - up the handcrack then step out on the slab to avoid bushes. pass an oak and belay near dead pine.P3 - locate the first bolt out right, climb past it, then keep going up and right passing one more bolt that protects a hard mantle move. I didn't find any pins on this pitch. Belay at one bolt with a ring on it and small gear. There's a 2 bolt anchor clearly seen out right that I think is the top anchor to 'the higher truth' on the sugar cookie, but you don't climb to it.It sounds like many have bailed from this point, P4 looking a bit too gnarly. I think you could rap straight down and hit the anchor for 60/40 on the sugar cookie with one rope, but not 100% on that one. There is an easier variation to P4 that goes straight up. There is a bolt maybe 15 ft. up and bit left from the anchor. \"Afraid of the Edge\"P4 - big exposure! the crux moves come pretty close to the belay so it may be better to have stronger partner follow. blowing it while following would result in a ride over the edge. there was nothing \"blind\" about the moves, imo, just a hard foot match. anyway, clip a bolt 15 ft. right of the belay, head up a corner, then traverse right to another bolt. easier and runout climbing leads up and right past one more bolt. I belayed on a clean slab with a horizontal crack for gear. They call this 5.8+... whatever... 5.9.P5 - head up the corner to get established on the upper slab, traverse straight right to a bolt and climb the arete on jugs. some more awesome exposure here. belay at some small, living pines.P6 - this is kind of an unnerving pitch. head straight right, and even slightly down, to get established on the featured wall. follow the path of least resistance, mostly straight right. eventually, and hopefully, you will find a bolt. it's kind of hidden but just keep looking. Then head up to some black rock and perform some awesome and big moves on good rock, protected by good gear in a horizontal. You may wish to stop and belay at the big pine above. Otherwise, keep heading right on the dirty ledge to a big flake.P7 - climb the big flake/crack that leads to the top.",
+                "route_location": "Park on the west end of the longest tunnel on the 120. There is a nice pullout here. Hike down the gully, staying mostly under some powerlines.\u00a0The going is pretty quick and easy, though fire activity has kind of screwed the area up a bit.\u00a0Stay low towards the bottom, and then hike up just a bit once around the toe of the buttress.\u00a0You'll be very close to the sugar cookie and cookie sheet area. Look for the nice pine tree on P1 to aim for.Descent: Pretty neat! From the top out, walk west 100 yards or so, staying mostly level (don't really go up at all), until you see a chain anchor on a boulder.\u00a0Rap (1 rope ok) to a nice ledge where a ventilation tunnel busts out of the side of the cliff. Hop the railing then walk to the main tunnel, turn left and walk out to your car.\u00a0Bring a headlamp.",
+                "route_protection": "Light rack to 3 with extra #1 and #2 for P2",
+                "route_id": "cc1f5a13-b17c-4975-aca4-bb989e861b15",
+                "route_tags": [],
+                "route_composite_tags": [],
+                "route_comments": [
+                    {
+                        "comment_author": "Alex Fischer",
+                        "comment_text": "Why is there a ventilation tunnel here? What does it ventilate? Dec 6, 2021",
+                        "comment_time": "Dec 6, 2021"
+                    },
+                    {
+                        "comment_author": "J. Albers",
+                        "comment_text": "^^^ It ventilates Big Oak Flat road when it tunnels through the hillside (this is the road that connects Hwy. 120 to El Portal Road). Dec 6, 2021",
+                        "comment_time": "Dec 6, 2021"
+                    }
+                ],
+                "route_name": "Edge of Absurdity",
+                "route_url": "https://www.mountainproject.com/route/116135773/edge-of-absurdity"
+            },
+            {
+                "route_grade": "5.12a",
+                "route_stars": 4.0,
+                "route_votes": 132,
+                "route_type": "Trad",
+                "route_length": "50 ft (15 m)",
+                "route_fa": "Ron Kauk, et al, 1978",
+                "route_description": "Separate Reality is the photogenic, quintessential Yosemite roof climb. It's short, aesthetic, athletic, and buckets o' fun.Take Hwy 120 out of the Valley and after going through two short tunnels, park at a paved pullout immediately before the third, long tunnel. Hike up the road to the mouth of this tunnel, jump over the stone wall, and follow a steep track down the cliff for 3 minutes. This deposits you at the top of the Separate Reality visor. At the top of the slab use the bolted anchor to fix a line and do a short (80') rap down to a staging area at the base of the climb.It's pretty obvious: Climb the steep lieback flake to a stance, then bust out the 20' roof to a wild series of moves at the lip.",
+                "route_location": "N/A",
+                "route_protection": "If you want to lead this on gear, I recommend a #3 Camalot for the belayer, a #1 and a #4 Camalot for the initial lieback section, and then a #3, a pair of #2s, a #1, and a 0.75 for the crack itself.  However, a much easier option is to bring four or five hexes and long slings:  One can easily pre-load the crack by dropping the hexes down in from above.  One person should rap in first to direct this procedure.",
+                "route_id": "ca7989de-4444-4594-8855-133b2105c18a",
+                "route_tags": [],
+                "route_composite_tags": [],
+                "route_comments": [
+                    {
+                        "comment_author": "Mason Earle",
+                        "comment_text": "yeah, feet first is pretty clutch. you'd have to be super human to do it any other way Jul 30, 2007",
+                        "comment_time": "Jul 30, 2007"
+                    },
+                    {
+                        "comment_author": "Adam Stackhouse",
+                        "comment_text": "One of the better videos youtube.com/watch?v=Btgnu-z\u2026 of a pinkpoint of the route. Mar 22, 2009",
+                        "comment_time": "Mar 22, 2009"
+                    },
+                    {
+                        "comment_author": "Dean Hoffman",
+                        "comment_text": "Trying to get a feel for how hard this is, how does it compare to say the Organasm or Castles in the Sand in Sedona?  Thanks. Sep 22, 2009",
+                        "comment_time": "Sep 22, 2009"
+                    },
+                    {
+                        "comment_author": "Monomaniac",
+                        "comment_text": "Its harder than the roof pitches of either of those climbs. Sep 23, 2009",
+                        "comment_time": "Sep 23, 2009"
+                    },
+                    {
+                        "comment_author": "Tev",
+                        "comment_text": "According to the Ray Jardine website, he did the First Ascent on March 12th 1977 with pro and free ascended it on March 23rd of the same year. Jun 13, 2012",
+                        "comment_time": "Jun 13, 2012"
+                    },
+                    {
+                        "comment_author": "Mickey Sensenbach",
+                        "comment_text": "again just trying to see how hard it is, is it like the backer cracker in the first hand jam, just more steep? do you not need any thing bigger then a number 4 camolot? is it C1 so I can down aid if I have pro under roof and cant pull it? Sep 16, 2013",
+                        "comment_time": "Sep 16, 2013"
+                    },
+                    {
+                        "comment_author": "MisterCattell Cattell",
+                        "comment_text": "I wish there were a way to describe how absolutely perfect this route is.  But I can't.  Just go try it yourself.  Also- Don't TR it.  That's just silly. Also also- Trying to drop hexes in from the top seems just as silly as TRing.  Cams work just fine. Oct 16, 2015",
+                        "comment_time": "Oct 16, 2015"
+                    },
+                    {
+                        "comment_author": "Josh Janes",
+                        "comment_text": "I'm sorry you found my suggestion silly but I think you missed the point. Oct 16, 2015",
+                        "comment_time": "Oct 16, 2015"
+                    },
+                    {
+                        "comment_author": "Jordan Cannon",
+                        "comment_text": "Amazing route! The location and positioning is unreal, get on it! I thought it was easier than \"More Monkey Than Funky\" 11c in J-Tree, even though it's longer and more sustained. For the roof I brought a #3, two #2's, and a .75 and was fine, just don't forget to bring the jumars so you can clean your gear if your partner isn't going to follow! Apr 3, 2016",
+                        "comment_time": "Apr 3, 2016"
+                    },
+                    {
+                        "comment_author": "Michael Lieb",
+                        "comment_text": "The tree people rappel off is dying and moves under body weight. The tree used to back it up has its roots halfway out of the ground (not to mention it\u2019s covered in biting ants). Someone should really put bolts up there. Jul 28, 2019",
+                        "comment_time": "Jul 28, 2019"
+                    },
+                    {
+                        "comment_author": "Mark Straub",
+                        "comment_text": "Undoubtedly one of the coolest climbs I've ever done.  Challenging, fun, and safe, with one of the best crux sequences on the planet. Dec 9, 2020",
+                        "comment_time": "Dec 9, 2020"
+                    },
+                    {
+                        "comment_author": "D F",
+                        "comment_text": "Some history that appears to be missing on here is that the original rating of 12a was given before the lip of the roof broke off, leaving the \"jug\" that everyone uses now and shortening the length of the roof significantly. According to various posts on Supertopo, the breakage at the lip happened in a couple of phases, not all at once, ca. 1980, and at one point the route was downrated to... more Some history that appears to be missing on here is that the original rating of 12a was given before the lip of the roof broke off, leaving the \"jug\" that everyone uses now and shortening the length of the roof significantly. According to various posts on Supertopo, the breakage at the lip happened in a couple of phases, not all at once, ca. 1980, and at one point the route was downrated to 11c. Kind of inspires me to try the route without using the jug. Kind of. I found a link to a photo of Ray Jardine that shows the route in its original state here: house-under-a-rock.tumblr.c\u2026 Supertopo thread here: supertopo.com/climbing/thre\u2026 Regarding the grade, and having recently sent this myself, it seems to me that back in the days when 5.12 was new territory, a route had to be 12b before anyone dared to call it \"12a,\" which has pretty much been the case with each new grade over the generations. In the spirit of Yosemite tradition and a tip of the hat to the original badasses who blazed the way, I'll add my checkmark to \"11d.\" ;-) Edit to add: I just got off the phone with Ron Kauk, and also corresponded over email with Ray Jardine, and it's been helpful to clear up some facts about this route. The first (Ron) and second (Ray) ascents occurred in 1977 (so the \"1978\" listing above should be corrected). Ray also sent me a link to his Climbing Log, which he said he updated daily during his career, so the dates in it are generally quite accurate: rayjardine.com/Avocations/C\u2026 (Thanks to these guys for taking the time to share the info!) May 27, 2021",
+                        "comment_time": "May 27, 2021"
+                    },
+                    {
+                        "comment_author": "Austin Donisan",
+                        "comment_text": "There's a new 2 bolt anchor to rap from instead instead of the dying trees. Oct 18, 2021",
+                        "comment_time": "Oct 18, 2021"
+                    },
+                    {
+                        "comment_author": "Andrew Chen",
+                        "comment_text": "What's the best way to bring up your follower from above the lip? Mar 22, 2023",
+                        "comment_time": "Mar 22, 2023"
+                    },
+                    {
+                        "comment_author": "Nick Patilsen",
+                        "comment_text": "There isn't really a way to follow this route, FYI. The best way to clean seems to be back climbing to the beginning of the roof and lowering off a fixed pin back to the belay area. From there, jumar out on the line you fixed to rappel in. May 13, 2024",
+                        "comment_time": "May 13, 2024"
+                    }
+                ],
+                "route_name": "Separate Reality",
+                "route_url": "https://www.mountainproject.com/route/105874590/separate-reality"
+            },
+            {
+                "route_grade": "5.12",
+                "route_stars": 3.9,
+                "route_votes": 28,
+                "route_type": "Trad",
+                "route_length": "110 ft (33 m)",
+                "route_fa": "Ron Kauk, et al, 9/1977",
+                "route_description": "This route is soooo beautiful! The climb starts with an awkward overhanging chimney. After that you get a rest then it moves into beautiful thin hand jams up an overhanging wall. This route shouldn't feel as hard for people with thinner hands. Those with thicker hands may have trouble in the mid-section of the hand crack. I feel like I have normal sized hands and ended up getting about six real tight thumbs up jams in a row. The crack does widen up though so just keep cranken'. The last 15 feet is a tight squeeze chimmney that some people like myself end up liebacking. A classic 5.12 crack!    P.S this climb is featured in the extra scenes of the film \"The Sharp End\".",
+                "route_location": "Rappel from the anchors below Separate Reality. The climb begins on a ledge with a tree.",
+                "route_protection": ".5 to #2  Bring a few extra .75 and 1 sized cams",
+                "route_id": "3abe6f6a-9f57-4550-8add-614fa55d8261",
+                "route_tags": [],
+                "route_composite_tags": [],
+                "route_comments": [
+                    {
+                        "comment_author": "Alexey Zelditch",
+                        "comment_text": "Stories and photos about Tales of Power: supertopo.com/climbing/thre\u2026 Mar 5, 2013",
+                        "comment_time": "Mar 5, 2013"
+                    },
+                    {
+                        "comment_author": "Peter Beal",
+                        "comment_text": "cool short vid of the business on TOP. No tape! youtube.com/watch?v=geOABKD\u2026 Apr 14, 2020",
+                        "comment_time": "Apr 14, 2020"
+                    },
+                    {
+                        "comment_author": "Austin Donisan",
+                        "comment_text": "A 70m fixed from the rap in point easily reaches the bottom; a 60m might. The pitch itself is much shorter than 110'. Pretend you're in Indian Creek and bring all the #1s you can (like 6 or more). May 9, 2022",
+                        "comment_time": "May 9, 2022"
+                    },
+                    {
+                        "comment_author": "Ben Gilkison",
+                        "comment_text": "Was stoked to onsight this back in the summer 2001' or so.  Likely a bit easier for me with my small hands, but at the time, it was still at my limit and I was trying HARD.  A couple guys above whom were working separate reality leaned over the edge and snapped some pictures of me on lead, but despite my attempts to relay them my email, I never heard back from them. On the off chance that this... more Was stoked to onsight this back in the summer 2001' or so.  Likely a bit easier for me with my small hands, but at the time, it was still at my limit and I was trying HARD.  A couple guys above whom were working separate reality leaned over the edge and snapped some pictures of me on lead, but despite my attempts to relay them my email, I never heard back from them. On the off chance that this message makes it to those gentleman, please, please... I'd be so psyched to see those pictures even if they are blurry 35mm prints. :-> Feb 6, 2024",
+                        "comment_time": "Feb 6, 2024"
+                    }
+                ],
+                "route_name": "Tales of Power",
+                "route_url": "https://www.mountainproject.com/route/106240365/tales-of-power"
+            },
+            {
+                "route_grade": "5.10c",
+                "route_stars": 2.5,
+                "route_votes": 2,
+                "route_type": "Trad",
+                "route_length": "85 ft (26 m)",
+                "route_fa": "Rick Cashner, Dimitri Barton, Dave Neilson - April, 1986",
+                "route_description": "This is a good obscure crack.  Pretty easy for the grade but steep and exposed.  Worth the walk and the exploring!",
+                "route_location": "On the opposite side of Tamerack Creek from Tales of Power and Seperate Reality, this route is located directly above the left side of Pat and Jack's.  Park at the long pullout just west of the Cascade Creek Bridge on Hwy 120.  Hike through the woods and a wet section of reeds.  Continue down and around small granite slopes and terraces until you reach the cliff edge.  The climb is closer to the Tamerack Creek side of the cliff than the Cascade Creek side.  Look for a west facing corner, this is Prime Time 5.9  Through Bein' Cool is just to the west.  Look over the edge, you should see a granite ramp with a tree in the middle of it about 80 feet down.  Rap to just below the tree.  This is the start of the climb.  Way cool place to be when Wildcat Falls is pumping!",
+                "route_protection": "Standard Rack. If you need anything extra it would be 1.5 - 2.5 friends.",
+                "route_id": "f9bd58cf-3482-43c1-a3d9-bb4f781f2d0b",
+                "route_tags": [],
+                "route_composite_tags": [],
+                "route_comments": [
+                    {
+                        "comment_author": "Osprey Overhang",
+                        "comment_text": "I hear this area above Pat and Jack's being referred to as Airplane Ledges.  Apparently this was a favorite spot around the time of the infamous marijuana loaded airplane crash.  The sunny ledges and terraces were a good place to dry out. There is a good bouldering wall here that is about 15ft high and 100ft long with knobs.  Come here to hang out in the sun and do the Bongsmoke Traverse V0-. more I hear this area above Pat and Jack's being referred to as Airplane Ledges.  Apparently this was a favorite spot around the time of the infamous marijuana loaded airplane crash.  The sunny ledges and terraces were a good place to dry out. There is a good bouldering wall here that is about 15ft high and 100ft long with knobs.  Come here to hang out in the sun and do the Bongsmoke Traverse V0-. Feb 3, 2010",
+                        "comment_time": "Feb 3, 2010"
+                    }
+                ],
+                "route_name": "Through Bein' Cool",
+                "route_url": "https://www.mountainproject.com/route/106651325/through-bein-cool"
+            }
+        ]
+    }
+]
