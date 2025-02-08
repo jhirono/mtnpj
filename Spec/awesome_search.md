@@ -2,9 +2,9 @@
 
 I’ve been passionate about rock climbing for over ten years, practicing trad, sport, and bouldering. While there are many incredible routes, information is scattered across websites and guidebooks, making searches difficult. This project aims to centralize route data and apply proper tags, enabling climbers to find routes quickly and efficiently with a simple web application.
 
-## Key User Scenarios and Tags
+## Search Scenarios
 
-Trad/Sport routes and Areas should have below tags for making searches. 
+This is a comprehensive list of search criteria for trad, sport and their areas. Data availability remains a challenge for many tags. Bouldering requires a separate set of search criteria.
 
 | Category | Search Criterion | Tag Name | Trad Route | Sport Route | Area |
 |----------|-----------------|----------|------------|------------|------|
@@ -17,15 +17,19 @@ Trad/Sport routes and Areas should have below tags for making searches.
 | | **Crag dries fast** (good after rain) | `dries_fast` | ✅ | ✅ | ✅ |
 | | **Dry in the rain** (stays climbable in light rain) | `dry_in_rain` | ✅ | ✅ | ✅ |
 | | **Seepage is a problem** (routes affected by water seepage) | `seepage_problem` | ✅ | ✅ | ✅ |
+| | **Windy and exposed** (routes frequently hit by strong winds) | `windy_exposed` | ✅ | ✅ | ✅ |
+| **Access & Restrictions** | **Seasonal closure** (due to raptor nesting or wildlife protection) | `seasonal_closure` | ✅ | ✅ | ✅ |
 | **Crowds & Popularity** | **Less crowded areas** (avoid high-traffic crags) | `low_crowds` | ✅ | ✅ | ✅ |
 | | **Classic routes** (highly-rated, must-do climbs) | `classic_route` | ✅ | ✅ | ✅ |
 | | **Development date** (to find newly established routes) | `new_routes` | ✅ | ✅ | ✅ |
+| | **Polished rock** (rock has become smooth due to frequent traffic) | `polished_rock` | ✅ | ✅ | ❌ |
 | **Difficulty & Safety** | **Good for breaking into a new grade** (first route in a harder grade) | `first_in_grade` | ✅ | ✅ | ❌ |
 | | **Runout, dangerous** (long distances between protection) | `runout_dangerous` | ✅ | ✅ | ❌ |
 | | **Stick clip advised** (high first bolt or risk of ground fall) | `stick_clip` | ❌ | ✅ | ❌ |
 | | **Watch for loose rock** (routes with potential rockfall hazards) | `loose_rock` | ✅ | ✅ | ❌ |
 | | **Rope drag warning** (zig-zagging route that requires careful rope management) | `rope_drag_warning` | ✅ | ✅ | ❌ |
-| **Approach & Accessibility** | **Short approach (<30 min)** | `approach_short` | ✅ | ✅ | ✅ |
+| **Approach & Accessibility** | **No approach (<5 min)** | `approach_none` | ✅ | ✅ | ✅ |
+| | **Short approach (<30 min)** | `approach_short` | ✅ | ✅ | ✅ |
 | | **Moderate approach (30-60 min)** | `approach_moderate` | ✅ | ✅ | ✅ |
 | | **Long approach (>60 min)** | `approach_long` | ✅ | ✅ | ✅ |
 | | **Can be top-roped** (accessible from above) | `top_rope_possible` | ✅ | ✅ | ❌ |
@@ -58,18 +62,13 @@ Trad/Sport routes and Areas should have below tags for making searches.
 | **Rope Length** | **Requires 70m rope** | `rope_70m` | ✅ | ✅ | ❌ |
 | | **Requires 80m rope** | `rope_80m` | ✅ | ✅ | ❌ |
 
-## Not to do
-* Boulder is out of scope for now
-* Do not accept user-defined-tagging for now
-* Do not provide route infromation itself, provide a link to existing services like mtnpj
+## Phase one
 
-## Design
 
-### Data
 1. Scrape areas, routes and their detail information from Mtnpj (done)
 1. Scrape data from a guidebook if it is possible. (ambistious, Squamish is relatively easy)
 1. Add requird tag information using LLM using area description, route description, comments.
-1. Store all data in json or SQL.
+1. Store all data in json or SQL.Store all data in json or SQL.
 
 ### Front End
 TBD
@@ -77,4 +76,5 @@ TBD
 ## Schedule
 
 ### Phase 1
-Focus on my local crags or to be visited crags: Squamish, Index, Leavenworth, Indian Creek and Yosemite.
+* Focus on my local crags or to be visited crags: Squamish, Index, Leavenworth, Indian Creek and Yosemite.
+* Focus on high feasibility taggings: crack climbing, multi-pitch/anchors/descent.S

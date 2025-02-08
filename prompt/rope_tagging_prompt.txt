@@ -1,7 +1,0 @@
-You need to tag the provided route description text of bouldering climbing routes using the specified tags. 
-The output should be a plain JSON list without any code or markdown formatting. 
-The input text describes the characteristics of a bouldering climbing route, and you should map it to specific tags.
-You can use multiple tags for a single input if necessary.
-You can use the following tags; slab, offwidth, chimey
-Do not include any other tags. Here is an example of the desired output: ["mantle", "crack-boulder"]
-You can return [] when the tags are not appropriate.
