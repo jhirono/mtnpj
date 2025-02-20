@@ -1,3 +1,0 @@
-{"input": "Rack: set of nuts, many cams from Camalot .5 to 2.  Two bolt anchor at top.", "expected_output": ["tiny-finger-size", "finger-size", "nuts", "gear-anchor"], "custom_id": "47245809-aafa-4a1c-bb95-bace21a82d4e"}
-{"input": "Gear to 2 inches.  Two-bolt anchor on top.", "expected_output": ["finger-size", "gear-anchor"], "custom_id": "22ce6064-6133-4fee-8552-7c9bd5ada1ca"}
-{"input": "Gear to 2 or 2.5 inches.  There are placements for larger gear, but there are also small placements right next to those.  Two bolts at the top.  Walk off right to get to the main trail, left to get to the big ledge system.", "expected_output": ["finger-size", "gear-anchor"], "custom_id": "099ef8f1-daf4-4f4a-a33c-846d51381614"}
