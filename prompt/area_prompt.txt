@@ -1,0 +1,67 @@
+You are responsible for returning a JSON object containing a set of tags based only on the allowed tags listed below. Do not invent any new tags. Your output must strictly follow the JSON format shown in the example.
+
+Input Data (for each area) will include:
+- area_description
+- area_getting_there
+- area_access_issues
+- area_page_views
+- area_shared_on
+- area_comments
+
+IMPORTANT: Your output must only include tag values (not descriptions) in this exact format:
+
+{
+  "llm_tags": {
+    "Weather & Conditions": ["sun_am"],
+    "Access & Restrictions": ["seasonal_closure"],
+    "Crowds & Popularity": [],
+    "Approach & Accessibility": ["approach_short"]
+  }
+}
+
+Use the following reference to understand the meaning of each tag, but DO NOT include descriptions in your output:
+
+{
+  "tags": [
+    {
+      "category": "Weather & Conditions",
+      "tags": [
+        { "tag": "sun_am", "description": "Morning sun exposure or Shaded in the afternoon" },
+        { "tag": "sun_pm", "description": "Afternoon sun exposure, or Shaded in the morning" },
+        { "tag": "tree_filtered_sun_am", "description": "Partial morning sun through trees" },
+        { "tag": "tree_filtered_sun_pm", "description": "Partial afternoon sun through trees" },
+        { "tag": "sunny_all_day", "description": "Sunny most of the day" },
+        { "tag": "shady_all_day", "description": "Shady most of the day" },
+        { "tag": "dries_fast", "description": "Crag dries fast after rain" },
+        { "tag": "dry_in_rain", "description": "Stays climbable in light rain" },
+        { "tag": "seepage_problem", "description": "Affected by water seepage" },
+        { "tag": "windy_exposed", "description": "Exposed to strong winds" }
+      ]
+    },
+    {
+      "category": "Access & Restrictions",
+      "description": "For seasonal closures, create a specific tag in the format 'seasonal_closure_*' where * describes the reason (e.g., seasonal_closure_birdnesting, seasonal_closure_wetrock). Base this on the area_access_issues content.",
+      "tags": [
+        { "tag": "seasonal_closure_*", "description": "Create specific seasonal closure tags based on the reason" }
+      ]
+    },
+    {
+      "category": "Crowds & Popularity",
+      "tags": [
+        { "tag": "low_crowds", "description": "Less crowded area or route" },
+        { "tag": "new_areas", "description": "If area was shared after January 2022" },
+        { "tag": "polished_rock", "description": "Rock polished from frequent use" }
+      ]
+    },
+    {
+      "category": "Approach & Accessibility",
+      "tags": [
+        { "tag": "approach_none", "description": "No approach required (<5 min) from parking" },
+        { "tag": "approach_short", "description": "Short approach (<30 min) from parking" },
+        { "tag": "approach_moderate", "description": "Moderate approach (30–60 min) from parking" },
+        { "tag": "approach_long", "description": "Long approach (>60 min) from parking" },
+        { "tag": "top_rope_possible", "description": "Anchor accessible without rope climbing" }
+      ]
+    }
+  ]
+}

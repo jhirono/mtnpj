@@ -1,2 +1,5 @@
 venv/
 .old/
+node_modules
+.env.local
+cookies.json

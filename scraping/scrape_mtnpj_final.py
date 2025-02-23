@@ -12,10 +12,10 @@ import os
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
-from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import WebDriverException
 
 # --- Global Login Credentials & Cookie File ---
 # Credentials are read from environment variables.
@@ -104,114 +104,117 @@ def scrape_lowest_level_areas(url, hierarchy=None, lowest_level_urls=None):
 # ==================== Selenium Dynamic Comment Scrapers ====================
 
 def get_comments(page_url, user_email=None, user_pass=None, cookie_file="cookies.json"):
-    chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-gpu")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-    service = Service(ChromeDriverManager().install())
-    driver = webdriver.Chrome(service=service, options=chrome_options)
-    driver.get("https://www.mountainproject.com")
-    if os.path.exists(cookie_file):
-        try:
-            with open(cookie_file, "r") as f:
-                cookies = json.load(f)
-            for cookie in cookies:
-                driver.add_cookie(cookie)
-        except Exception as e:
-            print("Error loading cookies:", e)
-    driver.get(page_url)
-    time.sleep(3)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(3)
-    load_more_elements = driver.find_elements(By.CSS_SELECTOR, "button.show-more-comments-trigger")
-    if load_more_elements:
-        print("Load more comments button found. Clicking it...")
-        load_more = load_more_elements[0]
-        load_more.click()
-        time.sleep(2)
-        login_form_elements = driver.find_elements(By.CSS_SELECTOR, "form[method='post'][action='/auth/login/email']")
-        login_form = login_form_elements[0] if login_form_elements else None
-        if login_form and user_email and user_pass:
-            print("Login form detected. Logging in...")
-            email_input = login_form.find_element(By.CSS_SELECTOR, "input[name='email']")
-            pass_input = login_form.find_element(By.CSS_SELECTOR, "input[name='pass']")
-            email_input.clear()
-            email_input.send_keys(user_email)
-            pass_input.clear()
-            pass_input.send_keys(user_pass)
-            login_button = login_form.find_element(By.CSS_SELECTOR, "button[type='submit']")
-            login_button.click()
-            WebDriverWait(driver, 20).until(
-                EC.invisibility_of_element((By.CSS_SELECTOR, "form[method='post'][action='/auth/login/email']"))
-            )
-            print("Logged in successfully.")
-            try:
-                cookies = driver.get_cookies()
-                with open(cookie_file, "w") as f:
-                    json.dump(cookies, f)
-            except Exception as e:
-                print("Error saving cookies:", e)
-    time.sleep(3)
-    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-    time.sleep(3)
+    """Get comments using Selenium"""
     try:
-        WebDriverWait(driver, 20).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, "div.comment-list"))
-        )
-    except Exception:
-        driver.quit()
+        driver = init_selenium_driver()
+        if not driver:
+            return []
+            
+        try:
+            driver.get(page_url)
+            time.sleep(3)
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            time.sleep(3)
+            
+            # Try to find and click "show more comments" button
+            try:
+                load_more = WebDriverWait(driver, 5).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "button.show-more-comments-trigger"))
+                )
+                load_more.click()
+                time.sleep(2)
+            except:
+                pass  # No "show more" button or already showing all comments
+            
+            # Parse comments from the page source
+            soup = BeautifulSoup(driver.page_source, "html.parser")
+            comments = []
+            comment_list = soup.find("div", class_="comment-list")
+            
+            if comment_list:
+                comment_elements = comment_list.find_all("table", class_="main-comment")
+                for element in comment_elements:
+                    bio_div = element.find("div", class_="bio")
+                    comment_author = "N/A"
+                    if bio_div:
+                        a_tag = bio_div.find("a", href=re.compile(r"/user/"))
+                        if a_tag:
+                            comment_author = a_tag.text.strip()
+                    
+                    comment_body = element.find("div", class_="comment-body")
+                    comment_text = comment_body.get_text(separator=" ", strip=True) if comment_body else "N/A"
+                    
+                    time_tag = element.find("span", class_="comment-time")
+                    comment_time = time_tag.get_text(separator=" ", strip=True) if time_tag else "N/A"
+                    
+                    comments.append({
+                        "comment_author": comment_author,
+                        "comment_text": comment_text,
+                        "comment_time": comment_time
+                    })
+            
+            return comments
+            
+        finally:
+            driver.quit()
+            
+    except Exception as e:
+        print(f"Error getting comments: {e}")
         return []
-    page_source = driver.page_source
-    driver.quit()
-    soup = BeautifulSoup(page_source, "html.parser")
-    comments = []
-    comment_list = soup.find("div", class_="comment-list")
-    if comment_list:
-        comment_elements = comment_list.find_all("table", class_="main-comment")
-        for element in comment_elements:
-            bio_div = element.find("div", class_="bio")
-            comment_author = "N/A"
-            if bio_div:
-                a_tag = bio_div.find("a", href=re.compile(r"/user/"))
-                if a_tag:
-                    comment_author = a_tag.text.strip()
-            comment_body = element.find("div", class_="comment-body")
-            comment_text = comment_body.get_text(separator=" ", strip=True) if comment_body else "N/A"
-            time_tag = element.find("span", class_="comment-time")
-            comment_time = time_tag.get_text(separator=" ", strip=True) if time_tag else "N/A"
-            comments.append({
-                "comment_author": comment_author,
-                "comment_text": comment_text,
-                "comment_time": comment_time
-            })
-    return comments
 
-def get_route_stats(route_url):
-    """
-    Build the stats URL for the route, fetch the page, and extract:
-      - Suggested ratings: a dictionary mapping each suggested grade (e.g., "5.10+") to the vote count.
-      - Tick comments: a string joining all text from the second cell of each row in the ticks table,
-        after cleaning out date patterns and bullet characters.
-    For example, for a route URL like:
-      https://www.mountainproject.com/route/105718387/4-x-4
-    the stats URL is constructed by inserting "stats" after "/route/".
+def init_selenium_driver():
+    """Initialize Selenium driver"""
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")  # Updated headless argument
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1920,1080")
+        
+        # Detect Chrome binary location based on platform
+        if sys.platform == "darwin":  # macOS
+            if os.path.exists("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"):
+                chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+            else:
+                print("Chrome not found in default location")
+                return None
+        
+        # Try to initialize driver
+        try:
+            service = Service()
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            print("Successfully initialized Chrome driver")
+            return driver
+        except Exception as e:
+            print(f"Error creating Chrome driver: {e}")
+            # Fallback to local ChromeDriver
+            try:
+                service = Service(executable_path="/usr/local/bin/chromedriver")
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                print("Successfully initialized Chrome driver with local ChromeDriver")
+                return driver
+            except Exception as e2:
+                print(f"Error creating Chrome driver with local ChromeDriver: {e2}")
+                return None
+                
+    except Exception as e:
+        print(f"Error initializing driver: {e}")
+        return None
+
+def parse_stats(soup):
+    """Parse stats from BeautifulSoup object"""
+    suggested_ratings = {}
+    tick_comments = ""
     
-    This function first tries a simple requests.get. If it detects a confirmation prompt ("Please Confirm")
-    in the returned HTML, it falls back to using Selenium to load the stats page.
-    
-    Returns a tuple: (suggested_ratings_dict, None, tick_comments)
-    (We ignore the numeric tick count as per request.)
-    """
-    def parse_stats(soup):
-        suggested_ratings = {}
-        tick_comments = ""
+    try:
         # Find Suggested Ratings table
         h3_suggested = None
         for h3 in soup.find_all("h3"):
             if re.search(r"^Suggested Ratings", h3.get_text(strip=True)):
                 h3_suggested = h3
                 break
+                
         if h3_suggested:
             table = h3_suggested.find_next("table", class_="table table-striped")
             if table:
@@ -220,13 +223,16 @@ def get_route_stats(route_url):
                     cells = row.find_all("td")
                     if len(cells) >= 2:
                         rating = cells[1].get_text(strip=True)
-                        suggested_ratings[rating] = suggested_ratings.get(rating, 0) + 1
+                        if rating and not rating.startswith('·'):  # Skip non-grade cells
+                            suggested_ratings[rating] = suggested_ratings.get(rating, 0) + 1
+                            
         # Find Ticks table
         h3_ticks = None
         for h3 in soup.find_all("h3"):
             if re.search(r"^Ticks", h3.get_text(strip=True)):
                 h3_ticks = h3
                 break
+                
         if h3_ticks:
             table = h3_ticks.find_next("table", class_="table table-striped")
             if table:
@@ -236,40 +242,58 @@ def get_route_stats(route_url):
                     cells = row.find_all("td")
                     if len(cells) >= 2:
                         tick_text = cells[1].get_text(" ", strip=True)
-                        tick_list.append(tick_text)
+                        # Clean up the comment
+                        tick_text = re.sub(r'\b[A-Za-z]{3}\s+\d{1,2},\s*\d{4}\b', '', tick_text)  # Remove date
+                        tick_text = re.sub(r'·.*?·', '', tick_text)  # Remove climb type
+                        tick_text = re.sub(r'\s+', ' ', tick_text).strip()
+                        if tick_text:
+                            tick_list.append(tick_text)
+                            
                 tick_comments = " ".join(tick_list)
-                # Remove date patterns and bullet characters
-                tick_comments = re.sub(r'\b[A-Za-z]{3}\s+\d{1,2},\s*\d{4}\b', '', tick_comments)
-                tick_comments = tick_comments.replace("·", "").strip()
-        return suggested_ratings, None, tick_comments
+                
+    except Exception as e:
+        print(f"Error parsing stats: {e}")
+        
+    return suggested_ratings, None, tick_comments
 
+def get_route_stats(route_url):
+    """Get route statistics using Selenium"""
     try:
         stats_url = route_url.replace("/route/", "/route/stats/", 1)
-        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
-        response = requests.get(stats_url, headers=headers)
-        response.raise_for_status()
-        content = response.text
-        if "Please Confirm" in content:
-            raise Exception("Confirmation needed")
-        soup = BeautifulSoup(content, "html.parser")
-        return parse_stats(soup)
-    except Exception:
+        print(f"\nDEBUG: Fetching stats from {stats_url}")
+        
+        # Try simple request first
         try:
-            chrome_options = Options()
-            chrome_options.add_argument("--headless")
-            chrome_options.add_argument("--disable-gpu")
-            chrome_options.add_argument("--no-sandbox")
-            chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-            service = Service(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-            driver.get(stats_url)
-            time.sleep(5)
-            selenium_html = driver.page_source
-            driver.quit()
-            soup = BeautifulSoup(selenium_html, "html.parser")
+            headers = {"User-Agent": "Mozilla/5.0"}
+            response = requests.get(stats_url, headers=headers)
+            response.raise_for_status()
+            content = response.text
+            if "Please Confirm" in content:
+                raise Exception("Confirmation needed")
+            soup = BeautifulSoup(content, "html.parser")
             return parse_stats(soup)
-        except Exception as se:
-            return {}, None, ""
+        except Exception:
+            print("DEBUG: Simple request failed, trying with Selenium")
+            
+            # Fall back to Selenium
+            driver = init_selenium_driver()
+            if not driver:
+                return {}, None, ""
+                
+            try:
+                driver.get(stats_url)
+                time.sleep(5)
+                print("DEBUG: Initial page load complete")
+                
+                selenium_html = driver.page_source
+                soup = BeautifulSoup(selenium_html, "html.parser")
+                return parse_stats(soup)
+            finally:
+                driver.quit()
+                
+    except Exception as e:
+        print(f"DEBUG: Error in get_route_stats: {e}")
+        return {}, None, ""
 
 def get_area_comments(area_url, user_email=None, user_pass=None, cookie_file="cookies.json"):
     return get_comments(area_url, user_email=user_email, user_pass=user_pass, cookie_file=cookie_file)
@@ -282,6 +306,18 @@ def get_route_details(route_url):
     soup = BeautifulSoup(response.text, 'html.parser')
     
     route_details = {}
+    
+    # Get route name from URL to find matching tr element
+    route_id = route_url.split('/')[-1]
+    
+    # Find the route's tr element using the TODO-MARKER
+    route_tr = soup.find('tr', id=lambda x: x and f'TODO-MARKER-{route_id}' in x)
+    if route_tr:
+        # Get left-to-right order
+        route_lr = route_tr.get('data-lr')
+        route_details['route_lr'] = int(route_lr) if route_lr else None
+    else:
+        route_details['route_lr'] = None
     
     # Route Grade (remove trailing "YDS")
     grade_element = soup.select_one('.rateYDS, .route-type.Ice')
@@ -465,8 +501,17 @@ def get_routes(area_url):
                 if not route_url.startswith('http'):
                     route_url = BASE_URL + route_url
                 route_name = link_tag.get_text(strip=True)
+                
+                # Get left-to-right order
+                route_lr = route_element.get('data-lr')
+                route_lr = int(route_lr) if route_lr else None
+                
                 route_details = get_route_details(route_url)
-                ordered_route = {"route_name": route_name, "route_url": route_url}
+                ordered_route = {
+                    "route_name": route_name, 
+                    "route_url": route_url,
+                    "route_lr": route_lr  # Add route_lr to output
+                }
                 ordered_route.update(route_details)
                 routes.append(ordered_route)
     
