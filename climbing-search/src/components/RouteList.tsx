@@ -1,9 +1,10 @@
+import type { Route } from '../types/route';
+
 interface RouteListProps {
   routes: (Route & { area_name: string })[];
-  // ... other props
 }
 
-export function RouteList({ routes, ...props }: RouteListProps) {
+export function RouteList({ routes }: RouteListProps) {
   return (
     <div>
       {routes.map(route => (

@@ -7,6 +7,30 @@ import type { Route } from './types/route'
 import type { RouteFilters, SortConfig } from './types/filters'
 import { GRADE_ORDER, normalizeGrade } from './types/filters'
 
+// Add these constants at the top of the file
+const EXCLUDED_TYPES = ['Aid', 'Boulder', 'Ice', 'Mixed', 'Snow'];
+
+function hasExcludedType(routeType: string): boolean {
+  return EXCLUDED_TYPES.some(type => 
+    routeType.split(', ').some(rt => rt === type)
+  );
+}
+
+function matchesRouteType(routeType: string, selectedType: string): boolean {
+  const types = routeType.split(', ')
+    .filter(type => !type.startsWith('Grade'))  // Ignore Grade specifications
+    .map(type => type.trim());
+
+  switch (selectedType) {
+    case 'Trad':
+      return types.includes('Trad');
+    case 'Sport':
+      return types.includes('Sport');
+    default:
+      return false;
+  }
+}
+
 function App() {
   const [areas, setAreas] = useState<Area[]>([])
   const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([])
@@ -81,8 +105,13 @@ function App() {
           })
           .flatMap(area => area.routes);
 
-    // Then apply filters
-    return routesFromSelectedAreas.filter(route => {
+    // Pre-filter to remove excluded types
+    const preFilteredRoutes = routesFromSelectedAreas.filter(route => 
+      !hasExcludedType(route.route_type)
+    );
+
+    // Then apply other filters
+    return preFilteredRoutes.filter(route => {
       // Grade filter
       const routeGradeNum = GRADE_ORDER.indexOf(normalizeGrade(route.route_grade));
       
@@ -108,9 +137,12 @@ function App() {
         }
       }
 
-      // Type filter
-      if (currentFilters.types.length > 0 && !currentFilters.types.includes(route.route_type)) {
-        return false;
+      // Type filter with new matching logic
+      if (currentFilters.types.length > 0) {
+        const matchesType = currentFilters.types.some(type => 
+          matchesRouteType(route.route_type, type)
+        );
+        if (!matchesType) return false;  // Only return false here, continue checking other filters
       }
 
       // Tags filter

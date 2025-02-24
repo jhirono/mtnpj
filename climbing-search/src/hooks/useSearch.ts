@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react'
 import type { Area } from '../types/area'
-import type { Route } from '../types/route'
 import type { RouteFilters } from '../types/filters'
 import { GRADE_ORDER, normalizeGrade } from '../types/filters'
 
