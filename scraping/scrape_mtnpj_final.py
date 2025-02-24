@@ -347,9 +347,9 @@ def get_route_details(route_url):
     if stars_avg_tag:
         stars_avg_text = stars_avg_tag.get_text(strip=True)
         stars_match = re.search(r'Avg: (\d+(\.\d+)?)', stars_avg_text)
-        votes_match = re.search(r'from (\d+)', stars_avg_text)
+        votes_match = re.search(r'from ([\d,]+)', stars_avg_text)
         route_details['route_stars'] = float(stars_match.group(1)) if stars_match else 'N/A'
-        route_details['route_votes'] = int(votes_match.group(1)) if votes_match else 'N/A'
+        route_details['route_votes'] = int(votes_match.group(1).replace(',', '')) if votes_match else 'N/A'
     else:
         route_details['route_stars'] = 'N/A'
         route_details['route_votes'] = 'N/A'

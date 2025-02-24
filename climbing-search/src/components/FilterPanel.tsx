@@ -21,6 +21,8 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
     'Multi-Pitch, Anchors & Descent'
   ])
   const [availableTags, setAvailableTags] = useState<Record<string, Set<string>>>({})
+  // Add state for grade filter enabled
+  const [gradeFilterEnabled, setGradeFilterEnabled] = useState(false);
 
   // First, collect available tags
   useEffect(() => {
@@ -67,11 +69,12 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
               "New Route (since 2022)"
       })),
 
-    "Difficulty & Safety": ["first_in_grade", "sandbag"]
-      .filter(tag => tag && availableTags["Difficulty & Safety"]?.has(tag))
+    "Difficulty & Safety": ["first_in_grade", "exclude_sandbag"]
+      .filter(tag => tag || availableTags["Difficulty & Safety"]?.has("sandbag"))
       .map(tag => ({
         value: tag,
-        label: tag === "first_in_grade" ? "Good for Breaking into Grade" : "Sandbag"
+        label: tag === "first_in_grade" ? "Good for Breaking into Grade" : 
+               tag === "exclude_sandbag" ? "Exclude Sandbag Routes" : ""
       })),
 
     "Crack Climbing": ["finger", "thin_hand", "wide_hand", "offwidth", "chimney"]  // Specified order
@@ -81,11 +84,16 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         label: tag.split('_').join(' ')
       })),
 
-    "Multi-Pitch, Anchors & Descent": ["short_multipitch", "long_multipitch"]
-      .filter(tag => tag && availableTags["Multi-Pitch, Anchors & Descent"]?.has(tag))
+    "Multi-Pitch, Anchors & Descent": ["single_pitch", "short_multipitch", "long_multipitch"]
+      .filter(tag => {
+        if (tag === "single_pitch") return true;
+        return tag && availableTags["Multi-Pitch, Anchors & Descent"]?.has(tag);
+      })
       .map(tag => ({
         value: tag,
-        label: tag === "short_multipitch" ? "Short (2-4 pitches)" : "Long (5+ pitches)"
+        label: tag === "single_pitch" ? "Single Pitch" :
+               tag === "short_multipitch" ? "Short (2-4 pitches)" : 
+               "Long (5+ pitches)"
       }))
   }), [availableTags])
 
@@ -170,7 +178,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         <label className="flex items-center text-sm">
           <input
             type="checkbox"
-            checked={!sortConfig.ascending}
+            checked={sortConfig.ascending}
             onChange={() => onSortChange({ 
               ...sortConfig, 
               ascending: !sortConfig.ascending 
@@ -183,58 +191,87 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
 
       {/* Grade Range Selector */}
       <div className="filter-group">
-        <button 
-          className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm"
-          onClick={() => toggleCategory('grades')}
-        >
-          <span>Grade: {filters.grades.min} - {filters.grades.max}</span>
-          <span>{expandedCategories.includes('grades') ? '▼' : '▶'}</span>
-        </button>
-        {expandedCategories.includes('grades') && (
-          <div className="mt-1 space-y-1 pl-3">
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Min Grade</label>
-                <select
-                  value={filters.grades.min}
-                  onChange={(e) => updateGradeRange({ 
-                    ...filters.grades, 
-                    min: e.target.value,
-                    max: GRADE_ORDER.indexOf(e.target.value) <= GRADE_ORDER.indexOf(filters.grades.max) 
-                      ? filters.grades.max 
-                      : e.target.value
-                  })}
-                  className="w-full p-2 border rounded"
-                >
-                  {SIMPLE_GRADES.map(grade => (
-                    <option key={grade} value={grade}>
-                      {grade}
-                    </option>
-                  ))}
-                </select>
+        <div className="flex items-center gap-2 mb-2">
+          <input
+            type="checkbox"
+            checked={gradeFilterEnabled}
+            onChange={(e) => {
+              setGradeFilterEnabled(e.target.checked);
+              // Clear grade filters when disabled
+              if (!e.target.checked) {
+                onChange({
+                  ...filters,
+                  grades: { min: "", max: "" }
+                });
+              } else {
+                // Set default range when enabled
+                onChange({
+                  ...filters,
+                  grades: { min: "5.10a", max: "5.11a" }
+                });
+              }
+            }}
+            className="mr-1"
+          />
+          <label className="text-sm font-medium">Enable Grade Filter</label>
+        </div>
+        
+        {gradeFilterEnabled && (
+          <>
+            <button 
+              className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm"
+              onClick={() => toggleCategory('grades')}
+            >
+              <span>Grade: {filters.grades.min} - {filters.grades.max}</span>
+              <span>{expandedCategories.includes('grades') ? '▼' : '▶'}</span>
+            </button>
+            {expandedCategories.includes('grades') && (
+              <div className="mt-1 space-y-1 pl-3">
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium mb-1">Min Grade</label>
+                    <select
+                      value={filters.grades.min}
+                      onChange={(e) => updateGradeRange({ 
+                        ...filters.grades, 
+                        min: e.target.value,
+                        max: GRADE_ORDER.indexOf(e.target.value) <= GRADE_ORDER.indexOf(filters.grades.max) 
+                          ? filters.grades.max 
+                          : e.target.value
+                      })}
+                      className="w-full p-2 border rounded"
+                    >
+                      {SIMPLE_GRADES.map(grade => (
+                        <option key={grade} value={grade}>
+                          {grade}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-sm font-medium mb-1">Max Grade</label>
+                    <select
+                      value={filters.grades.max}
+                      onChange={(e) => updateGradeRange({ 
+                        ...filters.grades, 
+                        max: e.target.value,
+                        min: GRADE_ORDER.indexOf(e.target.value) >= GRADE_ORDER.indexOf(filters.grades.min)
+                          ? filters.grades.min
+                          : e.target.value
+                      })}
+                      className="w-full p-2 border rounded"
+                    >
+                      {SIMPLE_GRADES.map(grade => (
+                        <option key={grade} value={grade}>
+                          {grade}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
               </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Max Grade</label>
-                <select
-                  value={filters.grades.max}
-                  onChange={(e) => updateGradeRange({ 
-                    ...filters.grades, 
-                    max: e.target.value,
-                    min: GRADE_ORDER.indexOf(e.target.value) >= GRADE_ORDER.indexOf(filters.grades.min)
-                      ? filters.grades.min
-                      : e.target.value
-                  })}
-                  className="w-full p-2 border rounded"
-                >
-                  {SIMPLE_GRADES.map(grade => (
-                    <option key={grade} value={grade}>
-                      {grade}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
+            )}
+          </>
         )}
       </div>
 
