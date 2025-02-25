@@ -484,7 +484,15 @@ def get_routes(area_url):
                 "area_hierarchy_name": cleaned_name,
                 "area_hierarchy_url": link['href']
             })
-    
+        
+        # Add current area as the lowest level
+        current_area_name = clean_area_name_from_url(area_url)
+        area_hierarchy.append({
+            "level": len(area_hierarchy) + 1,
+            "area_hierarchy_name": current_area_name,
+            "area_hierarchy_url": area_url
+        })
+
     area_comments = get_area_comments(area_url, user_email=LOGIN_EMAIL, user_pass=LOGIN_PASSWORD, cookie_file=COOKIE_FILE)
     
     routes = []
@@ -502,17 +510,25 @@ def get_routes(area_url):
                     route_url = BASE_URL + route_url
                 route_name = link_tag.get_text(strip=True)
                 
-                # Get left-to-right order
+                # Get left-to-right order and ensure it's an integer
                 route_lr = route_element.get('data-lr')
-                route_lr = int(route_lr) if route_lr else None
+                route_lr = int(route_lr) if route_lr is not None else 0
                 
+                # Get route details first
                 route_details = get_route_details(route_url)
+                
+                # Create final route data, ensuring route_lr is set
                 ordered_route = {
                     "route_name": route_name, 
                     "route_url": route_url,
-                    "route_lr": route_lr  # Add route_lr to output
+                    "route_lr": route_lr
                 }
-                ordered_route.update(route_details)
+                
+                # Update with other details, but preserve route_lr
+                if route_details:
+                    route_details['route_lr'] = route_lr  # Ensure route_lr is preserved
+                    ordered_route.update(route_details)
+                
                 routes.append(ordered_route)
     
     area_data = {
