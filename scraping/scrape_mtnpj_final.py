@@ -246,7 +246,8 @@ def parse_stats(soup):
                         tick_text = re.sub(r'\b[A-Za-z]{3}\s+\d{1,2},\s*\d{4}\b', '', tick_text)  # Remove date
                         tick_text = re.sub(r'·.*?·', '', tick_text)  # Remove climb type
                         tick_text = re.sub(r'\s+', ' ', tick_text).strip()
-                        if tick_text:
+                        # Only include comments with 15 or more words
+                        if tick_text and len(tick_text.split()) >= 15:
                             tick_list.append(tick_text)
                             
                 tick_comments = " ".join(tick_list)
@@ -262,37 +263,20 @@ def get_route_stats(route_url):
         stats_url = route_url.replace("/route/", "/route/stats/", 1)
         print(f"\nDEBUG: Fetching stats from {stats_url}")
         
-        # Try simple request first
-        try:
-            headers = {"User-Agent": "Mozilla/5.0"}
-            response = requests.get(stats_url, headers=headers)
-            response.raise_for_status()
-            content = response.text
-            if "Please Confirm" in content:
-                raise Exception("Confirmation needed")
-            soup = BeautifulSoup(content, "html.parser")
-            return parse_stats(soup)
-        except Exception:
-            print("DEBUG: Simple request failed, trying with Selenium")
-            
-            # Fall back to Selenium
-            driver = init_selenium_driver()
-            if not driver:
-                return {}, None, ""
-                
-            try:
-                driver.get(stats_url)
-                time.sleep(5)
-                print("DEBUG: Initial page load complete")
-                
-                selenium_html = driver.page_source
-                soup = BeautifulSoup(selenium_html, "html.parser")
-                return parse_stats(soup)
-            finally:
-                driver.quit()
-                
+        # Use Selenium directly
+        driver = init_selenium_driver()
+        driver.get(stats_url)
+        time.sleep(1)  # Wait for page load
+        print("DEBUG: Initial page load complete")
+        
+        content = driver.page_source
+        driver.quit()
+        
+        soup = BeautifulSoup(content, "html.parser")
+        return parse_stats(soup)
+        
     except Exception as e:
-        print(f"DEBUG: Error in get_route_stats: {e}")
+        print(f"Error getting route stats: {e}")
         return {}, None, ""
 
 def get_area_comments(area_url, user_email=None, user_pass=None, cookie_file="cookies.json"):

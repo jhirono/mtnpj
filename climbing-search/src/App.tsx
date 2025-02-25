@@ -40,7 +40,7 @@ function App() {
     tags: []
   })
   const [sortConfig, setSortConfig] = useState<SortConfig>({
-    option: 'stars',
+    option: 'votes',
     ascending: false  // Default to descending for stars (high to low)
   })
   const [loading, setLoading] = useState(true)
