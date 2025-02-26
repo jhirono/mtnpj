@@ -1,31 +1,9 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { Area } from '../types/area';
-import type { AreaHierarchy } from '../types/route';
 
 interface AreaSearchProps {
   areas: Area[];
   onAreaSelect: (selectedIds: string[]) => void;
-}
-
-interface SearchResult {
-  id: string;
-  displayName: string;
-  fullPath: string;
-  hierarchy: AreaHierarchy[];
-}
-
-function shortenHierarchy(hierarchy: AreaHierarchy[]): string {
-  // Skip "All Locations" and keep only relevant parts
-  const relevantHierarchy = hierarchy
-    .filter(h => h.area_hierarchy_name !== "All Locations")
-    .map(h => h.area_hierarchy_name);
-
-  // If hierarchy is longer than 3 levels, show only last 3 with ellipsis
-  if (relevantHierarchy.length > 3) {
-    return '...' + relevantHierarchy.slice(-3).join(' / ');
-  }
-
-  return relevantHierarchy.join(' / ');
 }
 
 export function AreaSearch({ areas, onAreaSelect }: AreaSearchProps) {
@@ -42,7 +20,7 @@ export function AreaSearch({ areas, onAreaSelect }: AreaSearchProps) {
       
       // Build path for each level of the hierarchy
       let currentPath = '';
-      area.area_hierarchy.forEach((level, index) => {
+      area.area_hierarchy.forEach((level) => {
         const levelName = level.area_hierarchy_name;
         const newPath = currentPath ? `${currentPath} / ${levelName}` : levelName;
         
