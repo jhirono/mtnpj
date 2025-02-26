@@ -3,6 +3,16 @@ import type { RouteFilters, GradeRange, SortConfig, SortOption } from '../types/
 import type { Area } from '../types/area'
 import { GRADE_ORDER, SIMPLE_GRADES } from '../types/filters'
 
+// Add type declaration for the Buy Me a Coffee button
+declare global {
+  interface Window {
+    createBMCButton?: (options: {
+      target: string;
+      data: Record<string, string>;
+    }) => void;
+  }
+}
+
 interface FilterPanelProps {
   filters: RouteFilters;
   onChange: (filters: RouteFilters) => void;
@@ -157,6 +167,36 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
       grades: range
     })
   }
+
+  // Initialize Buy Me a Book button
+  useEffect(() => {
+    // Check if the BMC script is loaded
+    if (typeof window !== 'undefined' && window.document && document.getElementById('bmc-container')) {
+      // If the BMC button already exists, remove it first to prevent duplicates
+      const existingButton = document.querySelector('#bmc-container .bmc-button');
+      if (existingButton) {
+        existingButton.remove();
+      }
+      
+      // Create the button if the BMC script is loaded
+      if (typeof window.createBMCButton === 'function') {
+        window.createBMCButton({
+          target: '#bmc-container',
+          data: {
+            name: 'bmc-button',
+            slug: 'bonvi',
+            color: '#5F7FFF',
+            emoji: '📖',
+            font: 'Cookie',
+            text: 'Buy me a book',
+            'outline-color': '#000000',
+            'font-color': '#ffffff',
+            'coffee-color': '#FFDD00'
+          }
+        });
+      }
+    }
+  }, []);
 
   return (
     <div className="space-y-3 p-3 bg-white dark:bg-gray-800 rounded-lg shadow text-sm overflow-y-auto max-h-[calc(100vh-120px)]">
