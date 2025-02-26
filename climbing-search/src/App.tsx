@@ -306,27 +306,36 @@ function App() {
     <div className="min-h-screen bg-white dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <header className="py-4 text-center">
-          <h1 className="text-xl font-bold flex items-center justify-center gap-2">
-            Awesome Climbing Route Search
-            <a 
-              href="/docs/README.md" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
-            >
-              BETA
-            </a>
-            <a 
-              href="https://www.buymeacoffee.com/bonvi" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300"
-            >
-              <span className="mr-1">☕</span>
-              Buy me a coffee
-            </a>
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+          {/* Responsive header layout */}
+          <div className="flex flex-col items-center">
+            {/* Title row */}
+            <h1 className="text-xl font-bold mb-2">
+              Awesome Climbing Search
+            </h1>
+            
+            {/* Badges row - will stack on mobile, side by side on desktop */}
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              <a 
+                href="/docs/README.html" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
+              >
+                BETA
+              </a>
+              <a 
+                href="https://www.buymeacoffee.com/bonvi" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
+              >
+                <span className="mr-1">☕</span>
+                Buy me a coffee
+              </a>
+            </div>
+          </div>
+          
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
             {sortedRoutes.length} routes found
           </p>
         </header>
