@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for mtnpj on 2025-02-24T13:19:38Z
+# fly.toml app configuration file generated for mtnpj on 2025-02-26T01:16:14Z
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
 app = 'mtnpj'
-primary_region = 'nrt'
+primary_region = 'lax'
 
 [build]
 
