@@ -69,19 +69,13 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
               "New Route (since 2022)"
       })),
 
-    "Difficulty & Safety": ["first_in_grade", "exclude_sandbag"]
-      .filter(tag => tag || availableTags["Difficulty & Safety"]?.has("sandbag"))
+    "Difficulty & Safety": ["first_in_grade", "exclude_sandbag", "exclude_runout_dangerous"]
+      .filter(tag => tag || availableTags["Difficulty & Safety"]?.has("sandbag") || availableTags["Difficulty & Safety"]?.has("runout_dangerous"))
       .map(tag => ({
         value: tag,
         label: tag === "first_in_grade" ? "Good for Breaking into Grade" : 
-               tag === "exclude_sandbag" ? "Exclude Sandbag Routes" : ""
-      })),
-
-    "Crack Climbing": ["finger", "thin_hand", "wide_hand", "offwidth", "chimney"]  // Specified order
-      .filter(tag => availableTags["Crack Climbing"]?.has(tag))
-      .map(tag => ({
-        value: tag,
-        label: tag.split('_').join(' ')
+               tag === "exclude_sandbag" ? "Exclude Sandbag Routes" :
+               tag === "exclude_runout_dangerous" ? "Exclude Dangerous Routes" : ""
       })),
 
     "Multi-Pitch, Anchors & Descent": ["single_pitch", "short_multipitch", "long_multipitch"]
@@ -94,6 +88,13 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         label: tag === "single_pitch" ? "Single Pitch" :
                tag === "short_multipitch" ? "Short (2-4 pitches)" : 
                "Long (5+ pitches)"
+      })),
+
+    "Crack Climbing": ["finger", "thin_hand", "wide_hand", "offwidth", "chimney"]  // Specified order
+      .filter(tag => availableTags["Crack Climbing"]?.has(tag))
+      .map(tag => ({
+        value: tag,
+        label: tag.split('_').join(' ')
       }))
   }), [availableTags])
 
@@ -158,24 +159,24 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
   }
 
   return (
-    <div className="space-y-3 p-3 bg-white rounded-lg shadow text-sm">
+    <div className="space-y-3 p-3 bg-white dark:bg-gray-800 rounded-lg shadow text-sm overflow-y-auto max-h-[calc(100vh-120px)]">
       {/* Sorting Options */}
       <div className="filter-group">
-        <h3 className="font-medium mb-1">Sort by</h3>
+        <h3 className="font-medium mb-1 text-gray-900 dark:text-gray-100">Sort by</h3>
         <select
           value={sortConfig.option}
           onChange={(e) => onSortChange({ 
             ...sortConfig, 
             option: e.target.value as SortOption 
           })}
-          className="w-full p-1.5 border rounded mb-1 text-sm"
+          className="w-full p-1.5 border rounded mb-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
         >
           <option value="grade">Grade</option>
           <option value="stars">Stars</option>
           <option value="votes"># of Votes</option>
           <option value="left_to_right">Left to Right</option>
         </select>
-        <label className="flex items-center text-sm">
+        <label className="flex items-center text-sm text-gray-700 dark:text-gray-300">
           <input
             type="checkbox"
             checked={sortConfig.ascending}
@@ -213,72 +214,61 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
             }}
             className="mr-1"
           />
-          <label className="text-sm font-medium">Enable Grade Filter</label>
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Grade Filter</label>
         </div>
         
         {gradeFilterEnabled && (
-          <>
-            <button 
-              className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm"
-              onClick={() => toggleCategory('grades')}
-            >
-              <span>Grade: {filters.grades.min} - {filters.grades.max}</span>
-              <span>{expandedCategories.includes('grades') ? '▼' : '▶'}</span>
-            </button>
-            {expandedCategories.includes('grades') && (
-              <div className="mt-1 space-y-1 pl-3">
-                <div className="flex items-center gap-4">
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium mb-1">Min Grade</label>
-                    <select
-                      value={filters.grades.min}
-                      onChange={(e) => updateGradeRange({ 
-                        ...filters.grades, 
-                        min: e.target.value,
-                        max: GRADE_ORDER.indexOf(e.target.value) <= GRADE_ORDER.indexOf(filters.grades.max) 
-                          ? filters.grades.max 
-                          : e.target.value
-                      })}
-                      className="w-full p-2 border rounded"
-                    >
-                      {SIMPLE_GRADES.map(grade => (
-                        <option key={grade} value={grade}>
-                          {grade}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-sm font-medium mb-1">Max Grade</label>
-                    <select
-                      value={filters.grades.max}
-                      onChange={(e) => updateGradeRange({ 
-                        ...filters.grades, 
-                        max: e.target.value,
-                        min: GRADE_ORDER.indexOf(e.target.value) >= GRADE_ORDER.indexOf(filters.grades.min)
-                          ? filters.grades.min
-                          : e.target.value
-                      })}
-                      className="w-full p-2 border rounded"
-                    >
-                      {SIMPLE_GRADES.map(grade => (
-                        <option key={grade} value={grade}>
-                          {grade}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
+          <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1">Min Grade</label>
+                <select
+                  value={filters.grades.min}
+                  onChange={(e) => updateGradeRange({ 
+                    ...filters.grades, 
+                    min: e.target.value,
+                    max: GRADE_ORDER.indexOf(e.target.value) <= GRADE_ORDER.indexOf(filters.grades.max) 
+                      ? filters.grades.max 
+                      : e.target.value
+                  })}
+                  className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                >
+                  {SIMPLE_GRADES.map(grade => (
+                    <option key={grade} value={grade}>
+                      {grade}
+                    </option>
+                  ))}
+                </select>
               </div>
-            )}
-          </>
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-1">Max Grade</label>
+                <select
+                  value={filters.grades.max}
+                  onChange={(e) => updateGradeRange({ 
+                    ...filters.grades, 
+                    max: e.target.value,
+                    min: GRADE_ORDER.indexOf(e.target.value) >= GRADE_ORDER.indexOf(filters.grades.min)
+                      ? filters.grades.min
+                      : e.target.value
+                  })}
+                  className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                >
+                  {SIMPLE_GRADES.map(grade => (
+                    <option key={grade} value={grade}>
+                      {grade}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Route Type */}
       <div className="filter-group">
-        <h3 className="font-medium mb-1">Type</h3>
-        <div className="flex gap-3">
+        <h3 className="font-medium mb-1 text-gray-900 dark:text-gray-100">Type</h3>
+        <div className="flex gap-3 text-gray-700 dark:text-gray-300">
           <label className="flex items-center">
             <input
               type="checkbox"
@@ -300,33 +290,104 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         </div>
       </div>
 
-      {/* Tag Categories */}
-      {Object.entries(nonEmptyCategories).map(([category, tags]) => (
-        <div key={category} className="filter-group">
+      {/* Tag Categories - Render in specific order */}
+      {(["Crowds & Popularity", "Difficulty & Safety", "Multi-Pitch, Anchors & Descent", "Crack Climbing"] as const)
+        .filter(category => category in nonEmptyCategories)
+        .map(category => (
+          <div key={category} className="filter-group">
+            <button 
+              className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+              onClick={() => toggleCategory(category)}
+            >
+              <span>
+                {category === "Difficulty & Safety" ? "Difficulty" :
+                 category === "Multi-Pitch, Anchors & Descent" ? "Multi-Pitch" :
+                 category}
+              </span>
+              <span>{expandedCategories.includes(category) ? '▼' : '▶'}</span>
+            </button>
+            {expandedCategories.includes(category) && (
+              <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+                {nonEmptyCategories[category]?.map(({ value, label }) => (
+                  <label key={value} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={isTagSelected(category, value)}
+                      onChange={() => toggleTag(category, value)}
+                      className="mr-2"
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+
+      {/* Experimental Tags Section */}
+      <div className="filter-group mt-4 border-t pt-3 border-gray-200 dark:border-gray-700">
+        <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">
+          Experimental Tags
+        </h3>
+        
+        {/* Style & Angle Category */}
+        <div className="filter-group mb-2">
           <button 
-            className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm"
-            onClick={() => toggleCategory(category)}
+            className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+            onClick={() => toggleCategory("Route Style & Angle")}
           >
-            <span>{category}</span>
-            <span>{expandedCategories.includes(category) ? '▼' : '▶'}</span>
+            <span>Style & Angle</span>
+            <span>{expandedCategories.includes("Route Style & Angle") ? '▼' : '▶'}</span>
           </button>
-          {expandedCategories.includes(category) && (
-            <div className="mt-1 space-y-1 pl-3">
-              {tags.map(({ value, label }) => (
-                <label key={value} className="flex items-center">
+          {expandedCategories.includes("Route Style & Angle") && (
+            <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+              {Array.from(availableTags["Route Style & Angle"] || []).map(tag => (
+                <label key={tag} className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={isTagSelected(category, value)}
-                    onChange={() => toggleTag(category, value)}
+                    checked={isTagSelected("Route Style & Angle", tag)}
+                    onChange={() => toggleTag("Route Style & Angle", tag)}
                     className="mr-2"
                   />
-                  {label}
+                  {tag}
                 </label>
               ))}
+              {(!availableTags["Route Style & Angle"] || availableTags["Route Style & Angle"].size === 0) && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
+              )}
             </div>
           )}
         </div>
-      ))}
+        
+        {/* Hold & Movement Type Category */}
+        <div className="filter-group">
+          <button 
+            className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+            onClick={() => toggleCategory("Hold & Movement Type")}
+          >
+            <span>Holds & Movement</span>
+            <span>{expandedCategories.includes("Hold & Movement Type") ? '▼' : '▶'}</span>
+          </button>
+          {expandedCategories.includes("Hold & Movement Type") && (
+            <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+              {Array.from(availableTags["Hold & Movement Type"] || []).map(tag => (
+                <label key={tag} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={isTagSelected("Hold & Movement Type", tag)}
+                    onChange={() => toggleTag("Hold & Movement Type", tag)}
+                    className="mr-2"
+                  />
+                  {tag}
+                </label>
+              ))}
+              {(!availableTags["Hold & Movement Type"] || availableTags["Hold & Movement Type"].size === 0) && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   )
 } 
