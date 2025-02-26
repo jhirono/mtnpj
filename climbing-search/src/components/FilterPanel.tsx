@@ -22,17 +22,41 @@ interface FilterPanelProps {
 }
 
 export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas }: FilterPanelProps) {
-  // Initialize with all categories expanded
-  const [expandedCategories, setExpandedCategories] = useState<string[]>([
-    'grades',
-    'Crowds & Popularity',
-    'Difficulty & Safety',
-    'Crack Climbing',
-    'Multi-Pitch, Anchors & Descent'
-  ])
+  // Initialize with categories expanded based on screen size
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([])
   const [availableTags, setAvailableTags] = useState<Record<string, Set<string>>>({})
   // Add state for grade filter enabled
   const [gradeFilterEnabled, setGradeFilterEnabled] = useState(false);
+
+  // Set expanded categories based on screen size
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 768; // Standard mobile breakpoint
+      
+      if (isMobile) {
+        // On mobile, collapse all categories by default to save space
+        setExpandedCategories([]);
+      } else {
+        // On desktop, expand common categories
+        setExpandedCategories([
+          'grades',
+          'Crowds & Popularity',
+          'Difficulty & Safety',
+          'Crack Climbing',
+          'Multi-Pitch, Anchors & Descent'
+        ]);
+      }
+    };
+    
+    // Set initial state
+    handleResize();
+    
+    // Add event listener for window resize
+    window.addEventListener('resize', handleResize);
+    
+    // Clean up
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // First, collect available tags
   useEffect(() => {
@@ -168,7 +192,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
     })
   }
 
-  // Initialize Buy Me a Book button
+  // Remove the Buy Me a Book button initialization
   useEffect(() => {
     // Check if the BMC script is loaded
     if (typeof window !== 'undefined' && window.document && document.getElementById('bmc-container')) {
@@ -199,40 +223,70 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
   }, []);
 
   return (
-    <div className="space-y-3 p-3 bg-white dark:bg-gray-800 rounded-lg shadow text-sm overflow-y-auto max-h-[calc(100vh-120px)]">
-      {/* Sorting Options */}
+    <div className="space-y-2.5 p-2.5 bg-white dark:bg-gray-800 rounded-lg shadow text-sm overflow-y-auto max-h-[calc(100vh-120px)]">
+      {/* Sorting Options - Now in one row with reverse order checkbox */}
       <div className="filter-group">
-        <h3 className="font-medium mb-1 text-gray-900 dark:text-gray-100">Sort by</h3>
-        <select
-          value={sortConfig.option}
-          onChange={(e) => onSortChange({ 
-            ...sortConfig, 
-            option: e.target.value as SortOption 
-          })}
-          className="w-full p-1.5 border rounded mb-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
-        >
-          <option value="grade">Grade</option>
-          <option value="stars">Stars</option>
-          <option value="votes"># of Votes</option>
-          <option value="left_to_right">Left to Right</option>
-        </select>
-        <label className="flex items-center text-sm text-gray-700 dark:text-gray-300">
-          <input
-            type="checkbox"
-            checked={sortConfig.ascending}
-            onChange={() => onSortChange({ 
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">Sort by</h3>
+          <select
+            value={sortConfig.option}
+            onChange={(e) => onSortChange({ 
               ...sortConfig, 
-              ascending: !sortConfig.ascending 
+              option: e.target.value as SortOption 
             })}
-            className="mr-1.5"
-          />
-          Reverse order
-        </label>
+            className="flex-1 p-1.5 border rounded text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+          >
+            <option value="grade">Grade</option>
+            <option value="stars">Stars</option>
+            <option value="votes"># of Votes</option>
+            <option value="left_to_right">Left to Right</option>
+          </select>
+          <label className="flex items-center text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
+            <input
+              type="checkbox"
+              checked={sortConfig.ascending}
+              onChange={() => onSortChange({ 
+                ...sortConfig, 
+                ascending: !sortConfig.ascending 
+              })}
+              className="mr-1.5"
+            />
+            Reverse
+          </label>
+        </div>
       </div>
 
-      {/* Grade Range Selector */}
+      {/* Route Type - In one row */}
       <div className="filter-group">
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center">
+          <h3 className="font-medium text-gray-900 dark:text-gray-100 mr-3">Type</h3>
+          <div className="flex gap-3 text-gray-700 dark:text-gray-300">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={filters.types.includes('Trad')}
+                onChange={() => toggleType('Trad')}
+                className="mr-1.5"
+              />
+              Trad
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={filters.types.includes('Sport')}
+                onChange={() => toggleType('Sport')}
+                className="mr-1.5"
+              />
+              Sport
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Grade Filter - Moved below Type with closer checkbox */}
+      <div className="filter-group">
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-gray-900 dark:text-gray-100">Grade Filter</h3>
           <input
             type="checkbox"
             checked={gradeFilterEnabled}
@@ -252,16 +306,14 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
                 });
               }
             }}
-            className="mr-1"
           />
-          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Grade Filter</label>
         </div>
         
         {gradeFilterEnabled && (
-          <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
-            <div className="flex items-center gap-4">
+          <div className="mt-1.5 space-y-1 text-gray-700 dark:text-gray-300">
+            <div className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Min Grade</label>
+                <label className="block text-sm font-medium mb-0.5">Min Grade</label>
                 <select
                   value={filters.grades.min}
                   onChange={(e) => updateGradeRange({ 
@@ -271,7 +323,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
                       ? filters.grades.max 
                       : e.target.value
                   })}
-                  className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                  className="w-full p-1.5 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 >
                   {SIMPLE_GRADES.map(grade => (
                     <option key={grade} value={grade}>
@@ -281,7 +333,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
                 </select>
               </div>
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-1">Max Grade</label>
+                <label className="block text-sm font-medium mb-0.5">Max Grade</label>
                 <select
                   value={filters.grades.max}
                   onChange={(e) => updateGradeRange({ 
@@ -291,7 +343,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
                       ? filters.grades.min
                       : e.target.value
                   })}
-                  className="w-full p-2 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
+                  className="w-full p-1.5 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 >
                   {SIMPLE_GRADES.map(grade => (
                     <option key={grade} value={grade}>
@@ -305,29 +357,11 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         )}
       </div>
 
-      {/* Route Type */}
-      <div className="filter-group">
-        <h3 className="font-medium mb-1 text-gray-900 dark:text-gray-100">Type</h3>
-        <div className="flex gap-3 text-gray-700 dark:text-gray-300">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={filters.types.includes('Trad')}
-              onChange={() => toggleType('Trad')}
-              className="mr-2"
-            />
-            Trad
-          </label>
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={filters.types.includes('Sport')}
-              onChange={() => toggleType('Sport')}
-              className="mr-2"
-            />
-            Sport
-          </label>
-        </div>
+      {/* Tags Section Header */}
+      <div className="filter-group mt-3 border-t pt-2.5 border-gray-200 dark:border-gray-700">
+        <h3 className="font-medium mb-1.5 text-gray-900 dark:text-gray-100">
+          Tags
+        </h3>
       </div>
 
       {/* Tag Categories - Render in specific order */}
@@ -336,7 +370,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         .map(category => (
           <div key={category} className="filter-group">
             <button 
-              className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+              className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
               onClick={() => toggleCategory(category)}
             >
               <span>
@@ -347,14 +381,14 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
               <span>{expandedCategories.includes(category) ? '▼' : '▶'}</span>
             </button>
             {expandedCategories.includes(category) && (
-              <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+              <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
                 {nonEmptyCategories[category]?.map(({ value, label }) => (
                   <label key={value} className="flex items-center">
                     <input
                       type="checkbox"
                       checked={isTagSelected(category, value)}
                       onChange={() => toggleTag(category, value)}
-                      className="mr-2"
+                      className="mr-1.5"
                     />
                     {label}
                   </label>
@@ -365,29 +399,29 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         ))}
 
       {/* Experimental Tags Section */}
-      <div className="filter-group mt-4 border-t pt-3 border-gray-200 dark:border-gray-700">
-        <h3 className="font-medium mb-2 text-gray-900 dark:text-gray-100">
+      <div className="filter-group mt-3 border-t pt-2.5 border-gray-200 dark:border-gray-700">
+        <h3 className="font-medium mb-1.5 text-gray-900 dark:text-gray-100">
           Experimental Tags
         </h3>
         
         {/* Style & Angle Category */}
-        <div className="filter-group mb-2">
+        <div className="filter-group mb-1.5">
           <button 
-            className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+            className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
             onClick={() => toggleCategory("Route Style & Angle")}
           >
             <span>Style & Angle</span>
             <span>{expandedCategories.includes("Route Style & Angle") ? '▼' : '▶'}</span>
           </button>
           {expandedCategories.includes("Route Style & Angle") && (
-            <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+            <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
               {Array.from(availableTags["Route Style & Angle"] || []).map(tag => (
                 <label key={tag} className="flex items-center">
                   <input
                     type="checkbox"
                     checked={isTagSelected("Route Style & Angle", tag)}
                     onChange={() => toggleTag("Route Style & Angle", tag)}
-                    className="mr-2"
+                    className="mr-1.5"
                   />
                   {tag}
                 </label>
@@ -402,21 +436,21 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         {/* Hold & Movement Type Category */}
         <div className="filter-group">
           <button 
-            className="w-full flex justify-between items-center py-1.5 px-3 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+            className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
             onClick={() => toggleCategory("Hold & Movement Type")}
           >
             <span>Holds & Movement</span>
             <span>{expandedCategories.includes("Hold & Movement Type") ? '▼' : '▶'}</span>
           </button>
           {expandedCategories.includes("Hold & Movement Type") && (
-            <div className="mt-1 space-y-1 pl-3 text-gray-700 dark:text-gray-300">
+            <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
               {Array.from(availableTags["Hold & Movement Type"] || []).map(tag => (
                 <label key={tag} className="flex items-center">
                   <input
                     type="checkbox"
                     checked={isTagSelected("Hold & Movement Type", tag)}
                     onChange={() => toggleTag("Hold & Movement Type", tag)}
-                    className="mr-2"
+                    className="mr-1.5"
                   />
                   {tag}
                 </label>
