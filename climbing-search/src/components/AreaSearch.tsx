@@ -1,10 +1,10 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { Area } from '../types/area';
 import type { AreaHierarchy } from '../types/route';
 
 interface AreaSearchProps {
   areas: Area[];
-  onAreaSelect: (areaIds: string[]) => void;
+  onAreaSelect: (selectedIds: string[]) => void;
 }
 
 interface SearchResult {
@@ -31,115 +31,145 @@ function shortenHierarchy(hierarchy: AreaHierarchy[]): string {
 export function AreaSearch({ areas, onAreaSelect }: AreaSearchProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Prepare searchable items
-  const searchableItems = useMemo(() => {
-    const items: SearchResult[] = [];
-
+  // Build a hierarchical structure of all areas
+  const areaHierarchy = useMemo(() => {
+    const hierarchy: Record<string, string[]> = {};
+    
     areas.forEach(area => {
-      // Add each hierarchy level
-      area.area_hierarchy.forEach((_, index) => {
-        const hierarchySlice = area.area_hierarchy.slice(0, index + 1);
-        // Skip if it's just "All Locations"
-        if (hierarchySlice.length === 1 && 
-            hierarchySlice[0].area_hierarchy_name === "All Locations") {
-          return;
+      if (!area.area_hierarchy) return;
+      
+      // Build path for each level of the hierarchy
+      let currentPath = '';
+      area.area_hierarchy.forEach((level, index) => {
+        const levelName = level.area_hierarchy_name;
+        const newPath = currentPath ? `${currentPath} / ${levelName}` : levelName;
+        
+        if (!hierarchy[currentPath]) {
+          hierarchy[currentPath] = [];
         }
         
-        items.push({
-          id: hierarchySlice.map(h => h.area_hierarchy_name).join(' / '),
-          displayName: hierarchySlice[hierarchySlice.length - 1].area_hierarchy_name,
-          fullPath: shortenHierarchy(hierarchySlice),
-          hierarchy: hierarchySlice
-        });
+        if (!hierarchy[currentPath].includes(newPath)) {
+          hierarchy[currentPath].push(newPath);
+        }
+        
+        currentPath = newPath;
       });
     });
-
-    // Remove duplicates
-    return Array.from(new Map(items.map(item => [item.id, item])).values());
+    
+    return hierarchy;
   }, [areas]);
 
-  // Filter items based on search term
-  const searchResults = useMemo(() => {
+  // Get all unique area paths for search
+  const allAreaPaths = useMemo(() => {
+    const paths = new Set<string>();
+    
+    // Add all paths from the hierarchy
+    Object.values(areaHierarchy).forEach(children => {
+      children.forEach(path => paths.add(path));
+    });
+    
+    return Array.from(paths);
+  }, [areaHierarchy]);
+
+  // Filter areas based on search term
+  const filteredAreas = useMemo(() => {
     if (!searchTerm) return [];
     
-    const searchLower = searchTerm.toLowerCase();
-    return searchableItems.filter(item => 
-      item.fullPath.toLowerCase().includes(searchLower)
-    );
-  }, [searchableItems, searchTerm]);
+    return allAreaPaths.filter(path => 
+      path.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 10); // Limit to 10 results
+  }, [searchTerm, allAreaPaths]);
 
-  const handleSelect = (item: SearchResult) => {
-    const newSelected = selectedAreas.includes(item.id)
-      ? selectedAreas.filter(id => id !== item.id)
-      : [...selectedAreas, item.id];
+  // Handle area selection
+  const handleAreaSelect = (areaPath: string) => {
+    setSelectedAreas(prev => {
+      const newSelection = prev.includes(areaPath)
+        ? prev.filter(a => a !== areaPath)
+        : [...prev, areaPath];
+      
+      onAreaSelect(newSelection);
+      return newSelection;
+    });
     
-    setSelectedAreas(newSelected);
-    onAreaSelect(newSelected);
+    setSearchTerm('');
+    setIsOpen(false);
   };
 
+  // Handle removing a selected area
+  const handleRemoveArea = (areaPath: string) => {
+    setSelectedAreas(prev => {
+      const newSelection = prev.filter(a => a !== areaPath);
+      onAreaSelect(newSelection);
+      return newSelection;
+    });
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setIsOpen(false);
+    };
+    
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
   return (
-    <div className="mb-3">
+    <div className="mb-3 bg-white dark:bg-gray-800 rounded-lg shadow p-2">
       <div className="relative">
         <input
           type="text"
-          placeholder="Search locations..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full py-1.5 px-2 pr-6 border rounded text-sm"
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setIsOpen(true);
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOpen(true);
+          }}
+          placeholder="Search for areas..."
+          className="w-full py-1 px-2 text-sm border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
         />
-        {searchTerm && (
-          <button
-            onClick={() => setSearchTerm('')}
-            className="absolute right-2 top-[50%] -translate-y-[50%] text-gray-400 hover:text-gray-600 w-4 h-4 flex items-center justify-center text-base leading-[0]"
-            aria-label="Clear search"
-          >
-            ×
-          </button>
+        
+        {isOpen && filteredAreas.length > 0 && (
+          <div className="absolute z-10 w-full mt-0.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded shadow-lg max-h-48 overflow-y-auto text-sm">
+            {filteredAreas.map(area => (
+              <div
+                key={area}
+                className={`py-1 px-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                  selectedAreas.includes(area) ? 'bg-blue-100 dark:bg-blue-900' : ''
+                }`}
+                onClick={() => handleAreaSelect(area)}
+              >
+                <span className="text-gray-900 dark:text-gray-100 text-xs">{area}</span>
+              </div>
+            ))}
+          </div>
         )}
       </div>
       
-      {/* Show selected areas */}
       {selectedAreas.length > 0 && (
-        <div className="mt-2">
-          <h3 className="text-xs font-medium mb-1">Selected Areas:</h3>
-          <div className="space-y-0.5">
-            {selectedAreas.map(id => {
-              const item = searchableItems.find(i => i.id === id);
-              return item && (
-                <div key={id} className="flex items-center text-xs bg-gray-50 py-0.5 px-1.5 rounded">
-                  <span className="flex-grow truncate">{item.fullPath}</span>
-                  <button
-                    onClick={() => handleSelect(item)}
-                    className="ml-1.5 text-gray-400 hover:text-gray-600"
-                  >
-                    ×
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* Search results */}
-      {searchTerm && (
-        <div className="mt-1 max-h-48 overflow-y-auto border rounded text-sm">
-          {searchResults.length > 0 ? (
-            searchResults.map(item => (
+        <div className="mt-1.5 flex flex-wrap gap-1">
+          {selectedAreas.map(area => (
+            <div
+              key={area}
+              className="flex items-center gap-0.5 py-0.5 px-1.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded text-xs"
+            >
+              <span>{area.split(' / ').pop()}</span>
               <button
-                key={item.id}
-                onClick={() => handleSelect(item)}
-                className={`w-full text-left py-1 px-2 hover:bg-gray-50 ${
-                  selectedAreas.includes(item.id) ? 'bg-gray-50' : ''
-                }`}
+                onClick={() => handleRemoveArea(area)}
+                className="inline-flex items-center justify-center w-3 h-3 ml-0.5 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-500 dark:text-gray-400 text-[10px] leading-none"
+                aria-label="Remove"
               >
-                <div className="text-xs truncate">{item.fullPath}</div>
+                ×
               </button>
-            ))
-          ) : (
-            <div className="py-1 px-2 text-xs text-gray-500">No results found</div>
-          )}
+            </div>
+          ))}
         </div>
       )}
     </div>

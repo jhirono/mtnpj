@@ -152,8 +152,23 @@ function App() {
           
           // Special handling for "Difficulty & Safety" category
           if (category === "Difficulty & Safety") {
+            // Check for exclude_sandbag filter
             if (selectedTags.includes("exclude_sandbag")) {
-              return !routeTagsForCategory.includes("sandbag");
+              if (routeTagsForCategory.includes("sandbag")) {
+                return false;
+              }
+            }
+            
+            // Check for exclude_runout_dangerous filter
+            if (selectedTags.includes("exclude_runout_dangerous")) {
+              if (routeTagsForCategory.includes("runout_dangerous")) {
+                return false;
+              }
+            }
+            
+            // If we're only using exclusion filters, return true
+            if (selectedTags.every(tag => tag === "exclude_sandbag" || tag === "exclude_runout_dangerous")) {
+              return true;
             }
           }
 
@@ -164,8 +179,18 @@ function App() {
             }
           }
           
+          // Filter out exclusion tags for normal handling
+          const nonExclusionTags = selectedTags.filter(
+            tag => tag !== "exclude_sandbag" && tag !== "exclude_runout_dangerous"
+          );
+          
+          // If there are no non-exclusion tags left, return true
+          if (nonExclusionTags.length === 0) {
+            return true;
+          }
+          
           // Normal handling for other tags
-          return selectedTags.some(tag => routeTagsForCategory.includes(tag));
+          return nonExclusionTags.some(tag => routeTagsForCategory.includes(tag));
         });
       }
 
@@ -278,15 +303,15 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="py-4 text-center">
-        <h1 className="text-xl font-bold">Awesome Climbing Route Search</h1>
-        <p className="text-gray-600 text-sm mt-1">
-          {sortedRoutes.length} routes found
-        </p>
-      </header>
+    <div className="min-h-screen bg-white dark:bg-gray-900 py-8">
+      <div className="max-w-7xl mx-auto px-4">
+        <header className="py-4 text-center">
+          <h1 className="text-xl font-bold">Awesome Climbing Route Search</h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+            {sortedRoutes.length} routes found
+          </p>
+        </header>
 
-      <div className="max-w-7xl mx-auto px-3 py-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="md:w-72 flex-shrink-0">
             <div className="sticky top-4">

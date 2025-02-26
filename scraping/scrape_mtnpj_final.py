@@ -23,6 +23,9 @@ LOGIN_EMAIL = os.environ.get("MP_LOGIN_EMAIL")
 LOGIN_PASSWORD = os.environ.get("MP_LOGIN_PASSWORD")
 COOKIE_FILE = "cookies.json"
 
+# Define output directory constant
+OUTPUT_DIR = "data"  # or use absolute path like os.path.join(os.path.dirname(__file__), "data")
+
 # ==================== Helper Functions ====================
 
 def get_soup(url):
@@ -40,11 +43,25 @@ def get_current_area_name(soup):
     return h1.text.strip() if h1 else 'Unknown Area'
 
 def get_sub_area_links(soup):
-    sub_areas_div = soup.find('div', class_='max-height max-height-md-0 max-height-xs-400')
-    return sub_areas_div.find_all('a', href=True) if sub_areas_div else []
+    """Get sub-area links from the area navigation section"""
+    # Look for the specific area navigation div
+    nav_div = soup.find('div', class_='max-height max-height-md-0 max-height-xs-400')
+    if nav_div:
+        # Find all area links within this section
+        return nav_div.find_all('a', href=lambda x: x and '/area/' in x)
+    return []
 
-def is_lowest_level_area(sub_areas):
-    return not any('/area/' in link['href'] for link in sub_areas)
+def is_lowest_level_area(soup, sub_areas):
+    """Check if this is a lowest-level area (has routes but no sub-areas)"""
+    # Check if there are any route links
+    route_table = soup.find('table', {'id': 'left-nav-route-table'})
+    has_routes = bool(route_table and route_table.find_all('a', href=lambda x: x and '/route/' in x))
+    
+    # Check if there are any sub-area links
+    has_sub_areas = bool(sub_areas)
+    
+    # It's a lowest level area if it has routes but no sub-areas
+    return has_routes and not has_sub_areas
 
 def clean_area_name_from_url(url):
     last_segment = url.rstrip('/').split('/')[-1]
@@ -81,24 +98,37 @@ def get_access_issues(soup):
     issues = [div.get_text(separator=" ", strip=True) for div in issue_divs if div.get_text(strip=True)]
     return " ".join(issues) if issues else ""
 
-def scrape_lowest_level_areas(url, hierarchy=None, lowest_level_urls=None):
-    if hierarchy is None:
-        hierarchy = []
-    if lowest_level_urls is None:
-        lowest_level_urls = []
-    soup = get_soup(url)
-    if soup is None:
-        return lowest_level_urls
-    current_area = get_current_area_name(soup)
-    hierarchy.append(current_area)
-    sub_area_links = get_sub_area_links(soup)
-    if is_lowest_level_area(sub_area_links):
-        lowest_level_urls.append(url)
-    else:
-        for link in sub_area_links:
-            if '/area/' in link['href']:
-                sub_area_url = link['href'] if link['href'].startswith('http') else BASE_URL + link['href']
-                scrape_lowest_level_areas(sub_area_url, hierarchy[:], lowest_level_urls)
+def scrape_lowest_level_areas(start_url):
+    """Find all lowest-level areas using iteration instead of recursion"""
+    to_visit = [(start_url, [])]  # Stack of (url, hierarchy) pairs
+    lowest_level_urls = []
+    visited = set()
+
+    while to_visit:
+        url, hierarchy = to_visit.pop()
+        if url in visited:
+            continue
+            
+        visited.add(url)
+        print(f"Visiting {url}")
+        
+        soup = get_soup(url)
+        if not soup:
+            continue
+            
+        current_area = get_current_area_name(soup)
+        current_hierarchy = hierarchy + [current_area]
+        sub_area_links = get_sub_area_links(soup)
+        
+        if is_lowest_level_area(soup, sub_area_links):
+            lowest_level_urls.append(url)
+        else:
+            for link in sub_area_links:
+                if '/area/' in link['href']:
+                    sub_area_url = link['href'] if link['href'].startswith('http') else BASE_URL + link['href']
+                    if sub_area_url not in visited:
+                        to_visit.append((sub_area_url, current_hierarchy))
+    
     return lowest_level_urls
 
 # ==================== Selenium Dynamic Comment Scrapers ====================
@@ -546,31 +576,50 @@ def safe_get_routes(url, retries=3, delay=5):
                 print("All retry attempts failed.")
     return None
 
-def save_urls_to_json(all_areas, base_url):
-    area_name = base_url.split('/')[-1]
-    file_name = f"{area_name}_routes.json"
-    try:
-        with open(file_name, 'w') as f:
-            json.dump(all_areas, f, indent=4)
-            print(f"Data saved to {file_name}")
-    except IOError as e:
-        print(f"Error saving data to {file_name}: {e}")
+def get_output_filename(base_url):
+    """Generate output filename from base URL"""
+    area_name = base_url.rstrip('/').split('/')[-1]
+    return os.path.join(OUTPUT_DIR, f"{area_name}_routes.json")
 
-if __name__ == "__main__":
+def save_all_areas(all_areas, base_url):
+    """Save all areas to a single JSON file"""
+    try:
+        output_file = get_output_filename(base_url)
+        # Create output directory if it doesn't exist
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+        
+        # Save to JSON file
+        with open(output_file, 'w', encoding='utf-8') as f:
+            json.dump(all_areas, f, indent=2, ensure_ascii=False)
+        print(f"All data saved to {output_file}")
+    except Exception as e:
+        print(f"Error saving data: {e}")
+
+def main():
     if len(sys.argv) < 2:
-        print("Usage: python3 script.py 'base_url'")
+        print("Please provide area URL(s) as arguments")
         sys.exit(1)
+        
     BASE_URL = sys.argv[1]
+    print(f"Finding all lowest-level areas in {BASE_URL}...")
+    sys.setrecursionlimit(10000)  # Increase limit to 10000
     lowest_level_urls = scrape_lowest_level_areas(BASE_URL)
+    print(f"Found {len(lowest_level_urls)} lowest-level areas")
+    
     all_areas = []
-    for index, url in enumerate(lowest_level_urls, start=1):
+    for i, url in enumerate(lowest_level_urls, 1):
+        print(f"Processing area {i}/{len(lowest_level_urls)}...")
         try:
-            print(f"Scraping {url} ({index}/{len(lowest_level_urls)})...")
-            area_details = safe_get_routes(url, retries=3, delay=5)
-            if area_details is not None:
-                all_areas.append(area_details)
+            area_data = safe_get_routes(url, retries=3, delay=5)
+            if area_data:
+                all_areas.append(area_data)
             else:
-                print(f"Skipping {url} after failed attempts.")
+                print(f"Skipping {url} after failed attempts")
         except Exception as e:
             print(f"Error processing {url}: {e}")
-    save_urls_to_json(all_areas, BASE_URL)
+    
+    # Save all areas to one file
+    save_all_areas(all_areas, BASE_URL)
+
+if __name__ == "__main__":
+    main()
