@@ -24,6 +24,13 @@ IMPORTANT: Your output must only include tag values (not descriptions) in this e
   }
 }
 
+CRITICAL INSTRUCTIONS:
+1. ONLY use tags that are explicitly listed in the reference below.
+2. DO NOT create new tags or variations (e.g., do not use "overhang" if it's not in the list).
+3. If unsure about a tag, DO NOT include it.
+4. Each category should only include tags from its appropriate section below.
+5. For "Route Style & Angle" and "Hold & Movement Type" categories specifically, be very strict about only using the exact tags listed.
+
 Use the following reference to understand the meaning of each tag, but DO NOT include descriptions in your output:
 
 {

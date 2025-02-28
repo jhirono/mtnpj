@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { FilterPanel } from './components/FilterPanel'
 import { AreaSearch } from './components/AreaSearch'
 import { RouteCard } from './components/RouteCard'
@@ -9,6 +9,7 @@ import { GRADE_ORDER, normalizeGrade } from './types/filters'
 
 // Add these constants at the top of the file
 const EXCLUDED_TYPES = ['Aid', 'Boulder', 'Ice', 'Mixed', 'Snow'];
+const ROUTES_PER_PAGE = 100; // Number of routes to load at a time
 
 function hasExcludedType(routeType: string): boolean {
   return EXCLUDED_TYPES.some(type => 
@@ -45,6 +46,7 @@ function App() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [visibleRoutes, setVisibleRoutes] = useState<number>(ROUTES_PER_PAGE)
 
   // Get routes from selected areas and apply filters
   const filteredRoutes = useMemo(() => {
@@ -237,22 +239,57 @@ function App() {
     })
   }, [filteredRoutes, sortConfig])
 
+  // Create a sliced version of sorted routes for display
+  const displayedRoutes = useMemo(() => {
+    return sortedRoutes.slice(0, visibleRoutes);
+  }, [sortedRoutes, visibleRoutes]);
+
+  // Observer for infinite scrolling
+  const observer = useRef<IntersectionObserver | null>(null);
+  
+  // Set up intersection observer for infinite scrolling
+  const lastRouteElementRef = useCallback((node: HTMLDivElement | null) => {
+    if (loading) return;
+    
+    if (observer.current) observer.current.disconnect();
+    
+    observer.current = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && displayedRoutes.length < sortedRoutes.length) {
+        // Load more routes when we reach the bottom
+        setVisibleRoutes(prev => Math.min(prev + ROUTES_PER_PAGE, sortedRoutes.length));
+      }
+    });
+    
+    if (node) observer.current.observe(node);
+  }, [loading, displayedRoutes.length, sortedRoutes.length]);
+
+  // Reset visible routes when filters or sort changes
+  useEffect(() => {
+    setVisibleRoutes(ROUTES_PER_PAGE);
+  }, [currentFilters, sortConfig, selectedAreaIds]);
+
   useEffect(() => {
     const loadAreas = async () => {
       try {
-        const areaFiles = [
-          '/data/castle-rock_routes_tagged.json',
-          '/data/indian-creek_routes_tagged.json',
-          '/data/squamish_routes_tagged.json'
-        ];
-
+        // First, get the list of data files from index.json
+        const indexResponse = await fetch('/data/index.json');
+        if (!indexResponse.ok) {
+          throw new Error(`Failed to load index.json: ${indexResponse.status} ${indexResponse.statusText}`);
+        }
+        
+        const dataFiles = await indexResponse.json();
+        if (!Array.isArray(dataFiles) || dataFiles.length === 0) {
+          throw new Error('No data files found in index.json');
+        }
+        
         const loadedAreas: Area[] = [];
         
-        for (const file of areaFiles) {
+        for (const fileName of dataFiles) {
+          const filePath = `/data/${fileName}`;
           try {
-            const response = await fetch(file);
+            const response = await fetch(filePath);
             if (!response.ok) {
-              console.error(`Failed to load ${file}: ${response.status} ${response.statusText}`);
+              console.error(`Failed to load ${filePath}: ${response.status} ${response.statusText}`);
               continue;
             }
             const data = await response.json();
@@ -278,7 +315,7 @@ function App() {
               });
             }
           } catch (fileErr) {
-            console.error(`Error loading ${file}:`, fileErr);
+            console.error(`Error loading ${filePath}:`, fileErr);
           }
         }
 
@@ -336,7 +373,7 @@ function App() {
           </div>
           
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-            {sortedRoutes.length} routes found
+            {sortedRoutes.length} routes found (showing {displayedRoutes.length})
           </p>
         </header>
 
@@ -370,14 +407,20 @@ function App() {
                   Loading...
                 </div>
               </div>
-            ) : sortedRoutes.length > 0 ? (
+            ) : displayedRoutes.length > 0 ? (
               <div className="space-y-3">
-                {sortedRoutes.map(route => (
-                  <RouteCard
-                    key={route.route_url}
-                    route={route}
-                  />
+                {displayedRoutes.map((route, index) => (
+                  <div key={route.route_url} ref={index === displayedRoutes.length - 1 ? lastRouteElementRef : undefined}>
+                    <RouteCard
+                      route={route}
+                    />
+                  </div>
                 ))}
+                {displayedRoutes.length < sortedRoutes.length && (
+                  <div className="py-4 text-center text-gray-500">
+                    Scroll for more routes...
+                  </div>
+                )}
               </div>
             ) : (
               <div className="h-[50vh] flex items-center justify-center">
