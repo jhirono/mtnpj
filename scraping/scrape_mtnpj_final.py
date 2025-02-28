@@ -7,6 +7,11 @@ import re
 import uuid
 import time
 import os
+import logging
+import argparse
+import datetime
+from pathlib import Path
+import hashlib
 
 # --- Selenium Imports ---
 from selenium import webdriver
@@ -23,19 +28,99 @@ LOGIN_EMAIL = os.environ.get("MP_LOGIN_EMAIL")
 LOGIN_PASSWORD = os.environ.get("MP_LOGIN_PASSWORD")
 COOKIE_FILE = "cookies.json"
 
-# Define output directory constant
+# Define output and cache directory constants
 OUTPUT_DIR = "data"  # or use absolute path like os.path.join(os.path.dirname(__file__), "data")
+CACHE_DIR = os.path.join(OUTPUT_DIR, "cache")
+CACHE_EXPIRY_DAYS = 7  # Cache entries older than this will be refreshed
+
+# Global selenium driver for reuse
+global_driver = None
+
+# --- Logging Setup ---
+def setup_logging(verbose=False):
+    """Setup logging configuration"""
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(
+        level=level,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
+
+# --- Caching Functions ---
+def get_cache_key(url):
+    """Generate a cache key from a URL"""
+    return hashlib.md5(url.encode()).hexdigest()
+
+def get_cache_path(url, data_type="html"):
+    """Get the path where the cached file should be stored"""
+    cache_key = get_cache_key(url)
+    cache_dir = os.path.join(CACHE_DIR, data_type)
+    os.makedirs(cache_dir, exist_ok=True)
+    return os.path.join(cache_dir, f"{cache_key}.json")
+
+def get_from_cache(url, data_type="html"):
+    """Retrieve content from cache if it exists and is not expired"""
+    cache_path = get_cache_path(url, data_type)
+    
+    if not os.path.exists(cache_path):
+        return None
+        
+    try:
+        with open(cache_path, 'r', encoding='utf-8') as f:
+            cache_data = json.load(f)
+            
+        # Check if cache is expired
+        timestamp = datetime.datetime.fromisoformat(cache_data['timestamp'])
+        now = datetime.datetime.now()
+        if (now - timestamp).days > CACHE_EXPIRY_DAYS:
+            logging.debug(f"Cache expired for {url}")
+            return None
+            
+        logging.debug(f"Cache hit for {url}")
+        return cache_data['content']
+    except Exception as e:
+        logging.warning(f"Error reading cache for {url}: {e}")
+        return None
+
+def save_to_cache(url, content, data_type="html"):
+    """Save content to cache with current timestamp"""
+    cache_path = get_cache_path(url, data_type)
+    
+    try:
+        cache_data = {
+            'url': url,
+            'timestamp': datetime.datetime.now().isoformat(),
+            'content': content
+        }
+        
+        with open(cache_path, 'w', encoding='utf-8') as f:
+            json.dump(cache_data, f, ensure_ascii=False)
+            
+        logging.debug(f"Saved to cache: {url}")
+    except Exception as e:
+        logging.warning(f"Error saving to cache for {url}: {e}")
 
 # ==================== Helper Functions ====================
 
 def get_soup(url):
+    """Get BeautifulSoup object from URL with caching"""
+    # Check cache first
+    cached_html = get_from_cache(url, "html")
+    if cached_html:
+        return BeautifulSoup(cached_html, 'lxml')  # Using lxml parser for better performance
+    
     try:
+        logging.debug(f"Fetching {url}")
         headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"}
         response = requests.get(url, headers=headers)
         response.raise_for_status()
-        return BeautifulSoup(response.text, 'html.parser')
+        
+        # Save to cache
+        save_to_cache(url, response.text, "html")
+        
+        return BeautifulSoup(response.text, 'lxml')
     except requests.RequestException as e:
-        print(f"Request error: {e}")
+        logging.error(f"Request error: {e}")
         return None
 
 def get_current_area_name(soup):
@@ -110,7 +195,7 @@ def scrape_lowest_level_areas(start_url):
             continue
             
         visited.add(url)
-        print(f"Visiting {url}")
+        logging.info(f"Visiting {url}")
         
         soup = get_soup(url)
         if not soup:
@@ -131,18 +216,99 @@ def scrape_lowest_level_areas(start_url):
     
     return lowest_level_urls
 
-# ==================== Selenium Dynamic Comment Scrapers ====================
+# ==================== Selenium Driver Management ====================
+
+def get_driver():
+    """Get or create a Selenium WebDriver instance"""
+    global global_driver
+    
+    if global_driver is not None:
+        try:
+            # Test if driver is still working
+            global_driver.current_url
+            logging.debug("Reusing existing WebDriver")
+            return global_driver
+        except Exception:
+            logging.debug("Existing WebDriver not responsive, creating new one")
+            if global_driver:
+                try:
+                    global_driver.quit()
+                except:
+                    pass
+            global_driver = None
+    
+    global_driver = init_selenium_driver()
+    return global_driver
+
+def init_selenium_driver():
+    """Initialize Selenium driver"""
+    try:
+        chrome_options = Options()
+        chrome_options.add_argument("--headless=new")  # Updated headless argument
+        chrome_options.add_argument("--disable-gpu")
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1920,1080")
+        
+        # Detect Chrome binary location based on platform
+        if sys.platform == "darwin":  # macOS
+            if os.path.exists("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"):
+                chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+            else:
+                logging.error("Chrome not found in default location")
+                return None
+        
+        # Try to initialize driver
+        try:
+            service = Service()
+            driver = webdriver.Chrome(service=service, options=chrome_options)
+            logging.debug("Successfully initialized Chrome driver")
+            return driver
+        except Exception as e:
+            logging.error(f"Error creating Chrome driver: {e}")
+            # Fallback to local ChromeDriver
+            try:
+                service = Service(executable_path="/usr/local/bin/chromedriver")
+                driver = webdriver.Chrome(service=service, options=chrome_options)
+                logging.debug("Successfully initialized Chrome driver with local ChromeDriver")
+                return driver
+            except Exception as e2:
+                logging.error(f"Error creating Chrome driver with local ChromeDriver: {e2}")
+                return None
+                
+    except Exception as e:
+        logging.error(f"Error initializing driver: {e}")
+        return None
+
+def cleanup_driver():
+    """Clean up the global driver when done"""
+    global global_driver
+    if global_driver:
+        try:
+            global_driver.quit()
+        except:
+            pass
+        global_driver = None
+
+# ==================== Selenium Dynamic Content Scrapers ====================
 
 def get_comments(page_url, user_email=None, user_pass=None, cookie_file="cookies.json"):
-    """Get comments using Selenium"""
+    """Get comments using Selenium with caching"""
+    # Check cache first
+    cache_key = f"comments_{get_cache_key(page_url)}"
+    cached_comments = get_from_cache(page_url, "comments")
+    if cached_comments:
+        return cached_comments
+    
     try:
-        driver = init_selenium_driver()
+        driver = get_driver()
         if not driver:
             return []
             
         try:
+            logging.debug(f"Fetching comments from {page_url}")
             driver.get(page_url)
-            time.sleep(3)
+            time.sleep(3)  # Wait for page load
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(3)
             
@@ -157,7 +323,7 @@ def get_comments(page_url, user_email=None, user_pass=None, cookie_file="cookies
                 pass  # No "show more" button or already showing all comments
             
             # Parse comments from the page source
-            soup = BeautifulSoup(driver.page_source, "html.parser")
+            soup = BeautifulSoup(driver.page_source, "lxml")
             comments = []
             comment_list = soup.find("div", class_="comment-list")
             
@@ -183,54 +349,18 @@ def get_comments(page_url, user_email=None, user_pass=None, cookie_file="cookies
                         "comment_time": comment_time
                     })
             
+            # Save to cache
+            save_to_cache(page_url, comments, "comments")
+            
             return comments
             
-        finally:
-            driver.quit()
+        except Exception as e:
+            logging.error(f"Error processing comments: {e}")
+            return []
             
     except Exception as e:
-        print(f"Error getting comments: {e}")
+        logging.error(f"Error getting comments: {e}")
         return []
-
-def init_selenium_driver():
-    """Initialize Selenium driver"""
-    try:
-        chrome_options = Options()
-        chrome_options.add_argument("--headless=new")  # Updated headless argument
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--window-size=1920,1080")
-        
-        # Detect Chrome binary location based on platform
-        if sys.platform == "darwin":  # macOS
-            if os.path.exists("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"):
-                chrome_options.binary_location = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-            else:
-                print("Chrome not found in default location")
-                return None
-        
-        # Try to initialize driver
-        try:
-            service = Service()
-            driver = webdriver.Chrome(service=service, options=chrome_options)
-            print("Successfully initialized Chrome driver")
-            return driver
-        except Exception as e:
-            print(f"Error creating Chrome driver: {e}")
-            # Fallback to local ChromeDriver
-            try:
-                service = Service(executable_path="/usr/local/bin/chromedriver")
-                driver = webdriver.Chrome(service=service, options=chrome_options)
-                print("Successfully initialized Chrome driver with local ChromeDriver")
-                return driver
-            except Exception as e2:
-                print(f"Error creating Chrome driver with local ChromeDriver: {e2}")
-                return None
-                
-    except Exception as e:
-        print(f"Error initializing driver: {e}")
-        return None
 
 def parse_stats(soup):
     """Parse stats from BeautifulSoup object"""
@@ -283,30 +413,43 @@ def parse_stats(soup):
                 tick_comments = " ".join(tick_list)
                 
     except Exception as e:
-        print(f"Error parsing stats: {e}")
+        logging.error(f"Error parsing stats: {e}")
         
     return suggested_ratings, None, tick_comments
 
 def get_route_stats(route_url):
-    """Get route statistics using Selenium"""
+    """Get route statistics using Selenium with caching"""
+    # Check cache first
+    cached_stats = get_from_cache(route_url, "stats")
+    if cached_stats:
+        return cached_stats.get("suggested_ratings", {}), None, cached_stats.get("tick_comments", "")
+    
     try:
         stats_url = route_url.replace("/route/", "/route/stats/", 1)
-        print(f"\nDEBUG: Fetching stats from {stats_url}")
+        logging.debug(f"Fetching stats from {stats_url}")
         
-        # Use Selenium directly
-        driver = init_selenium_driver()
+        driver = get_driver()
+        if not driver:
+            return {}, None, ""
+            
         driver.get(stats_url)
         time.sleep(1)  # Wait for page load
-        print("DEBUG: Initial page load complete")
         
         content = driver.page_source
-        driver.quit()
+        soup = BeautifulSoup(content, "lxml")
+        suggested_ratings, _, tick_comments = parse_stats(soup)
         
-        soup = BeautifulSoup(content, "html.parser")
-        return parse_stats(soup)
+        # Save to cache
+        stats_data = {
+            "suggested_ratings": suggested_ratings,
+            "tick_comments": tick_comments
+        }
+        save_to_cache(route_url, stats_data, "stats")
+        
+        return suggested_ratings, None, tick_comments
         
     except Exception as e:
-        print(f"Error getting route stats: {e}")
+        logging.error(f"Error getting route stats: {e}")
         return {}, None, ""
 
 def get_area_comments(area_url, user_email=None, user_pass=None, cookie_file="cookies.json"):
@@ -315,9 +458,15 @@ def get_area_comments(area_url, user_email=None, user_pass=None, cookie_file="co
 # ==================== Route Details & Area Routes ====================
 
 def get_route_details(route_url):
+    """Get route details with caching"""
+    # Check cache first
+    cached_details = get_from_cache(route_url, "route_details")
+    if cached_details:
+        return cached_details
+    
     response = requests.get(route_url)
     response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, 'lxml')
     
     route_details = {}
     
@@ -457,12 +606,21 @@ def get_route_details(route_url):
     route_details['route_suggested_ratings'] = suggested_ratings
     route_details['route_tick_comments'] = tick_comments
     
+    # Save to cache
+    save_to_cache(route_url, route_details, "route_details")
+    
     return route_details
 
 def get_routes(area_url):
+    """Get routes with caching"""
+    # Check cache first
+    cached_area = get_from_cache(area_url, "area")
+    if cached_area:
+        return cached_area
+        
     response = requests.get(area_url)
     response.raise_for_status()
-    soup = BeautifulSoup(response.text, 'html.parser')
+    soup = BeautifulSoup(response.text, 'lxml')
     
     area_name = area_url.rstrip('/').split('/')[-1]
     description_div = soup.find('div', {'class': 'fr-view'})
@@ -516,7 +674,7 @@ def get_routes(area_url):
         valid_route_elements = [elem for elem in route_elements if elem.find('a')]
         total_routes = len(valid_route_elements)
         for idx, route_element in enumerate(valid_route_elements, start=1):
-            print(f"    Scraping route {idx}/{total_routes}...")
+            logging.info(f"    Scraping route {idx}/{total_routes}...")
             link_tag = route_element.find('a')
             if link_tag:
                 route_url = link_tag['href']
@@ -561,6 +719,9 @@ def get_routes(area_url):
         "routes": routes
     }
     
+    # Save to cache
+    save_to_cache(area_url, area_data, "area")
+    
     return area_data
 
 def safe_get_routes(url, retries=3, delay=5):
@@ -568,12 +729,12 @@ def safe_get_routes(url, retries=3, delay=5):
         try:
             return get_routes(url)
         except Exception as e:
-            print(f"Error processing {url} (attempt {attempt}/{retries}): {e}")
+            logging.error(f"Error processing {url} (attempt {attempt}/{retries}): {e}")
             if attempt < retries:
-                print(f"Retrying in {delay} seconds...")
+                logging.info(f"Retrying in {delay} seconds...")
                 time.sleep(delay)
             else:
-                print("All retry attempts failed.")
+                logging.error("All retry attempts failed.")
     return None
 
 def get_output_filename(base_url):
@@ -591,35 +752,54 @@ def save_all_areas(all_areas, base_url):
         # Save to JSON file
         with open(output_file, 'w', encoding='utf-8') as f:
             json.dump(all_areas, f, indent=2, ensure_ascii=False)
-        print(f"All data saved to {output_file}")
+        logging.info(f"All data saved to {output_file}")
     except Exception as e:
-        print(f"Error saving data: {e}")
+        logging.error(f"Error saving data: {e}")
 
 def main():
-    if len(sys.argv) < 2:
-        print("Please provide area URL(s) as arguments")
+    # Parse command line arguments
+    parser = argparse.ArgumentParser(description='Scrape Mountain Project routes')
+    parser.add_argument('url', help='Base URL to scrape')
+    parser.add_argument('-v', '--verbose', action='store_true', help='Enable verbose logging')
+    parser.add_argument('--cache-days', type=int, default=7, help='Cache expiry in days')
+    parser.add_argument('--no-cache', action='store_true', help='Disable caching')
+    args = parser.parse_args()
+    
+    # Setup logging
+    setup_logging(args.verbose)
+    
+    # Set cache expiry
+    global CACHE_EXPIRY_DAYS
+    CACHE_EXPIRY_DAYS = 0 if args.no_cache else args.cache_days
+    
+    if not args.url:
+        logging.error("Please provide area URL as argument")
         sys.exit(1)
         
-    BASE_URL = sys.argv[1]
-    print(f"Finding all lowest-level areas in {BASE_URL}...")
+    BASE_URL = args.url
+    logging.info(f"Finding all lowest-level areas in {BASE_URL}...")
     sys.setrecursionlimit(10000)  # Increase limit to 10000
     lowest_level_urls = scrape_lowest_level_areas(BASE_URL)
-    print(f"Found {len(lowest_level_urls)} lowest-level areas")
+    logging.info(f"Found {len(lowest_level_urls)} lowest-level areas")
     
     all_areas = []
-    for i, url in enumerate(lowest_level_urls, 1):
-        print(f"Processing area {i}/{len(lowest_level_urls)}...")
-        try:
-            area_data = safe_get_routes(url, retries=3, delay=5)
-            if area_data:
-                all_areas.append(area_data)
-            else:
-                print(f"Skipping {url} after failed attempts")
-        except Exception as e:
-            print(f"Error processing {url}: {e}")
-    
-    # Save all areas to one file
-    save_all_areas(all_areas, BASE_URL)
+    try:
+        for i, url in enumerate(lowest_level_urls, 1):
+            logging.info(f"Processing area {i}/{len(lowest_level_urls)}...")
+            try:
+                area_data = safe_get_routes(url, retries=3, delay=5)
+                if area_data:
+                    all_areas.append(area_data)
+                else:
+                    logging.warning(f"Skipping {url} after failed attempts")
+            except Exception as e:
+                logging.error(f"Error processing {url}: {e}")
+        
+        # Save all areas to one file
+        save_all_areas(all_areas, BASE_URL)
+    finally:
+        # Clean up resources
+        cleanup_driver()
 
 if __name__ == "__main__":
     main()

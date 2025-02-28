@@ -6,7 +6,7 @@ import openai
 import os
 import time
 from datetime import datetime
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Set
 
 # OpenAI API configuration
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -16,6 +16,65 @@ client = openai.OpenAI()
 MAX_BATCH_SIZE = 50000  # Batch API limit
 MAX_RETRIES = 3
 RETRY_DELAY = 5  # seconds
+LOG_FILE = "tagging_validation.log"  # Log file for tag validation
+
+# Define allowed tags for each category
+ALLOWED_TAGS = {
+    "Weather & Conditions": {"sun_am", "sun_pm", "tree_filtered_sun_am", "tree_filtered_sun_pm", 
+                           "sunny_all_day", "shady_all_day", "dries_fast", "dry_in_rain", 
+                           "seepage_problem", "windy_exposed"},
+    "Access & Restrictions": {"seasonal_closure"},
+    "Crowds & Popularity": {"low_crowds", "classic_route", "polished_rock"},
+    "Difficulty & Safety": {"stick_clip", "loose_rock", "rope_drag_warning", "runout_dangerous", 
+                           "sandbag", "first_in_grade"},
+    "Approach & Accessibility": {"approach_none", "approach_short", "approach_moderate", 
+                                "approach_long", "top_rope_possible"},
+    "Multi-Pitch, Anchors & Descent": {"bolted_anchor", "walk_off", "rappel_down"},
+    "Route Style & Angle": {"slab", "vertical", "gentle_overhang", "steep_roof", 
+                           "tower_climbing", "sporty_trad"},
+    "Crack Climbing": {"finger", "thin_hand", "wide_hand", "offwidth", "chimney", "layback"},
+    "Hold & Movement Type": {"reachy", "dynamic_moves", "pumpy_sustained", "technical_moves", 
+                            "powerful_bouldery", "pockets_holes", "small_edges", "slopey_holds"},
+    "Rope Length": {"rope_60m", "rope_70m", "rope_80m"},
+    "Multipitch": {"short_multipitch", "long_multipitch"},
+    "Crowds & Popularity": {"classic_route", "new_routes"}
+}
+
+def log_message(message: str):
+    """Log a message to both console and log file"""
+    print(message)
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_FILE, "a") as f:
+        f.write(f"[{timestamp}] {message}\n")
+
+def validate_tags(tags_dict: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """
+    Validates tags against the allowed tags for each category.
+    Removes any tags that are not in the allowed list.
+    """
+    valid_tags = {}
+    invalid_tags_found = False
+    
+    for category, tags in tags_dict.items():
+        if category not in ALLOWED_TAGS:
+            log_message(f"Warning: Category '{category}' is not in the allowed list")
+            continue
+            
+        valid_category_tags = []
+        for tag in tags:
+            if tag in ALLOWED_TAGS[category]:
+                valid_category_tags.append(tag)
+            else:
+                log_message(f"Warning: Removed invalid tag '{tag}' from category '{category}'")
+                invalid_tags_found = True
+                
+        if valid_category_tags:
+            valid_tags[category] = valid_category_tags
+    
+    if invalid_tags_found:
+        log_message("Some invalid tags were removed from the results")
+        
+    return valid_tags
 
 def parse_grade(grade_str):
     """
@@ -238,7 +297,7 @@ def process_batch_results(results):
             response = result.get("response", {}).get("body", {}).get("choices", [{}])[0].get("message", {}).get("content")
             
             if not response:
-                print(f"No content found for {custom_id}")
+                log_message(f"No content found for {custom_id}")
                 continue
                 
             try:
@@ -246,23 +305,32 @@ def process_batch_results(results):
                 tags_data = json.loads(response)
                 llm_tags = tags_data.get("llm_tags", {})
                 
+                # Log the raw tags before validation
+                log_message(f"Raw tags for {custom_id}: {json.dumps(llm_tags)}")
+                
+                # Validate the tags against allowed tags
+                valid_llm_tags = validate_tags(llm_tags)
+                
+                # Log the validated tags
+                log_message(f"Validated tags for {custom_id}: {json.dumps(valid_llm_tags)}")
+                
                 # Check if this is an area or route based on the ID format
                 if custom_id.startswith("area_"):
-                    area_tags[custom_id] = llm_tags
-                    print(f"Processed area tags for {custom_id}")
+                    area_tags[custom_id] = valid_llm_tags
+                    log_message(f"Processed area tags for {custom_id}")
                 else:
-                    route_tags[custom_id] = llm_tags
-                    print(f"Processed route tags for {custom_id}")
+                    route_tags[custom_id] = valid_llm_tags
+                    log_message(f"Processed route tags for {custom_id}")
                     
             except json.JSONDecodeError as e:
-                print(f"Error parsing JSON content for {custom_id}: {e}")
+                log_message(f"Error parsing JSON content for {custom_id}: {e}")
                 continue
                 
         except Exception as e:
-            print(f"Error processing result for {custom_id}: {e}")
+            log_message(f"Error processing result for {custom_id}: {e}")
             continue
     
-    print(f"Processed {len(area_tags)} areas and {len(route_tags)} routes")
+    log_message(f"Processed {len(area_tags)} areas and {len(route_tags)} routes")
     return area_tags, route_tags
 
 def map_category(manual_category):
@@ -373,10 +441,10 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
             area_id = f"area_{area.get('area_id')}"
             if area_id in area_tags:
                 area['area_tags'] = area_tags[area_id]  # Use area_tags instead of llm_tags
-                print(f"Added tags to area: {area_id}")
+                log_message(f"Added tags to area: {area_id}")
                 areas_updated += 1
             else:
-                print(f"No tags found for area: {area_id}")
+                log_message(f"No tags found for area: {area_id}")
             
             # Process route tags
             for route in area.get('routes', []):
@@ -403,13 +471,13 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
                     route['route_tags'] = combined_tags
                     routes_updated += 1
         
-        print(f"Updated {areas_updated} areas and {routes_updated} routes with tags")
+        log_message(f"Updated {areas_updated} areas and {routes_updated} routes with tags")
         
         # Write output
         output_file = input_file.replace('.json', '_tagged.json')
         with open(output_file, 'w') as f:
             json.dump(data, f, indent=4)
-        print(f"Tagged data written to {output_file}")
+        log_message(f"Tagged data written to {output_file}")
         
         return data
     
@@ -424,12 +492,12 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
         all_requests = area_requests + route_requests
         
         if not all_requests:
-            print("No items to process")
+            log_message("No items to process")
             return data
         
         # Submit batch
         batch_id = submit_batch(all_requests)
-        print(f"Submitted batch with ID: {batch_id}")
+        log_message(f"Submitted batch with ID: {batch_id}")
         
         return data
 
