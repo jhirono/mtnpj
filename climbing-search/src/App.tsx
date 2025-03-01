@@ -358,7 +358,8 @@ function App() {
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
               >
-                BETA
+                <span className="mr-1">ⓘ</span>
+                INFO
               </a>
               <a 
                 href="https://www.buymeacoffee.com/bonvi" 
@@ -425,7 +426,15 @@ function App() {
             ) : (
               <div className="h-[50vh] flex items-center justify-center">
                 <div className="text-center text-gray-500 text-sm">
-                  No routes found matching your criteria
+                  {selectedAreaIds.length === 0 ? (
+                    <div>
+                      <p className="mb-2 font-medium">No areas selected</p>
+                      <p>Start by searching for and selecting an area in the sidebar</p>
+                      <p className="mt-2">↖ Enter a location name and click on a result to select it</p>
+                    </div>
+                  ) : (
+                    "No routes found matching your criteria"
+                  )}
                 </div>
               </div>
             )}
