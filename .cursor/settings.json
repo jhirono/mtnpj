@@ -1,0 +1,16 @@
+{
+  "projectName": "Awesome Climbing Search",
+  "description": "A web application for searching climbing routes across multiple areas with advanced filtering and sorting capabilities.",
+  "version": "1.0.0",
+  "mainFile": "climbing-search/src/App.tsx",
+  "language": "typescript",
+  "framework": "react",
+  "buildSystem": "vite",
+  "recommendations": {
+    "extensions": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss"
+    ]
+  }
+} 
