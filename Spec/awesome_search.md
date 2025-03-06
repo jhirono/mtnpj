@@ -32,14 +32,13 @@ This is a comprehensive list of search criteria for trad, sport and their areas.
 | | Short approach (<30 min) | `approach_short` | ✅ | ✅ | ✅ |
 | | Moderate approach (30-60 min) | `approach_moderate` | ✅ | ✅ | ✅ |
 | | Long approach (>60 min) | `approach_long` | ✅ | ✅ | ✅ |
-| | Can be top-roped (accessible from above) | `top_rope_possible` | ✅ | ✅ | ❌ |
 | | Seasonal closure (due to raptor nesting or wildlife protection) | `seasonal_closure` | ✅ | ✅ | ✅ |
 | Multi-Pitch, Anchors & Descent | Short multi-pitch (≤5 pitches) | `short_multipitch` | ✅ | ✅ | ❌ |
 | | Long multi-pitch (>5 pitches) | `long_multipitch` | ✅ | ✅ | ❌ |
 | | Bolted anchor (fixed anchors at the top) | `bolted_anchor` | ✅ | ✅ | ❌ |
 | | Gear anchor (trad routes requiring gear for anchors) | `gear_anchor` | ✅ | ❌ | ❌ |
 | | Walk-off descent (hike down from top) | `walk_off` | ✅ | ✅ | ❌ |
-| | Rappel descent (requires rappelling) | `rappel_down` | ✅ | ✅ | ❌ |
+| | Tricky rappel (difficult or complex rappel, especially for multi-pitch) | `tricky_rappel` | ✅ | ✅ | ❌ |
 | Route Style & Angle | Slabby (thin footwork, delicate movement) | `slab` | ✅ | ✅ | ❌ |
 | | Vertical (near-vertical face climbing) | `vertical` | ✅ | ✅ | ❌ |
 | | Gently overhanging (mildly steep climbing) | `gentle_overhang` | ✅ | ✅ | ❌ |
@@ -292,8 +291,7 @@ The tagging system consists of both manual tags (derived from numeric data) and 
         { "tag": "approach_none", "description": "No approach required (<5 min) from parking" },
         { "tag": "approach_short", "description": "Short approach (<30 min) from parking" },
         { "tag": "approach_moderate", "description": "Moderate approach (30–60 min) from parking" },
-        { "tag": "approach_long", "description": "Long approach (>60 min) from parking" },
-        { "tag": "top_rope_possible", "description": "Anchor accessible without rope climbing" }
+        { "tag": "approach_long", "description": "Long approach (>60 min) from parking" }
       ]
     },
     {
@@ -303,7 +301,7 @@ The tagging system consists of both manual tags (derived from numeric data) and 
         { "tag": "long_multipitch", "description": "If route_pitches >= 5" },
         { "tag": "bolted_anchor", "description": "Fixed anchors at the top" },
         { "tag": "walk_off", "description": "Route with a walk-off descent" },
-        { "tag": "rappel_down", "description": "Requires rappelling" }
+        { "tag": "tricky_rappel", "description": "Difficult or complex rappel, especially for multi-pitch routes" }
       ]
     },
     {
@@ -387,12 +385,15 @@ This document outlines the manual rules that will be applied to the scraped Moun
 
 - Logic:  
   - Single-pitch routes only:  
-    This rule is applied strictly to single-pitch routes (i.e., routes without a `route_pitches` value).
+    This rule is applied strictly to single-pitch routes (i.e., routes with `route_pitches` value of 1).
   - Conditions:
     - If the route's `route_length_meter` is greater than 30m and less than or equal to 35m, add the tag `rope_70m`.
     - If the route's `route_length_meter` is greater than 35m, add the tag `rope_80m`.
   - Mutual Exclusivity:  
     Only one of these tags is applied per route. If the route length qualifies for `rope_80m`, the `rope_70m` tag is not added.
+  - Tag Priority:
+    - For single-pitch routes, manual rope length tags take priority over LLM tags.
+    - For multi-pitch routes, LLM rope length tags take priority over manual tags.
 
 ---
 
@@ -445,9 +446,10 @@ This document outlines the manual rules that will be applied to the scraped Moun
 - Logic:  
   - Check the field `route_pitches` (which should have been extracted from the route type).
   - Conditions:
-    - If `route_pitches` is larger than1, less than 5, assign the tag `short_multipitch`.
+    - If `route_pitches` is larger than 1, less than 5, assign the tag `short_multipitch`.
     - If `route_pitches` is 5 or more, assign the tag `long_multipitch`.
   - For routes that do not include any pitch information, no multipitch tag is applied.
+  - For multi-pitch routes, LLM tags should be prioritized over manual tags.
 
 #### 5. classic_route
 
@@ -464,6 +466,34 @@ This document outlines the manual rules that will be applied to the scraped Moun
 - Logic:  
   - Parse the `route_shared_on` field, which is in the format "Mon, YYYY".
   - If the year is greater than 2022 or if the year is 2022 and the month is later than January, add the tag `new_routes` under "Crowds & Popularity".
+
+#### 7. Approach Tags Inheritance
+
+- Objective:  
+  Ensure routes inherit approach tags from their parent area.
+
+- Logic:  
+  - If an area has approach tags (`approach_none`, `approach_short`, `approach_moderate`, or `approach_long`), all routes within that area should inherit these tags.
+  - This inheritance happens after LLM tagging but before the final tag merging.
+
+#### 8. Stick Clip Tag (Sport Routes Only)
+
+- Objective:  
+  Ensure the `stick_clip` tag is only applied to sport routes.
+
+- Logic:  
+  - The `stick_clip` tag should only be applied to routes where `route_type` contains "Sport".
+  - For all other route types, this tag should be removed if present in the LLM tags.
+
+#### 9. Rappel Tag Replacement
+
+- Objective:  
+  Replace the general `rappel_down` tag with a more specific `tricky_rappel` tag for difficult rappels.
+
+- Logic:  
+  - Remove the `rappel_down` tag from all routes.
+  - For multi-pitch routes (where `route_pitches` > 1), analyze the route description and comments for indications of difficult or complex rappels.
+  - If such indications are found, apply the `tricky_rappel` tag.
 
 ---
 
@@ -572,11 +602,13 @@ to be considered.
 
 ### 📚 Overview
 A minimalist climbing route search web app that allows users to:
-- Search multiple areas or routes (free-text input)
-- Filter by grade, type (Trad/Sport), and tags
-- Display a list of routes with meaningful route details
-- Work seamlessly across desktop & mobile
-- Be fast & lightweight with a clean UI
+- Search and select specific climbing areas from a hierarchical structure
+- Filter routes by grade range, climbing type (Trad/Sport), and tags
+- Sort routes by grade, stars, votes, or left-to-right order
+- Browse routes with lazy loading for improved performance
+- View detailed route information with external links
+- Work seamlessly across desktop & mobile devices
+- Access multiple climbing areas including Indian Creek, Squamish, Joshua Tree, Leavenworth, Red Rocks, Yosemite, and Index
 
 ---
 
@@ -584,166 +616,112 @@ A minimalist climbing route search web app that allows users to:
 
 ### 🎨 Design Philosophy
 ✅ Minimal & functional – Focus on usability over clutter  
-✅ Fast & responsive – Works smoothly on mobile  
-✅ Search-first UX – Users can type areas/routes without friction  
-✅ Scalable – Can support future features (e.g., user ratings, maps)  
+✅ Fast & responsive – Works smoothly on mobile with efficient data loading  
+✅ Area-based filtering – Users select climbing areas from a hierarchical structure  
+✅ Advanced filtering – Filter by grade ranges, route types, and tagged characteristics  
+✅ Infinite scrolling – Load routes as needed instead of all at once  
 
 ---
 
 ### 🔍 Search & Filter UI
 
-#### Search Bar (Multi-input)
-Functionality:
-- Users can input multiple areas or routes (comma-separated)
-- Autocomplete suggestions for popular climbing locations
-- Press Enter or click a pill to add an entry
-- Press ❌ to remove an entry  
-
-Example UI:
-```
-🔍 [ Enter area or route name ]  [ + Add another area/route ]
-
-📍 Yosemite, CA  ❌   📍 Red River Gorge, KY  ❌   📍 Smith Rock, OR  ❌
-```
-
----
+#### Area Selection
+- Hierarchical area search that understands area relationships
+- Search box with dropdown results for quick area finding
+- Selected areas displayed as removable chips
+- Support for multiple simultaneous area selections
+- Areas shown with shortened paths to save space (e.g., "Washington / Central-West Cas... / Skykomish Valley / Index")
 
 #### 📌 Filters
 Filter Categories:
-- Grade: Dropdown selector (`5.6 - 5.13d`)
-  - Format: "5.{number}{letter}" (e.g., "5.10b", "5.11d")
-  - Handles variations: simple (5.9), letter grades (5.10a), plus/minus (5.10+)
-  - Common range: 5.6 to 5.13d
+- Grade Range: Min and max grade selectors with support for various grade formats
+- Type: Checkboxes for Trad and Sport routes
+- Tags: Collapsible categories with checkboxes for specific attributes
 
-- Type: Checkboxes
-  - `[ ] Trad`
-  - `[ ] Sport`
-
-- Tags: Collapsible categories with checkboxes
-  ```
-  Weather & Conditions ▼
-    [ ] sun_am
-    [ ] sun_pm
-    [ ] sunny_all_day
-    [ ] dries_fast
-    [ ] seepage_problem
-    [ ] windy_exposed
-
-  Access & Restrictions ▼
-    [ ] seasonal_closure
-
-  Crowds & Popularity ▼
-    [ ] low_crowds
-    [ ] classic_route
-    [ ] new_routes
-    [ ] polished_rock
-
-  Difficulty & Safety ▼
-    [ ] first_in_grade
-    [ ] sandbag
-    [ ] runout_dangerous
-    [ ] stick_clip
-    [ ] loose_rock
-    [ ] rope_drag_warning
-
-  Approach & Accessibility ▼
-    [ ] approach_none
-    [ ] approach_short
-    [ ] approach_moderate
-    [ ] approach_long
-    [ ] top_rope_possible
-
-  Multi-Pitch, Anchors & Descent ▼
-    [ ] short_multipitch
-    [ ] long_multipitch
-    [ ] bolted_anchor
-    [ ] walk_off
-    [ ] rappel_down
-
-  Route Style & Angle ▼
-    [ ] slab
-    [ ] vertical
-    [ ] gentle_overhang
-    [ ] steep_roof
-    [ ] tower_climbing
-    [ ] sporty_trad
-
-  Crack Climbing ▼
-    [ ] finger_tip
-    [ ] finger
-    [ ] thin_hand
-    [ ] wide_hand
-    [ ] offwidth
-    [ ] chimney
-    [ ] layback
-
-  Hold & Movement Type ▼
-    [ ] reachy
-    [ ] dynamic_moves
-    [ ] pumpy_sustained
-    [ ] technical_moves
-    [ ] powerful_bouldery
-    [ ] pockets_holes
-    [ ] small_edges
-    [ ] slopey_holds
-
-  Rope Length ▼
-    [ ] rope_70m
-    [ ] rope_80m
-  ```
-
-Example UI State:
-```
-[ Grade: 5.10a - 5.11d ▼ ]
-[ Type: Trad ☑  Sport ☐ ]
-[ Tags ▼ ]
-  Weather & Conditions ▼
-    ☑ sunny_all_day
-    ☑ dries_fast
-  Route Style & Angle ▼
-    ☑ vertical
-    ☑ gentle_overhang
-  Hold & Movement Type ▼
-    ☑ technical_moves
-    ☑ pumpy_sustained
-```
+#### Sort Options
+- Grade (ascending or descending)
+- Stars (default descending)
+- Votes (default descending)
+- Left-to-right ordering (for exploring walls sequentially)
 
 ---
 
 ### 💚 Search Results UI
-- Display results in a list format with meaningful details
-- Minimalist card-based layout
-- Clickable for future expansions (route details page)
+- Clean card-based layout for each route
+- Detailed route information and hierarchical location
+- Star ratings with vote counts
+- Route length and pitch information
+- Relevant tags displayed as badges
+- Direct links to Mountain Project for each route
+- Infinite scrolling to handle large numbers of routes efficiently
 
-Example UI:
-```
-📌 Das Musak
-   🌄 Castle Rock, WA | Sport | 5.11d | ⭐3.6 (36 votes)
-   📏 60ft | 7 bolts
-   🌂 Classic, Gentle Overhang, Pumpy, Bouldery
+---
 
-📌 Angel
-   🌄 Castle Rock, WA | Trad | 5.10b | ⭐2.7 (129 votes)
-   📏 300ft | 3 pitches
-   🌂 Classic, Finger Crack, Technical, Polished
+## 🛠️ Technical Implementation
 
-📌 Canary
-   🌄 Castle Rock, WA | Trad | 5.8+ | ⭐3.4 (291 votes)
-   📏 300ft | 3 pitches
-   🌂 Classic, Vertical, Multi-Pitch, Walk-off
-```
+### Core Stack
+- **Frontend**: React with TypeScript + Vite
+  - Functional components with hooks
+  - Strong TypeScript typing
+  - Fast development and build process
 
-Key Details Shown:
-- Route name
-- Location & type
-- Grade & star rating (with vote count)
-- Length & pitch/bolt info
-- Most relevant tags from route_tags categories
+- **UI**: 
+  - TailwindCSS for responsive styling
+  - Dark mode support
+  - Custom components for specific UI elements
 
-Mobile-Friendly Adjustments:
-- Filters collapse under a "🔍 Filter" button  
-- Results use a single-column layout
-- Star ratings may condense to just the number on very small screens
+- **Data Loading**:
+  - Dynamic loading from JSON files listed in index.json
+  - Lazy loading with intersection observer for infinite scrolling
+  - Efficient filtering and sorting with useMemo hooks
+
+### Key Features
+- **Dynamic Area Loading**: App loads area data files dynamically from index.json, making it easy to add new climbing areas
+- **Hierarchical Area Selection**: Understand parent-child relationships in area selection
+- **Advanced Filtering**: Complex filtering logic for grades, types, and tags
+- **Custom Sorting**: Flexible sorting options with sensible defaults
+- **Infinite Scrolling**: Load only the routes currently needed, improving performance with large datasets
+- **Dark Mode**: Support for light and dark themes
+
+### Available Climbing Areas
+The application currently includes route data for:
+- Indian Creek
+- Squamish
+- Joshua Tree National Park
+- Leavenworth
+- Red Rocks
+- Yosemite National Park
+- Index
+
+Adding new areas is as simple as:
+1. Creating a properly formatted JSON file with route data and tags
+2. Adding the filename to the index.json list
+3. The application will automatically detect and load the new area
+
+### Implementation Highlights
+
+#### Area Search and Selection
+The application implements a hierarchical area search component that:
+- Builds a tree structure of climbing areas
+- Allows searching across the entire hierarchy
+- Supports selecting multiple areas simultaneously
+- Handles parent-child relationships appropriately
+- Provides visual feedback for selected areas
+
+#### Efficient Route Filtering
+The app uses a sophisticated filtering system that:
+- Filters routes based on selected areas, handling hierarchical relationships
+- Applies grade range filtering with normalization for different grade formats
+- Filters by route type (Trad/Sport) with exclusions for other types
+- Supports complex tag filtering across multiple categories
+- Implements exclude filters for certain safety characteristics
+
+#### Infinite Scrolling
+The application implements efficient lazy loading with:
+- IntersectionObserver to detect when the user reaches the end of the list
+- Incremental loading of additional routes (100 at a time)
+- Minimal memory footprint by only rendering visible routes
+- Reset of the visible route counter when filters or sorts change
 
 ## 🛠️ Technical Stack (Simplified)
 

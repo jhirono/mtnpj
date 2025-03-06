@@ -1,0 +1,660 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "areas",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_hierarchy_path",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "area_name",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_hierarchy_path",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_hierarchy_path",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "DESCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_multipitch",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_multipitch",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_multipitch",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_lr",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_multipitch",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_votes",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_sport",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_sport",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_sport",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_lr",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_sport",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_sport",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_votes",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_trad",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_trad",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_trad",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_lr",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_trad",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "is_trad",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_votes",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_lr",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_lr",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_type",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_votes",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_votes",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "area_id",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "tags",
+          "arrayConfig": "CONTAINS"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "is_multipitch",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "route_stars",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "is_sport",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "is_trad",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "grade_numeric",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "quality_score",
+          "order": "DESCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "areas",
+      "fieldPath": "searchable_text",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "routes",
+      "fieldPath": "searchable_text",
+      "ttl": false,
+      "indexes": [
+        {
+          "order": "ASCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "order": "DESCENDING",
+          "queryScope": "COLLECTION"
+        },
+        {
+          "arrayConfig": "CONTAINS",
+          "queryScope": "COLLECTION"
+        }
+      ]
+    }
+  ]
+}

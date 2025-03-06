@@ -4,3 +4,4 @@ node_modules
 .env.local
 cookies.json
 data/cache/
+firebase-climbing-search/serviceAccountKey.json

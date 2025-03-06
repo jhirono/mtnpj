@@ -13,7 +13,7 @@ IMPORTANT: Your output must only include tag values (not descriptions) in this e
 {
   "llm_tags": {
     "Weather & Conditions": ["sun_am"],
-    "Access & Restrictions": ["seasonal_closure"],
+    "Access & Restrictions": ["seasonal_closure_birdnesting"],
     "Crowds & Popularity": [],
     "Approach & Accessibility": ["approach_short"]
   }
@@ -40,7 +40,7 @@ Use the following reference to understand the meaning of each tag, but DO NOT in
     },
     {
       "category": "Access & Restrictions",
-      "description": "For seasonal closures, create a specific tag in the format 'seasonal_closure_*' where * describes the reason (e.g., seasonal_closure_birdnesting, seasonal_closure_wetrock). Base this on the area_access_issues content.",
+      "description": "For seasonal closures, create a specific tag in the format 'seasonal_closure_*' where * describes the reason (e.g., seasonal_closure_birdnesting, seasonal_closure_wetrock). Base this on the area_access_issues content. IMPORTANT: You MUST use this exact format with an underscore after 'seasonal_closure' followed by a specific reason.",
       "tags": [
         { "tag": "seasonal_closure_*", "description": "Create specific seasonal closure tags based on the reason" }
       ]
@@ -59,8 +59,7 @@ Use the following reference to understand the meaning of each tag, but DO NOT in
         { "tag": "approach_none", "description": "No approach required (<5 min) from parking" },
         { "tag": "approach_short", "description": "Short approach (<30 min) from parking" },
         { "tag": "approach_moderate", "description": "Moderate approach (30–60 min) from parking" },
-        { "tag": "approach_long", "description": "Long approach (>60 min) from parking" },
-        { "tag": "top_rope_possible", "description": "Anchor accessible without rope climbing" }
+        { "tag": "approach_long", "description": "Long approach (>60 min) from parking" }
       ]
     }
   ]

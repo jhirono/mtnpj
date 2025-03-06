@@ -176,9 +176,8 @@ function App() {
 
           // Special handling for "Multi-Pitch, Anchors & Descent" category
           if (category === "Multi-Pitch, Anchors & Descent") {
-            if (selectedTags.includes("single_pitch")) {
-              return route.route_pitches === 1;
-            }
+            // Remove special handling for single_pitch as it's now in the manual tags
+            // The tag will be present in the route tags directly
           }
           
           // Filter out exclusion tags for normal handling

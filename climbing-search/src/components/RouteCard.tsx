@@ -55,10 +55,6 @@ export function RouteCard({ route }: RouteCardProps) {
         {/* Tags below - excluding certain categories */}
         <div className="mt-1.5 flex flex-wrap gap-1.5">
           {Object.entries(route.route_tags)
-            .filter(([category]) => 
-              category !== "Weather & Conditions" && 
-              category !== "Approach & Accessibility"
-            )
             .map(([category, tags]) =>
               tags.map(tag => (
                 <span 

@@ -42,7 +42,6 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
           'grades',
           'Crowds & Popularity',
           'Difficulty & Safety',
-          'Crack Climbing',
           'Multi-Pitch, Anchors & Descent'
         ]);
       }
@@ -129,7 +128,44 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
       .map(tag => ({
         value: tag,
         label: tag.split('_').join(' ')
-      }))
+      })),
+
+    "Route Style & Angle": ["slab", "vertical", "gentle_overhang", "steep_roof", 
+                           "tower_climbing", "sporty_trad"]
+      .filter(tag => availableTags["Route Style & Angle"]?.has(tag))
+      .map(tag => ({
+        value: tag,
+        label: tag.split('_').join(' ')
+      })),
+
+    "Hold & Movement Type": ["reachy", "dynamic_moves", "pumpy_sustained", "technical_moves", 
+                            "powerful_bouldery", "pockets_holes", "small_edges", "slopey_holds"]
+      .filter(tag => availableTags["Hold & Movement Type"]?.has(tag))
+      .map(tag => ({
+        value: tag,
+        label: tag.split('_').join(' ')
+      })),
+
+    "Weather & Conditions": ["sun_am", "sun_pm", "tree_filtered_sun_am", "tree_filtered_sun_pm", 
+                           "sunny_all_day", "shady_all_day", "dries_fast", "dry_in_rain", 
+                           "seepage_problem", "windy_exposed"]
+      .filter(tag => availableTags["Weather & Conditions"]?.has(tag))
+      .map(tag => ({
+        value: tag,
+        label: tag.split('_').join(' ')
+      })),
+
+    "Rope Length": ["rope_60m", "rope_70m", "rope_80m"]
+      .filter(tag => availableTags["Rope Length"]?.has(tag))
+      // Sort to ensure correct order regardless of availableTags order
+      .sort((a, b) => {
+        const order = ["rope_60m", "rope_70m", "rope_80m"];
+        return order.indexOf(a) - order.indexOf(b);
+      })
+      .map(tag => ({
+        value: tag,
+        label: tag.replace('rope_', '') // Convert rope_60m to 60m for display
+      })),
   }), [availableTags])
 
   // Filter out empty categories
@@ -365,7 +401,7 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
       </div>
 
       {/* Tag Categories - Render in specific order */}
-      {(["Crowds & Popularity", "Difficulty & Safety", "Multi-Pitch, Anchors & Descent", "Crack Climbing"] as const)
+      {(["Crowds & Popularity", "Difficulty & Safety", "Multi-Pitch, Anchors & Descent"] as const)
         .filter(category => category in nonEmptyCategories)
         .map(category => (
           <div key={category} className="filter-group">
@@ -398,64 +434,186 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
           </div>
         ))}
 
+      {/* Crack Climbing Category */}
+      {nonEmptyCategories["Crack Climbing"] && (
+        <div className="filter-group">
+          <button 
+            className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+            onClick={() => toggleCategory("Crack Climbing")}
+          >
+            <span>Crack Climbing</span>
+            <span>{expandedCategories.includes("Crack Climbing") ? '▼' : '▶'}</span>
+          </button>
+          {expandedCategories.includes("Crack Climbing") && (
+            <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
+              {nonEmptyCategories["Crack Climbing"]?.map(({ value, label }) => (
+                <label key={value} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={isTagSelected("Crack Climbing", value)}
+                    onChange={() => toggleTag("Crack Climbing", value)}
+                    className="mr-1.5"
+                  />
+                  {label}
+                </label>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Style & Angle Category */}
+      <div className="filter-group">
+        <button 
+          className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+          onClick={() => toggleCategory("Route Style & Angle")}
+        >
+          <span>Style & Angle</span>
+          <span>{expandedCategories.includes("Route Style & Angle") ? '▼' : '▶'}</span>
+        </button>
+        {expandedCategories.includes("Route Style & Angle") && (
+          <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
+            {Array.from(availableTags["Route Style & Angle"] || []).map(tag => (
+              <label key={tag} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isTagSelected("Route Style & Angle", tag)}
+                  onChange={() => toggleTag("Route Style & Angle", tag)}
+                  className="mr-1.5"
+                />
+                {tag}
+              </label>
+            ))}
+            {(!availableTags["Route Style & Angle"] || availableTags["Route Style & Angle"].size === 0) && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Hold & Movement Type Category */}
+      <div className="filter-group">
+        <button 
+          className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+          onClick={() => toggleCategory("Hold & Movement Type")}
+        >
+          <span>Holds & Movement</span>
+          <span>{expandedCategories.includes("Hold & Movement Type") ? '▼' : '▶'}</span>
+        </button>
+        {expandedCategories.includes("Hold & Movement Type") && (
+          <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
+            {Array.from(availableTags["Hold & Movement Type"] || []).map(tag => (
+              <label key={tag} className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={isTagSelected("Hold & Movement Type", tag)}
+                  onChange={() => toggleTag("Hold & Movement Type", tag)}
+                  className="mr-1.5"
+                />
+                {tag}
+              </label>
+            ))}
+            {(!availableTags["Hold & Movement Type"] || availableTags["Hold & Movement Type"].size === 0) && (
+              <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Experimental Tags Section */}
       <div className="filter-group mt-3 border-t pt-2.5 border-gray-200 dark:border-gray-700">
         <h3 className="font-medium mb-1.5 text-gray-900 dark:text-gray-100">
           Experimental Tags
         </h3>
         
-        {/* Style & Angle Category */}
+        {/* Rope Length Category */}
         <div className="filter-group mb-1.5">
           <button 
             className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-            onClick={() => toggleCategory("Route Style & Angle")}
+            onClick={() => toggleCategory("Rope Length")}
           >
-            <span>Style & Angle</span>
-            <span>{expandedCategories.includes("Route Style & Angle") ? '▼' : '▶'}</span>
+            <span>Rope Length</span>
+            <span>{expandedCategories.includes("Rope Length") ? '▼' : '▶'}</span>
           </button>
-          {expandedCategories.includes("Route Style & Angle") && (
+          {expandedCategories.includes("Rope Length") && (
             <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
-              {Array.from(availableTags["Route Style & Angle"] || []).map(tag => (
+              {Array.from(availableTags["Rope Length"] || [])
+                // Sort to ensure correct order regardless of availableTags order
+                .sort((a, b) => {
+                  const order = ["rope_60m", "rope_70m", "rope_80m"];
+                  return order.indexOf(a) - order.indexOf(b);
+                })
+                .map(tag => (
                 <label key={tag} className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={isTagSelected("Route Style & Angle", tag)}
-                    onChange={() => toggleTag("Route Style & Angle", tag)}
+                    checked={isTagSelected("Rope Length", tag)}
+                    onChange={() => toggleTag("Rope Length", tag)}
                     className="mr-1.5"
                   />
                   {tag}
                 </label>
               ))}
-              {(!availableTags["Route Style & Angle"] || availableTags["Route Style & Angle"].size === 0) && (
+              {(!availableTags["Rope Length"] || availableTags["Rope Length"].size === 0) && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
               )}
             </div>
           )}
         </div>
         
-        {/* Hold & Movement Type Category */}
-        <div className="filter-group">
+        {/* Weather & Conditions Category */}
+        <div className="filter-group mb-1.5">
           <button 
             className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-            onClick={() => toggleCategory("Hold & Movement Type")}
+            onClick={() => toggleCategory("Weather & Conditions")}
           >
-            <span>Holds & Movement</span>
-            <span>{expandedCategories.includes("Hold & Movement Type") ? '▼' : '▶'}</span>
+            <span>Weather & Conditions</span>
+            <span>{expandedCategories.includes("Weather & Conditions") ? '▼' : '▶'}</span>
           </button>
-          {expandedCategories.includes("Hold & Movement Type") && (
+          {expandedCategories.includes("Weather & Conditions") && (
             <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
-              {Array.from(availableTags["Hold & Movement Type"] || []).map(tag => (
+              {Array.from(availableTags["Weather & Conditions"] || []).map(tag => (
                 <label key={tag} className="flex items-center">
                   <input
                     type="checkbox"
-                    checked={isTagSelected("Hold & Movement Type", tag)}
-                    onChange={() => toggleTag("Hold & Movement Type", tag)}
+                    checked={isTagSelected("Weather & Conditions", tag)}
+                    onChange={() => toggleTag("Weather & Conditions", tag)}
                     className="mr-1.5"
                   />
                   {tag}
                 </label>
               ))}
-              {(!availableTags["Hold & Movement Type"] || availableTags["Hold & Movement Type"].size === 0) && (
+              {(!availableTags["Weather & Conditions"] || availableTags["Weather & Conditions"].size === 0) && (
+                <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Approach & Accessibility Category */}
+        <div className="filter-group">
+          <button 
+            className="w-full flex justify-between items-center py-1.5 px-2.5 bg-gray-100 rounded text-sm text-gray-700 dark:bg-gray-700 dark:text-gray-300"
+            onClick={() => toggleCategory("Approach & Accessibility")}
+          >
+            <span>Approach & Accessibility</span>
+            <span>{expandedCategories.includes("Approach & Accessibility") ? '▼' : '▶'}</span>
+          </button>
+          {expandedCategories.includes("Approach & Accessibility") && (
+            <div className="mt-1 space-y-1 pl-2.5 text-gray-700 dark:text-gray-300">
+              {Array.from(availableTags["Approach & Accessibility"] || [])
+                .map(tag => (
+                <label key={tag} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={isTagSelected("Approach & Accessibility", tag)}
+                    onChange={() => toggleTag("Approach & Accessibility", tag)}
+                    className="mr-1.5"
+                  />
+                  {tag}
+                </label>
+              ))}
+              {(!availableTags["Approach & Accessibility"] || availableTags["Approach & Accessibility"].size === 0) && (
                 <span className="text-xs text-gray-500 dark:text-gray-400">No tags available</span>
               )}
             </div>

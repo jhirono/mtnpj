@@ -11,12 +11,10 @@ IMPORTANT: Your output must only include tag values (not descriptions) in this e
 
 {
   "llm_tags": {
-    "Weather & Conditions": ["sun_am", "seepage_problem"],
     "Access & Restrictions": [],
     "Crowds & Popularity": ["classic_route"],
     "Difficulty & Safety": [],
-    "Approach & Accessibility": ["approach_none"],
-    "Multi-Pitch, Anchors & Descent": ["rappel_down"],
+    "Multi-Pitch, Anchors & Descent": ["tricky_rappel"],
     "Route Style & Angle": ["vertical"],
     "Crack Climbing": ["finger_tip"],
     "Hold & Movement Type": ["technical_moves"],
@@ -30,26 +28,12 @@ CRITICAL INSTRUCTIONS:
 3. If unsure about a tag, DO NOT include it.
 4. Each category should only include tags from its appropriate section below.
 5. For "Route Style & Angle" and "Hold & Movement Type" categories specifically, be very strict about only using the exact tags listed.
+6. For "stick_clip" tag, ONLY apply it to Sport routes, never to Trad routes.
 
 Use the following reference to understand the meaning of each tag, but DO NOT include descriptions in your output:
 
 {
   "tags": [
-    {
-      "category": "Weather & Conditions",
-      "tags": [
-        { "tag": "sun_am", "description": "Morning sun exposure or Shaded in the afternoon" },
-        { "tag": "sun_pm", "description": "Afternoon sun exposure, or Shaded in the morning" },
-        { "tag": "tree_filtered_sun_am", "description": "Partial morning sun through trees" },
-        { "tag": "tree_filtered_sun_pm", "description": "Partial afternoon sun through trees" },
-        { "tag": "sunny_all_day", "description": "Sunny most of the day" },
-        { "tag": "shady_all_day", "description": "Shady most of the day" },
-        { "tag": "dries_fast", "description": "Crag dries fast after rain" },
-        { "tag": "dry_in_rain", "description": "Stays climbable in light rain" },
-        { "tag": "seepage_problem", "description": "Affected by water seepage" },
-        { "tag": "windy_exposed", "description": "Exposed to strong winds" }
-      ]
-    },
     {
       "category": "Access & Restrictions",
       "tags": [
@@ -67,19 +51,9 @@ Use the following reference to understand the meaning of each tag, but DO NOT in
     {
       "category": "Difficulty & Safety",
       "tags": [
-        { "tag": "stick_clip", "description": "High first bolt or risk of ground fall (sport routes only, can't be used for trad)" },
+        { "tag": "stick_clip", "description": "High first bolt or risk of ground fall (sport routes only, NEVER use for trad routes)" },
         { "tag": "loose_rock", "description": "Potential rockfall hazards" },
         { "tag": "rope_drag_warning", "description": "Requires careful rope management to avoid rope drag" }
-      ]
-    },
-    {
-      "category": "Approach & Accessibility", "description": "walking distance from the parking eariest to a crag. Don't confuse with the minutes from a problem or something",
-      "tags": [
-        { "tag": "approach_none", "description": "No approach required (<5 min) from parking" },
-        { "tag": "approach_short", "description": "Short approach (<30 min) from parking" },
-        { "tag": "approach_moderate", "description": "Moderate approach (30–60 min) from parking" },
-        { "tag": "approach_long", "description": "Long approach (>60 min) from parking" },
-        { "tag": "top_rope_possible", "description": "Anchor accessible without rope climbing" }
       ]
     },
     {
@@ -87,7 +61,7 @@ Use the following reference to understand the meaning of each tag, but DO NOT in
       "tags": [
         { "tag": "bolted_anchor", "description": "Fixed anchors at the top" },
         { "tag": "walk_off", "description": "Route with a walk-off descent" },
-        { "tag": "rappel_down", "description": "Requires rappelling" }
+        { "tag": "tricky_rappel", "description": "Difficult or complex rappel, especially for multi-pitch routes. Look for mentions of complicated descents, multiple rappels, exposed rappels, or rappels requiring special care." }
       ]
     },
     {
