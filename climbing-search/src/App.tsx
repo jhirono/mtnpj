@@ -6,6 +6,7 @@ import type { Area } from './types/area'
 import type { Route } from './types/route'
 import type { RouteFilters, SortConfig } from './types/filters'
 import { GRADE_ORDER, normalizeGrade } from './types/filters'
+import { getDataUrl, indexFilePath } from './config'
 
 // Add these constants at the top of the file
 const EXCLUDED_TYPES = ['Aid', 'Boulder', 'Ice', 'Mixed', 'Snow'];
@@ -35,6 +36,7 @@ function matchesRouteType(routeType: string, selectedType: string): boolean {
 function App() {
   const [areas, setAreas] = useState<Area[]>([])
   const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([])
+  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
   const [currentFilters, setCurrentFilters] = useState<RouteFilters>({
     grades: { min: "", max: "" },  // Start with empty grade range
     types: [],
@@ -50,6 +52,14 @@ function App() {
 
   // Get routes from selected areas and apply filters
   const filteredRoutes = useMemo(() => {
+    // If a specific route is selected, only include that one
+    if (selectedRoute) {
+      return [selectedRoute];
+    }
+    
+    // Log selected areas for debugging
+    console.log('Filtering with selected areas:', selectedAreaIds);
+    
     // First, get routes from selected areas
     const routesFromSelectedAreas = selectedAreaIds.length === 0
       ? areas.flatMap(area => area.routes)
@@ -58,59 +68,34 @@ function App() {
             // If no selections, include all areas
             if (selectedAreaIds.length === 0) return true;
 
-            // Group selections by their parent hierarchy
-            const hierarchyGroups = new Map<string, string[]>();
-            
-            selectedAreaIds.forEach(selectedId => {
-              const parts = selectedId.split(' / ');
-              // Skip if it's just a single level
-              if (parts.length <= 1) return;
-              
-              // Find if this selection is a child of any existing selection
-              const parentSelection = selectedAreaIds.find(otherId => 
-                selectedId !== otherId && selectedId.startsWith(otherId)
-              );
-
-              if (parentSelection) {
-                // Add to parent's group
-                if (!hierarchyGroups.has(parentSelection)) {
-                  hierarchyGroups.set(parentSelection, []);
-                }
-                hierarchyGroups.get(parentSelection)!.push(selectedId);
-              }
-            });
-
-            // Get standalone selections (those without children selected)
-            const standaloneSelections = selectedAreaIds.filter(selectedId => {
-              return !Array.from(hierarchyGroups.values())
-                .flat()
-                .includes(selectedId);
-            });
-
+            // Get the area's hierarchy path
             const areaHierarchyPath = area.area_hierarchy
               .map(h => h.area_hierarchy_name)
               .join(' / ');
-
-            // Check standalone selections first (OR condition)
-            const matchesStandalone = standaloneSelections.some(selectedId => 
-              !hierarchyGroups.has(selectedId) && areaHierarchyPath.startsWith(selectedId)
+            
+            // Check if any of the selected area IDs match the beginning of this area's path
+            // This ensures we include child areas of any selected parent area
+            const isMatch = selectedAreaIds.some(selectedId => 
+              areaHierarchyPath.startsWith(selectedId)
             );
-
-            if (matchesStandalone) return true;
-
-            // Check each hierarchy group (AND condition within group)
-            return Array.from(hierarchyGroups.entries()).some(([parentPath, childPaths]) => {
-              // Must match parent AND at least one child
-              return areaHierarchyPath.startsWith(parentPath) && 
-                     childPaths.some(childPath => areaHierarchyPath.startsWith(childPath));
-            });
+            
+            // For debugging
+            if (isMatch) {
+              console.log(`Area matched: ${area.area_name} (${areaHierarchyPath})`);
+            }
+            
+            return isMatch;
           })
           .flatMap(area => area.routes);
+          
+    console.log(`Found ${routesFromSelectedAreas.length} routes from selected areas`);
 
     // Pre-filter to remove excluded types
     const preFilteredRoutes = routesFromSelectedAreas.filter(route => 
       !hasExcludedType(route.route_type)
     );
+    
+    console.log(`After filtering excluded types: ${preFilteredRoutes.length} routes`);
 
     // Then apply other filters
     return preFilteredRoutes.filter(route => {
@@ -197,10 +182,15 @@ function App() {
 
       return true;
     });
-  }, [areas, selectedAreaIds, currentFilters]);
+  }, [areas, selectedAreaIds, currentFilters, selectedRoute]);
 
   // Sort routes
   const sortedRoutes = useMemo(() => {
+    // If we have a selected route, don't sort (return as is)
+    if (selectedRoute) {
+      return filteredRoutes;
+    }
+
     return [...filteredRoutes].sort((a, b) => {
       // Default sort directions without needing the checkbox:
       // grade: ascending (easy to hard) when unchecked
@@ -236,7 +226,7 @@ function App() {
           return 0
       }
     })
-  }, [filteredRoutes, sortConfig])
+  }, [filteredRoutes, sortConfig, selectedRoute])
 
   // Create a sliced version of sorted routes for display
   const displayedRoutes = useMemo(() => {
@@ -265,13 +255,13 @@ function App() {
   // Reset visible routes when filters or sort changes
   useEffect(() => {
     setVisibleRoutes(ROUTES_PER_PAGE);
-  }, [currentFilters, sortConfig, selectedAreaIds]);
+  }, [currentFilters, sortConfig, selectedAreaIds, selectedRoute]);
 
   useEffect(() => {
     const loadAreas = async () => {
       try {
         // First, get the list of data files from index.json
-        const indexResponse = await fetch('/data/index.json');
+        const indexResponse = await fetch(indexFilePath);
         if (!indexResponse.ok) {
           throw new Error(`Failed to load index.json: ${indexResponse.status} ${indexResponse.statusText}`);
         }
@@ -284,7 +274,7 @@ function App() {
         const loadedAreas: Area[] = [];
         
         for (const fileName of dataFiles) {
-          const filePath = `/data/${fileName}`;
+          const filePath = getDataUrl(fileName);
           try {
             const response = await fetch(filePath);
             if (!response.ok) {
@@ -338,6 +328,27 @@ function App() {
     setCurrentFilters(filters)
   }
 
+  // Handle area selection in the App component
+  const handleAreaSelect = (selectedIds: string[]) => {
+    console.log('App received area selection update:', selectedIds);
+    // Clear any selected route when area selection changes
+    setSelectedRoute(null);
+    // Update selected area IDs with the new selection
+    setSelectedAreaIds(selectedIds);
+  }
+
+  // Handle when a route is selected from search
+  const handleRouteSelect = (route: Route) => {
+    setSelectedRoute(route);
+    // Clear any area selections when viewing a specific route
+    setSelectedAreaIds([]);
+  }
+
+  // Function to clear selected route
+  const clearSelectedRoute = () => {
+    setSelectedRoute(null);
+  }
+
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4">
@@ -360,21 +371,24 @@ function App() {
                 <span className="mr-1">ⓘ</span>
                 INFO
               </a>
-              <a 
-                href="https://www.buymeacoffee.com/bonvi" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
-              >
-                <span className="mr-1">☕</span>
-                Buy me a coffee
-              </a>
             </div>
           </div>
           
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
             {sortedRoutes.length} routes found (showing {displayedRoutes.length})
           </p>
+          
+          {/* Show a clear button when a route is selected */}
+          {selectedRoute && (
+            <div className="mt-2">
+              <button 
+                onClick={clearSelectedRoute}
+                className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300"
+              >
+                ← Back to all routes
+              </button>
+            </div>
+          )}
         </header>
 
         <div className="flex flex-col md:flex-row gap-4">
@@ -382,7 +396,8 @@ function App() {
             <div className="sticky top-4">
               <AreaSearch 
                 areas={areas}
-                onAreaSelect={setSelectedAreaIds}
+                onAreaSelect={handleAreaSelect}
+                onRouteSelect={handleRouteSelect}
               />
               <FilterPanel
                 filters={currentFilters}
@@ -425,11 +440,11 @@ function App() {
             ) : (
               <div className="h-[50vh] flex items-center justify-center">
                 <div className="text-center text-gray-500 text-sm">
-                  {selectedAreaIds.length === 0 ? (
+                  {selectedAreaIds.length === 0 && !selectedRoute ? (
                     <div>
                       <p className="mb-2 font-medium">No areas selected</p>
-                      <p>Start by searching for and selecting an area in the sidebar</p>
-                      <p className="mt-2">↖ Enter a location name and click on a result to select it</p>
+                      <p>Start by searching for an area or route in the sidebar</p>
+                      <p className="mt-2">↖ Enter a location or route name and click on a result</p>
                     </div>
                   ) : (
                     "No routes found matching your criteria"

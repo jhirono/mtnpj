@@ -1,5 +1,10 @@
 [
-  "castle-rock_routes_tagged.json",
-  "canada_routes_tagged.json",
-  "california_routes_tagged.json"
-] 
+  "nevada_sport_trad.json",
+  "oregon_sport_trad.json",
+  "arizona_sport_trad.json",
+  "california_sport_trad.json",
+  "canada_sport_trad.json",
+  "colorado_sport_trad.json",
+  "washington_sport_trad.json",
+  "utah_sport_trad.json"
+]

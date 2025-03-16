@@ -2,6 +2,15 @@ venv/
 .old/
 node_modules
 .env.local
+.env
 cookies.json
 data/cache/
 firebase-climbing-search/serviceAccountKey.json
+r2_config.py
+.r2_credentials
+# Ignore data folder in the root directory only
+/data/
+/climbing-search/public/data/*/
+
+# But don't ignore data folders in subdirectories
+!/*/data/
