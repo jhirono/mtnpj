@@ -1,3 +1,4 @@
+import { formatRouteName } from '../utils/formatters'
 import type { Route } from '../types/route';
 
 interface RouteListProps {
@@ -9,7 +10,7 @@ export function RouteList({ routes }: RouteListProps) {
     <div>
       {routes.map(route => (
         <div key={route.route_id}>
-          <h3>{route.route_name}</h3>
+          <h3>{formatRouteName(route.route_name)}</h3>
           <p>Area: {route.area_name}</p>
           <p>Grade: {route.route_grade}</p>
           {route.route_lr !== undefined && (

@@ -1,3 +1,4 @@
+import { formatRouteName } from '../utils/formatters'
 import { useState, useEffect, useMemo } from 'react';
 import type { Area } from '../types/area';
 import type { Route } from '../types/route';
@@ -185,7 +186,7 @@ export function AreaSearch({ areas, onAreaSelect, onRouteSelect }: AreaSearchPro
       .map(({ route, score }) => ({
         type: 'route' as const,
         id: route.route_id,
-        text: route.route_name,
+        text: formatRouteName(route.route_name),
         route,
         score
       }));
@@ -322,7 +323,7 @@ export function AreaSearch({ areas, onAreaSelect, onRouteSelect }: AreaSearchPro
               >
                 <span className="text-gray-900 dark:text-gray-100 text-xs flex items-center">
                   <span className="inline-block w-4 text-gray-500 mr-1">📁</span>
-                  <span>{result.text}</span>
+                  <span>{formatRouteName(result.text)}</span>
                   <span className="ml-auto text-blue-500 dark:text-blue-400">
                     {selectedAreas.includes(result.path!) ? '✓' : '+'}
                   </span>
@@ -345,7 +346,7 @@ export function AreaSearch({ areas, onAreaSelect, onRouteSelect }: AreaSearchPro
               >
                 <span className="text-gray-900 dark:text-gray-100 text-xs flex items-center">
                   <span className="inline-block w-4 text-gray-500 mr-1">🧗</span>
-                  <span>{result.text}</span>
+                  <span>{formatRouteName(result.text)}</span>
                   <span className="ml-1 text-gray-500">
                     {result.route!.route_grade}
                   </span>

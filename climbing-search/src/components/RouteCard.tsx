@@ -1,3 +1,4 @@
+import { formatRouteName } from '../utils/formatters'
 import { Route, AreaHierarchy } from '../types/route'
 
 interface RouteCardProps {
@@ -28,7 +29,7 @@ export function RouteCard({ route }: RouteCardProps) {
             target="_blank"
             rel="noopener noreferrer"
           >
-            {route.route_name}
+            {formatRouteName(route.route_name)}
           </a>
           <span className="text-gray-600 dark:text-gray-300 text-sm">
             {route.route_type} | {route.route_grade} {route.route_protection_grading} |
