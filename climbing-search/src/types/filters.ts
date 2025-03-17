@@ -14,6 +14,15 @@ export interface RouteFilters {
 
 export const GRADE_ORDER = [
   // 5.3-5.9 with variations
+  "Easy",
+  "1st",
+  "2nd",
+  "3rd",
+  "4th",
+  "5th",
+  "5.0",
+  "5.1",
+  "5.2",
   "5.3",
   "5.4",
   "5.5",
