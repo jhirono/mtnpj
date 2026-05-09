@@ -1,3 +1,11 @@
+import type { RouteType } from '../api/types';
+export type { RouteType };
+
+export const ROUTE_TYPE_LABELS: Record<RouteType, string> = {
+  sport: 'Sport', trad: 'Trad', aid: 'Aid', ice: 'Ice', alpine: 'Alpine',
+  mixed: 'Mixed', tr: 'Top Rope', boulder: 'Boulder', snow: 'Snow',
+};
+
 export interface GradeRange {
   min: string;
   max: string;
@@ -8,7 +16,7 @@ export interface RouteFilters {
     min: string;
     max: string;
   };
-  types: string[];
+  types: RouteType[];
   tags: { category: string; selectedTags: string[] }[];
 }
 
