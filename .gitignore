@@ -19,3 +19,6 @@ r2_config.py
 # Keep firebase data files
 !/firebase-climbing-search/data/
 !/firebase-climbing-search/data/*.json
+
+# Generated D1 import SQL (regenerated from data/*.json by scraping/import_to_d1.py)
+worker-api/import_*.sql
