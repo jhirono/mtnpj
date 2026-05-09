@@ -123,22 +123,27 @@ def build_materialized_path(area_hierarchy: list[dict] | None) -> str:
 
 def grade_to_numeric(grade: str | None) -> float | None:
     """
-    Convert Yosemite Decimal System grade string to a sortable float.
+    Convert a grade string to a sortable float for YDS rock climbing grades.
 
-    5.9  → 9.0
-    5.10a → 10.1
-    5.10b → 10.2
-    5.10c → 10.3
-    5.10d → 10.4
-    5.11d → 11.4
-    V3 (boulder) → None (not supported)
-    Unknown → None
+    Handles combined grades like "5.10b A2" by extracting the YDS component.
 
-    Returns None for grades that don't match the 5.X[a-d] pattern.
+    5.9       → 9.0
+    5.10a     → 10.1
+    5.10b     → 10.2  (also "5.10b A2" → 10.2)
+    5.10c     → 10.3
+    5.10d     → 10.4
+    5.11d     → 11.4
+    A2, A5+   → None (pure aid — no YDS component)
+    V3        → None (boulder grades not supported)
+    Unknown   → None
     """
     if not grade or grade == "Unknown":
         return None
-    m = re.match(r"^5\.(\d+)([a-d]?)([+\-]?)$", grade.strip())
+    # Extract just the YDS token from combined grades like "5.10b A2"
+    yds_token = next((t for t in grade.strip().split() if t.startswith("5.")), None)
+    if not yds_token:
+        return None
+    m = re.match(r"^5\.(\d+)([a-d]?)([+\-]?)$", yds_token)
     if not m:
         return None  # boulder grades (V0…V16) and other formats unsupported here
     minor = int(m.group(1))

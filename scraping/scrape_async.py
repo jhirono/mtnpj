@@ -84,20 +84,29 @@ def extract_mp_area_id(area_url: str) -> str:
 # Sub-Area & Leaf-Area Detection
 # ===========================================================================
 
+_AREA_ID_RE = re.compile(r"/area/\d+/")
+
+
+def _is_real_area_href(href: str) -> bool:
+    """Only accept standard MP area URLs: /area/{numeric-id}/{slug}.
+    Excludes /area/classics/, printer-friendly (?print=1), and other query-param variants."""
+    return bool(href and _AREA_ID_RE.search(href) and "?" not in href)
+
+
 def get_sub_area_links(soup: BeautifulSoup) -> list:
     """
     Multi-strategy detection for sub-area links.
-    Returns list of <a> tag objects whose href contains '/area/'.
+    Returns list of <a> tag objects whose href matches /area/{digits}/.
     Tries strategies in order, returns first non-empty result.
 
     Strategy A: primary nav div with exact class string
     Strategy B: any div whose class string contains 'max-height' (regex)
     Strategy C: element with id matching 'left-nav'
-    Strategy D: all <a> tags with /area/ href, excluding breadcrumb context
+    Strategy D: all <a> tags with standard /area/{id}/ href, excluding breadcrumb context
     """
     def _area_links(container):
         return [a for a in container.find_all("a")
-                if a.get("href") and "/area/" in a.get("href", "")]
+                if _is_real_area_href(a.get("href", ""))]
 
     # Strategy A: exact class match (primary — preserves existing behavior)
     nav_div = soup.find("div", class_="max-height max-height-md-0 max-height-xs-400")
@@ -139,7 +148,7 @@ def get_sub_area_links(soup: BeautifulSoup) -> list:
     links = []
     for a in soup.find_all("a"):
         href = a.get("href", "")
-        if "/area/" in href and href not in breadcrumb_hrefs and href not in seen_hrefs:
+        if _is_real_area_href(href) and href not in breadcrumb_hrefs and href not in seen_hrefs:
             seen_hrefs.add(href)
             links.append(a)
     return links
@@ -339,22 +348,74 @@ def _extract_route_name_from_soup(soup: BeautifulSoup) -> str:
     return h1.get_text(strip=True) if h1 else "Unknown Route"
 
 
+# Grade token patterns for non-YDS systems extracted from h2 text nodes
+_AID_GRADE_RE   = re.compile(r"^[AC]\d+\+?$")           # A0-A5+, C0-C5+
+_ICE_GRADE_RE   = re.compile(r"^(WI|AI)\d+\+?$")        # WI2-WI7+, AI1-AI5+
+_MIXED_GRADE_RE = re.compile(r"^M\d+[-+]?\d*$")          # M4, M4-5, M6+
+_PROTECTION_RE  = re.compile(r"^(PG-?13|PG|R|X)$", re.IGNORECASE)
+
+
 def _extract_grade(soup: BeautifulSoup) -> tuple:
-    """Returns (grade, protection_grading)."""
-    grade_el = soup.select_one(".rateYDS, .route-type.Ice, .rateHueco")
-    if grade_el:
-        grade_full = grade_el.get_text(strip=True)
-        grade = grade_full.split()[0].replace("YDS", "").strip() if grade_full else "Unknown"
-        h2 = grade_el.find_parent("h2")
-        protection_grading = ""
-        if h2:
-            for item in h2.contents:
-                if isinstance(item, str):
-                    text = item.strip()
-                    if text:
-                        protection_grading += text + " "
-        return grade, protection_grading.strip()
-    return "Unknown", ""
+    """Returns (grade, protection_grading).
+
+    grade: full combined grade string, e.g.:
+        "5.10b A2"   — trad with aid component
+        "5.6 WI3 M4" — mixed alpine with ice and mixed grades
+        "WI5+"       — pure ice
+        "A5+"        — pure aid
+        "V6"         — boulder (Hueco)
+    protection_grading: PG13/R/X safety rating if present
+    """
+    h2 = soup.select_one("h2.inline-block")
+    if not h2:
+        return "Unknown", ""
+
+    # Free climbing grade from labelled span (highest priority)
+    free_grade = ""
+    for cls in (".rateYDS", ".rateHueco"):
+        el = h2.select_one(cls)
+        if el:
+            raw = el.get_text(strip=True)
+            free_grade = re.sub(r"(YDS|Hueco)$", "", raw).strip().split()[0]
+            break
+
+    # Scan all bare text nodes for non-YDS grade components and protection
+    aid_grade = ice_grade = mixed_grade = protection_grading = ""
+    all_text_tokens = []
+    for child in h2.children:
+        if not isinstance(child, str):
+            continue
+        # Each text node may contain multiple tokens (e.g. "WI3 M4-5 Steep Snow X")
+        for token in child.strip().split():
+            all_text_tokens.append(token)
+
+    for token in all_text_tokens:
+        if not aid_grade   and _AID_GRADE_RE.match(token):
+            aid_grade = token
+        elif not ice_grade   and _ICE_GRADE_RE.match(token):
+            ice_grade = token
+        elif not mixed_grade and _MIXED_GRADE_RE.match(token):
+            mixed_grade = token
+        elif not protection_grading and _PROTECTION_RE.match(token):
+            protection_grading = token
+
+    # Pure non-YDS route (no free grade span): classify from h2 text directly
+    if not free_grade and not any([aid_grade, ice_grade, mixed_grade]):
+        h2_text = h2.get_text(strip=True)
+        first = h2_text.split()[0] if h2_text else ""
+        if _AID_GRADE_RE.match(first):
+            aid_grade = first
+        elif _ICE_GRADE_RE.match(first):
+            ice_grade = first
+        elif _MIXED_GRADE_RE.match(first):
+            mixed_grade = first
+        else:
+            # Fallback: use first token as-is (catches novel grade systems)
+            free_grade = first or "Unknown"
+
+    parts = [x for x in [free_grade, ice_grade, mixed_grade, aid_grade] if x]
+    grade = " ".join(parts) if parts else "Unknown"
+    return grade, protection_grading
 
 
 def _extract_stars_votes(soup: BeautifulSoup) -> tuple:
@@ -732,6 +793,8 @@ async def scrape_lowest_level_areas(
                         continue
                     if not href.startswith("http"):
                         href = BASE_URL + href
+                    if not _is_real_area_href(href):
+                        continue
                     if href not in visited:
                         next_to_visit.append(href)
 
