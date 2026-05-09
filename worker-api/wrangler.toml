@@ -2,8 +2,7 @@ name = "climbing-search-api"
 main = "src/index.ts"
 compatibility_date = "2025-01-01"
 
-# D1 binding (database_id filled in after `wrangler d1 create climbing-search` in Task 5)
 [[d1_databases]]
 binding = "DB"
 database_name = "climbing-search"
-database_id = "REPLACE_AFTER_DB_CREATE"
+database_id = "4183c756-4393-4fc1-913e-10e5f2e813ac"
