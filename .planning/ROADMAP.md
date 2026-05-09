@@ -1,21 +1,26 @@
-# Roadmap — Mountain Project Climbing Search Refactor
+# Roadmap — Mountain Project Climbing Search
 
-## Phase 1 — Full Scraper Coverage
-**Goal:** Fix scraper to capture all route types (aid, ice, alpine, mixed, TR, boulder) across all area hierarchy levels including large parks like Yosemite NP.
-**Status:** in_progress
+## Milestones
 
-| Plan | Status | Artifacts |
-|------|--------|-----------|
-| 01-01 | checkpoint | scrape_async.py (httpx + Semaphore); awaiting Yosemite smoke test |
-| 01-02 | complete | import_to_d1.py, schema.sql, 13 tests pass |
-| 01-03 | pending | Hono Worker API |
-| 01-04 | pending | Frontend migration |
-| 01-05 | complete | d1_tag_sync.py — 11 tests, 89,467 route updates across 6 states |
+- ✅ **v1.0 Full-Stack Refactor** — Phase 01 (shipped 2026-05-09)
 
-## Phase 2 — Data Model Normalization
-**Goal:** Replace nested JSON (area contains routes[]) with normalized relational tables (areas table, routes table, comments table, hierarchy table).
-**Status:** planning
+## Phases
 
-## Phase 3 — Cloud Database Migration
-**Goal:** Migrate from static JSON file loading to a cloud database. Evaluate and implement best-ROI solution (Cloudflare D1, Firebase, Supabase, Turso, etc.).
-**Status:** planning
+<details>
+<summary>✅ v1.0 Full-Stack Refactor (Phase 01) — SHIPPED 2026-05-09</summary>
+
+- [x] Phase 01-01: Async scraper (5/5 plans) — completed 2026-05-09
+- [x] Phase 01-02: D1 schema + import pipeline (5/5 plans) — completed 2026-05-09
+- [x] Phase 01-03: Hono Worker API (5/5 plans) — completed 2026-05-09
+- [x] Phase 01-04: Frontend migration to Worker API (5/5 plans) — completed 2026-05-09
+- [x] Phase 01-05: Tagging pipeline (5/5 plans) — completed 2026-05-09
+
+Full archive: `.planning/milestones/v1.0-ROADMAP.md`
+
+</details>
+
+## Progress
+
+| Phase | Milestone | Plans | Status | Completed |
+|-------|-----------|-------|--------|-----------|
+| 01 Full-Stack Refactor | v1.0 | 5/5 | Complete | 2026-05-09 |
