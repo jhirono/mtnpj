@@ -1,0 +1,147 @@
+[
+  {
+    "area_id": "aacc9468-bfbc-4f2b-86b5-b0f4890371a1",
+    "area_url": "https://www.mountainproject.com/area/106584089/meatwad",
+    "area_name": "Meatwad",
+    "area_gps": "http://maps.google.com/maps?q=32.3435,-111.1586&t=h&hl=en",
+    "area_description": "Another large block with potential all the way around.",
+    "area_getting_there": "Next large boulder east of the cluster.",
+    "area_tags": {
+      "Weather & Conditions": ["shady_all_day"],
+      "Approach & Accessibility": ["approach_none"]
+    },
+    "area_hierarchy": [
+      {
+        "level": 1,
+        "area_hierarchy_name": "All Locations",
+        "area_hierarchy_url": "https://www.mountainproject.com/route-guide"
+      },
+      {
+        "level": 2,
+        "area_hierarchy_name": "Arizona",
+        "area_hierarchy_url": "https://www.mountainproject.com/area/105708962/arizona"
+      },
+      {
+        "level": 3,
+        "area_hierarchy_name": "Southern Arizona",
+        "area_hierarchy_url": "https://www.mountainproject.com/area/107447521/southern-arizona"
+      },
+      {
+        "level": 4,
+        "area_hierarchy_name": "Tucson Area Bouldering",
+        "area_hierarchy_url": "https://www.mountainproject.com/area/106824861/tucson-area-bouldering"
+      },
+      {
+        "level": 5,
+        "area_hierarchy_name": "Panther Peak",
+        "area_hierarchy_url": "https://www.mountainproject.com/area/106582735/panther-peak"
+      },
+      {
+        "level": 6,
+        "area_hierarchy_name": "Meatwad",
+        "area_hierarchy_url": "https://www.mountainproject.com/area/106584089/meatwad"
+      }
+    ],
+    "area_access_issues": "",
+    "area_page_views": "3664",
+    "area_shared_on": "Oct, 2009",
+    "area_comments": [],
+    "routes": [
+      {
+        "route_name": "Cyborg Sucker Punch",
+        "route_url": "https://www.mountainproject.com/route/106608542/cyborg-sucker-punch",
+        "route_lr": 999999,
+        "route_grade": "V3-",
+        "route_protection_grading": "",
+        "route_stars": 2.0,
+        "route_votes": 1,
+        "route_type": "Boulder",
+        "route_pitches": 1,
+        "route_length_ft": 20,
+        "route_length_meter": 6,
+        "route_fa": "Dustin Payne",
+        "route_description": "Use crimps and ledges to make your way up to jugs about half way up.",
+        "route_location": "Four feet to the left of Pyrrhuloxia.",
+        "route_protection": "Pads and a spot.",
+        "route_page_views": "602",
+        "route_shared_on": "Nov, 2009",
+        "route_id": "200640bc-fd83-465b-aec3-92c1620f560b",
+        "route_tags": {
+          "Rope Length": ["rope_60m"],
+          "Multi-Pitch, Anchors & Descent": ["single_pitch"],
+          "Approach & Accessibility": ["approach_none"]
+        },
+        "route_composite_tags": [],
+        "route_comments": [],
+        "route_suggested_ratings": {},
+        "route_tick_comments": "",
+        "manual_tags": {}
+      },
+      {
+        "route_name": "The Nose",
+        "route_url": "https://www.mountainproject.com/route/106607357/the-nose",
+        "route_lr": 1,
+        "route_grade": "5.14a",
+        "route_protection_grading": "G",
+        "route_stars": 4.7,
+        "route_votes": 1234,
+        "route_type": "Trad, Aid, 31 pitches, 2900 ft",
+        "route_pitches": 31,
+        "route_length_ft": 2900,
+        "route_length_meter": 884,
+        "route_fa": "Royal Robbins et al.",
+        "route_description": "One of the most famous routes in the world. A classic aid line up the nose of El Capitan.",
+        "route_location": "The nose of El Capitan.",
+        "route_protection": "Full rack plus aid gear.",
+        "route_page_views": "98765",
+        "route_shared_on": "Jan, 2001",
+        "route_id": "abc12345-0000-0000-0000-000000000001",
+        "route_tags": {
+          "Multi-Pitch, Anchors & Descent": ["multi_pitch"],
+          "Gear": ["big_wall"]
+        },
+        "route_composite_tags": [],
+        "route_comments": [
+          {
+            "comment_author": "JohnClimber",
+            "comment_text": "Epic route!",
+            "comment_time": "2023-06-15"
+          }
+        ],
+        "route_suggested_ratings": {"5.14a": 3, "5.13d": 1},
+        "route_tick_comments": "",
+        "manual_tags": {}
+      },
+      {
+        "route_name": "O'Brien's Route",
+        "route_url": "https://www.mountainproject.com/route/100000001/o-briens-route",
+        "route_lr": 2,
+        "route_grade": "5.10b",
+        "route_protection_grading": "",
+        "route_stars": 3.2,
+        "route_votes": 42,
+        "route_type": "Sport, 80 ft",
+        "route_pitches": 1,
+        "route_length_ft": 80,
+        "route_length_meter": 24,
+        "route_fa": "O'Brien",
+        "route_description": "A classic sport route with great moves on featured granite.",
+        "route_location": "Left side of the crag.",
+        "route_protection": "10 bolts to anchor.",
+        "route_page_views": "1500",
+        "route_shared_on": "Mar, 2010",
+        "route_id": "ffffffff-0000-0000-0000-000000000001",
+        "route_tags": {
+          "Rope Length": ["rope_60m"],
+          "Multi-Pitch, Anchors & Descent": ["single_pitch"]
+        },
+        "route_composite_tags": [],
+        "route_comments": [],
+        "route_suggested_ratings": {},
+        "route_tick_comments": "",
+        "manual_tags": {}
+      }
+    ],
+    "manual_tags": {}
+  }
+]
