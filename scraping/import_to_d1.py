@@ -364,11 +364,53 @@ def generate_sql(
     with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
 
-    # Sort areas deterministically by extracted MP ID for idempotent output
-    data_sorted = sorted(
-        data,
-        key=lambda a: extract_mp_id_from_url(a.get("area_url") or ""),
+    # Topologically sort areas so parents always precede children.
+    # D1 enforces FK constraints by default; inserting a child before its
+    # parent area causes SQLITE_CONSTRAINT_FOREIGNKEY. Kahn's algorithm on
+    # the parent_id adjacency list guarantees parent-first ordering while
+    # preserving numeric-ID tie-breaking for determinism.
+    id_to_area: dict[str, dict] = {}
+    for area in data:
+        aid = extract_mp_id_from_url(area.get("area_url") or "")
+        if aid:
+            id_to_area[aid] = area
+
+    # Build parent_id map from hierarchy
+    def _get_parent_id(area: dict) -> str | None:
+        hier = area.get("area_hierarchy") or []
+        aid = extract_mp_id_from_url(area.get("area_url") or "")
+        for h in reversed(hier):
+            pid = extract_mp_id_from_url(h.get("area_hierarchy_url") or "")
+            if pid and pid != aid:
+                return pid
+        return None
+
+    children: dict[str, list[str]] = {aid: [] for aid in id_to_area}
+    in_degree: dict[str, int] = {aid: 0 for aid in id_to_area}
+    for aid, area in id_to_area.items():
+        pid = _get_parent_id(area)
+        if pid and pid in id_to_area:
+            children[pid].append(aid)
+            in_degree[aid] += 1
+
+    # Roots first (no parent in dataset), then children — stable numeric sort
+    queue = sorted(
+        [aid for aid, deg in in_degree.items() if deg == 0],
+        key=lambda x: int(x) if x.isdigit() else x,
     )
+    data_sorted: list[dict] = []
+    while queue:
+        aid = queue.pop(0)
+        data_sorted.append(id_to_area[aid])
+        for child in sorted(children[aid], key=lambda x: int(x) if x.isdigit() else x):
+            in_degree[child] -= 1
+            if in_degree[child] == 0:
+                queue.append(child)
+    # Append any areas not reached (disconnected — shouldn't happen, but be safe)
+    reached = {extract_mp_id_from_url(a.get("area_url") or "") for a in data_sorted}
+    for area in sorted(data, key=lambda a: extract_mp_id_from_url(a.get("area_url") or "")):
+        if extract_mp_id_from_url(area.get("area_url") or "") not in reached:
+            data_sorted.append(area)
 
     area_rows: list[str] = []
     route_rows: list[str] = []
@@ -399,7 +441,11 @@ def generate_sql(
         )
 
     # Build SQL statements — batched to stay under D1 100KB limit (T-02-03)
-    sql_parts: list[str] = []
+    # Disable FK enforcement during bulk import: parent areas are often
+    # structural nodes (state/region) not present in leaf-area JSON files,
+    # so they cannot satisfy the REFERENCES constraint at insert time.
+    # Re-enable after all rows are loaded.
+    sql_parts: list[str] = ["PRAGMA foreign_keys = 0;"]
 
     if area_rows:
         for stmt in chunk_inserts(area_rows, "areas", AREAS_COLUMNS):
@@ -413,8 +459,9 @@ def generate_sql(
         for stmt in chunk_inserts(comment_rows, "comments", COMMENTS_COLUMNS):
             sql_parts.append(stmt)
 
-    # FTS5 rebuild MUST be the last statement (Pitfall 3)
+    # FTS5 rebuild then re-enable FK enforcement
     sql_parts.append("INSERT INTO routes_fts(routes_fts) VALUES('rebuild');")
+    sql_parts.append("PRAGMA foreign_keys = 1;")
 
     sql = "\n".join(sql_parts)
 

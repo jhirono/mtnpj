@@ -202,6 +202,10 @@ def test_import_idempotent():
 def test_fts_rebuild_appended():
     sql = generate_sql(FIXTURE)
     fts_rebuild = "INSERT INTO routes_fts(routes_fts) VALUES('rebuild');"
-    assert sql.rstrip().endswith(fts_rebuild), (
-        f"Expected SQL to end with FTS rebuild statement. Last 200 chars: {sql[-200:]!r}"
+    # FTS rebuild precedes the final PRAGMA foreign_keys = 1 re-enable statement
+    assert fts_rebuild in sql, (
+        f"Expected FTS rebuild statement in SQL. Last 200 chars: {sql[-200:]!r}"
     )
+    fts_pos = sql.rindex(fts_rebuild)
+    pragma_pos = sql.rindex("PRAGMA foreign_keys = 1;")
+    assert fts_pos < pragma_pos, "FTS rebuild must appear before PRAGMA foreign_keys = 1"
