@@ -19,7 +19,7 @@ current_wave: 1_complete_pending_checkpoint
 | 01-02 | complete | D1 schema + import_to_d1.py, 13 tests pass |
 | 01-03 | pending | Hono Worker API (depends on 01-02) |
 | 01-04 | pending | Frontend migration (depends on 01-03) |
-| 01-05 | pending | LLM tag sync (depends on 01-02) |
+| 01-05 | complete | d1_tag_sync.py — 11 tests pass, nevada smoke: 6407 route updates |
 
 ## Decisions
 
@@ -30,6 +30,8 @@ current_wave: 1_complete_pending_checkpoint
 - Import batching ≤100KB per D1 statement; materialized path from URL slugs
 - Hono Worker API on Cloudflare Workers (Wave 2)
 - Frontend migrates from static JSON to Worker API REST calls (Wave 3)
+- CASE-WHEN bulk UPDATE for d1_tag_sync.py batch efficiency (one statement per chunk, hundreds of routes)
+- URL-derived stable MP ID resolution: numeric route_id passes through, legacy uuid4 falls back to URL extraction
 
 ## Open Checkpoints
 
