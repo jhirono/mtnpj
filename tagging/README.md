@@ -237,4 +237,76 @@ Common issues and resolutions:
 
 ## Conclusion
 
-The Route Area Tagging System provides a robust solution for processing and tagging climbing routes and areas. Its architecture handles large datasets efficiently while ensuring tag validity and consistency through inheritance. 
+The Route Area Tagging System provides a robust solution for processing and tagging climbing routes and areas. Its architecture handles large datasets efficiently while ensuring tag validity and consistency through inheritance.
+
+---
+
+## Full Pipeline (Phase 1 refactor)
+
+The Phase 1 refactor (decisions D-07, D-08) splits the climbing-data update
+flow into four independent, restartable stages. The LLM tagging pipeline
+(this directory) is stage 3.
+
+### Stage 1 — Scrape
+
+```
+cd /Users/jhirono/Dev/mtnpj
+source venv/bin/activate
+python -m scraping.scrape_async "https://www.mountainproject.com/area/<id>/<slug>" \
+  --existing-json data/<state>_routes.json
+```
+
+Outputs `data/<slug>_routes.json` with stable route_ids derived from MP URLs.
+Incremental mode (`--existing-json`) skips routes whose IDs already exist.
+
+### Stage 2 — Import to D1 (raw, untagged)
+
+```
+python -m scraping.import_to_d1 data/<state>_routes.json \
+  -o worker-api/import_<state>.sql
+cd worker-api
+npx wrangler d1 execute climbing-search --file=./import_<state>.sql --remote
+```
+
+Routes/areas appear in D1 with `route_tags = NULL` and `area_tags = NULL`.
+Boolean type columns (is_sport, is_aid, etc.) are populated from the
+comma-separated `route_type` string. FTS5 index is rebuilt.
+
+### Stage 3 — LLM Tagging (existing pipeline; this directory)
+
+```
+# Submit batches (existing pipeline, unchanged)
+python tagging/route_area_tagging.py data/<state>_routes.json
+# ... wait for OpenAI batch completion ...
+python tagging/route_area_tagging.py data/<state>_routes.json <batch_id>
+```
+
+Produces `data/<state>_routes_tagged.json` with `route_tags` dicts and
+`area_tags` dicts populated by GPT-4o-mini + manual rule layering.
+
+### Stage 4 — Sync tags to D1
+
+```
+python -m tagging.d1_tag_sync data/<state>_routes_tagged.json \
+  -o worker-api/tag_update_<state>.sql
+cd worker-api
+npx wrangler d1 execute climbing-search --file=./tag_update_<state>.sql --remote
+```
+
+Updates `routes.route_tags` and `areas.area_tags` JSON columns in D1.
+Idempotent — re-running with the same input produces identical updates.
+Skips routes with empty/missing tags so existing tag values aren't clobbered.
+
+### Operator notes
+
+- Each stage writes intermediate files to disk; restart from the failing
+  stage, no need to re-run earlier ones.
+- Stages 2 and 4 produce SQL files; both respect D1's 100KB statement limit.
+- Stage 4 uses CASE-WHEN UPDATE batching, so each statement updates
+  hundreds of routes in one DB roundtrip.
+- Generated SQL files are git-ignored (worker-api/import_*.sql,
+  worker-api/tag_update_*.sql).
+- `tagging.d1_tag_sync` reads the full `route_tags` and `area_tags` payload
+  from the tagged JSON, covering both LLM-generated tags and rule/logic-based
+  tags produced by `route_area_tagging.py`. No distinction is made between
+  tag sources — all tags in the payload are synced to D1.
