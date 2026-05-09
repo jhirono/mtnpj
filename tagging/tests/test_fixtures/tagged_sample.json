@@ -1,0 +1,92 @@
+[
+    {
+        "area_id": "legacy-uuid-area-1",
+        "area_url": "https://www.mountainproject.com/area/106584089/meatwad",
+        "area_name": "Meatwad",
+        "area_gps": "http://maps.google.com/maps?q=32.3435,-111.1586&t=h&hl=en",
+        "area_description": "Test area for tag sync fixture.",
+        "area_getting_there": "Take the trail east.",
+        "area_tags": {
+            "Approach & Accessibility": ["approach_short"]
+        },
+        "area_hierarchy": [
+            {
+                "level": 1,
+                "area_hierarchy_name": "All Locations",
+                "area_hierarchy_url": "https://www.mountainproject.com/route-guide"
+            },
+            {
+                "level": 2,
+                "area_hierarchy_name": "Arizona",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/105708962/arizona"
+            },
+            {
+                "level": 3,
+                "area_hierarchy_name": "Southern Arizona",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/107447521/southern-arizona"
+            },
+            {
+                "level": 4,
+                "area_hierarchy_name": "Tucson Area Bouldering",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/106824861/tucson-area-bouldering"
+            },
+            {
+                "level": 5,
+                "area_hierarchy_name": "Panther Peak",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/106582735/panther-peak"
+            },
+            {
+                "level": 6,
+                "area_hierarchy_name": "Meatwad",
+                "area_hierarchy_url": "https://www.mountainproject.com/area/106584089/meatwad"
+            }
+        ],
+        "area_access_issues": "",
+        "area_page_views": "3664",
+        "area_shared_on": "Oct, 2009",
+        "area_comments": [],
+        "routes": [
+            {
+                "route_name": "Cyborg Sucker Punch",
+                "route_url": "https://www.mountainproject.com/route/106608542/cyborg-sucker-punch",
+                "route_id": "legacy-uuid-r1",
+                "route_grade": "V3-",
+                "route_type": "Boulder",
+                "route_pitches": 1,
+                "route_length_ft": 20,
+                "route_stars": 2.0,
+                "route_votes": 1,
+                "route_tags": {
+                    "Rope Length": ["rope_60m"],
+                    "Multi-Pitch, Anchors & Descent": ["single_pitch"]
+                }
+            },
+            {
+                "route_name": "O'Brien's Route",
+                "route_url": "https://www.mountainproject.com/route/100000001/o-briens-route",
+                "route_id": "100000001",
+                "route_grade": "5.10a",
+                "route_type": "Sport",
+                "route_pitches": 1,
+                "route_length_ft": 60,
+                "route_stars": 3.0,
+                "route_votes": 5,
+                "route_tags": {
+                    "Difficulty & Safety": ["sandbag", "O'Brien"]
+                }
+            },
+            {
+                "route_name": "No Tags Route",
+                "route_url": "https://www.mountainproject.com/route/100000002/no-tags",
+                "route_id": "100000002",
+                "route_grade": "5.8",
+                "route_type": "Trad",
+                "route_pitches": 1,
+                "route_length_ft": 50,
+                "route_stars": 1.0,
+                "route_votes": 2,
+                "route_tags": {}
+            }
+        ]
+    }
+]
