@@ -1,8 +1,8 @@
 import { formatRouteName } from '../utils/formatters'
-import type { Route } from '../types/route';
+import type { RouteApi } from '../api/types';
 
 interface RouteListProps {
-  routes: (Route & { area_name: string })[];
+  routes: RouteApi[];
 }
 
 export function RouteList({ routes }: RouteListProps) {
@@ -16,9 +16,8 @@ export function RouteList({ routes }: RouteListProps) {
           {route.route_lr !== undefined && (
             <p>Left-to-right order: {route.route_lr}</p>
           )}
-          {/* ... rest of route display ... */}
         </div>
       ))}
     </div>
   );
-} 
+}

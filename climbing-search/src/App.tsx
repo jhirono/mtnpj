@@ -2,390 +2,259 @@ import { useEffect, useState, useMemo, useRef, useCallback } from 'react'
 import { FilterPanel } from './components/FilterPanel'
 import { AreaSearch } from './components/AreaSearch'
 import { RouteCard } from './components/RouteCard'
-import type { Area } from './types/area'
-import type { Route } from './types/route'
+import OfflineIndicator from './components/OfflineIndicator'
+import InstallPrompt from './components/InstallPrompt'
 import type { RouteFilters, SortConfig } from './types/filters'
 import { GRADE_ORDER, normalizeGrade } from './types/filters'
-import { getDataUrl, indexFilePath } from './config'
+import { routeApi } from './api/routeApi'
+import type { RouteApi, ApiFilters, RouteType } from './api/types'
+import { parseRouteTypes } from './api/types'
 
-// Add these constants at the top of the file
-const EXCLUDED_TYPES = ['Aid', 'Boulder', 'Ice', 'Mixed', 'Snow'];
-const ROUTES_PER_PAGE = 100; // Number of routes to load at a time
+const ROUTES_PER_PAGE = 100;
 
-function hasExcludedType(routeType: string): boolean {
-  return EXCLUDED_TYPES.some(type => 
-    routeType.split(', ').some(rt => rt === type)
-  );
-}
+/**
+ * Map UI filter state -> API query params.
+ * If exactly one type is selected, send ?type=; otherwise omit and filter client-side.
+ */
+function filtersToApi(
+  uiFilters: RouteFilters,
+  _sort: SortConfig,
+  page: number
+): ApiFilters {
+  const params: ApiFilters = { page, limit: ROUTES_PER_PAGE };
 
-function matchesRouteType(routeType: string, selectedType: string): boolean {
-  const types = routeType.split(', ')
-    .filter(type => !type.startsWith('Grade'))  // Ignore Grade specifications
-    .map(type => type.trim());
-
-  switch (selectedType) {
-    case 'Trad':
-      return types.includes('Trad');
-    case 'Sport':
-      return types.includes('Sport');
-    default:
-      return false;
+  if (uiFilters.types.length === 1) {
+    params.type = uiFilters.types[0];
   }
+
+  if (uiFilters.grades.min) {
+    const idx = GRADE_ORDER.indexOf(normalizeGrade(uiFilters.grades.min));
+    if (idx !== -1) params.grade_min = idx;
+  }
+  if (uiFilters.grades.max) {
+    const idx = GRADE_ORDER.indexOf(normalizeGrade(uiFilters.grades.max));
+    if (idx !== -1) params.grade_max = idx;
+  }
+
+  return params;
 }
 
 function App() {
-  const [areas, setAreas] = useState<Area[]>([])
-  const [selectedAreaIds, setSelectedAreaIds] = useState<string[]>([])
-  const [selectedRoute, setSelectedRoute] = useState<Route | null>(null)
+  const [routes, setRoutes] = useState<RouteApi[]>([]);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedAreaId, setSelectedAreaId] = useState<string | null>(null);
+  const [selectedRoute, setSelectedRoute] = useState<RouteApi | null>(null);
   const [currentFilters, setCurrentFilters] = useState<RouteFilters>({
-    grades: { min: "", max: "" },  // Start with empty grade range
+    grades: { min: '', max: '' },
     types: [],
     tags: []
-  })
+  });
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     option: 'votes',
-    ascending: false  // Default to descending for stars (high to low)
-  })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [visibleRoutes, setVisibleRoutes] = useState<number>(ROUTES_PER_PAGE)
+    ascending: false
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [visibleRoutes, setVisibleRoutes] = useState<number>(ROUTES_PER_PAGE);
 
-  // Get routes from selected areas and apply filters
-  const filteredRoutes = useMemo(() => {
-    // If a specific route is selected, only include that one
-    if (selectedRoute) {
-      return [selectedRoute];
+  // Reset page to 1 whenever filters/sort/area changes
+  useEffect(() => {
+    setPage(1);
+    setRoutes([]);
+  }, [currentFilters, sortConfig, selectedAreaId]);
+
+  // Load routes from the Worker API
+  useEffect(() => {
+    if (selectedRoute) return; // Single-route view: skip API call
+
+    let cancelled = false;
+    setLoading(true);
+
+    const apiFilters: ApiFilters = filtersToApi(currentFilters, sortConfig, page);
+    if (selectedAreaId) {
+      apiFilters.area_id = selectedAreaId;
     }
-    
-    // Log selected areas for debugging
-    console.log('Filtering with selected areas:', selectedAreaIds);
-    
-    // First, get routes from selected areas
-    const routesFromSelectedAreas = selectedAreaIds.length === 0
-      ? areas.flatMap(area => area.routes)
-      : areas
-          .filter(area => {
-            // If no selections, include all areas
-            if (selectedAreaIds.length === 0) return true;
 
-            // Get the area's hierarchy path
-            const areaHierarchyPath = area.area_hierarchy
-              .map(h => h.area_hierarchy_name)
-              .join(' / ');
-            
-            // Check if any of the selected area IDs match the beginning of this area's path
-            // This ensures we include child areas of any selected parent area
-            const isMatch = selectedAreaIds.some(selectedId => 
-              areaHierarchyPath.startsWith(selectedId)
-            );
-            
-            // For debugging
-            if (isMatch) {
-              console.log(`Area matched: ${area.area_name} (${areaHierarchyPath})`);
-            }
-            
-            return isMatch;
-          })
-          .flatMap(area => area.routes);
-          
-    console.log(`Found ${routesFromSelectedAreas.length} routes from selected areas`);
+    routeApi.fetchRoutes(apiFilters)
+      .then(res => {
+        if (cancelled) return;
+        setRoutes(prev => page === 1 ? res.data : [...prev, ...res.data]);
+        setHasMore(res.data.length === res.limit);
+        setLoading(false);
+      })
+      .catch(err => {
+        if (cancelled) return;
+        setError(String(err));
+        setLoading(false);
+      });
 
-    // Pre-filter to remove excluded types
-    const preFilteredRoutes = routesFromSelectedAreas.filter(route => 
-      !hasExcludedType(route.route_type)
-    );
-    
-    console.log(`After filtering excluded types: ${preFilteredRoutes.length} routes`);
+    return () => { cancelled = true; };
+  }, [currentFilters, sortConfig, page, selectedAreaId, selectedRoute]);
 
-    // Then apply other filters
-    return preFilteredRoutes.filter(route => {
-      // Grade filter
-      const routeGradeNum = GRADE_ORDER.indexOf(normalizeGrade(route.route_grade));
-      
-      // Skip routes with unparseable grades
-      if (routeGradeNum === -1) {
-        console.log('Could not parse grade for:', route.route_name, route.route_grade);
-        return true;
+  // Client-side filtering: multi-type filter + tag filter (tags are JSON strings from D1)
+  const filteredRoutes = useMemo(() => {
+    if (selectedRoute) return [selectedRoute];
+
+    return routes.filter(route => {
+      // Multi-type filter: if 2+ types selected, filter client-side by is_* booleans
+      if (currentFilters.types.length >= 2) {
+        const routeTypes = parseRouteTypes(route);
+        const matchesType = currentFilters.types.some((t: RouteType) => routeTypes.includes(t));
+        if (!matchesType) return false;
       }
 
-      // Apply min grade filter if set
-      const minGrade = normalizeGrade(currentFilters.grades.min);
-      if (minGrade && GRADE_ORDER.indexOf(minGrade) !== -1) {
-        if (routeGradeNum < GRADE_ORDER.indexOf(minGrade)) {
-          return false;
-        }
-      }
-
-      // Apply max grade filter if set
-      const maxGrade = normalizeGrade(currentFilters.grades.max);
-      if (maxGrade && GRADE_ORDER.indexOf(maxGrade) !== -1) {
-        if (routeGradeNum > GRADE_ORDER.indexOf(maxGrade)) {
-          return false;
-        }
-      }
-
-      // Type filter with new matching logic
-      if (currentFilters.types.length > 0) {
-        const matchesType = currentFilters.types.some(type => 
-          matchesRouteType(route.route_type, type)
-        );
-        if (!matchesType) return false;  // Only return false here, continue checking other filters
-      }
-
-      // Tags filter
+      // Tag filter
       if (currentFilters.tags.length > 0) {
+        const parsedTags = (() => {
+          try { return JSON.parse(route.route_tags || '{}') as Record<string, string[]>; }
+          catch { return {} as Record<string, string[]>; }
+        })();
+
         return currentFilters.tags.every(({ category, selectedTags }) => {
-          const routeTagsForCategory = route.route_tags[category] || [];
-          
-          // Special handling for "Difficulty & Safety" category
-          if (category === "Difficulty & Safety") {
-            // Check for exclude_sandbag filter
-            if (selectedTags.includes("exclude_sandbag")) {
-              if (routeTagsForCategory.includes("sandbag")) {
-                return false;
-              }
-            }
-            
-            // Check for exclude_runout_dangerous filter
-            if (selectedTags.includes("exclude_runout_dangerous")) {
-              if (routeTagsForCategory.includes("runout_dangerous")) {
-                return false;
-              }
-            }
-            
-            // If we're only using exclusion filters, return true
-            if (selectedTags.every(tag => tag === "exclude_sandbag" || tag === "exclude_runout_dangerous")) {
-              return true;
-            }
+          const routeTagsForCategory: string[] = parsedTags[category] || [];
+
+          if (category === 'Difficulty & Safety') {
+            if (selectedTags.includes('exclude_sandbag') && routeTagsForCategory.includes('sandbag')) return false;
+            if (selectedTags.includes('exclude_runout_dangerous') && routeTagsForCategory.includes('runout_dangerous')) return false;
+            if (selectedTags.every(tag => tag === 'exclude_sandbag' || tag === 'exclude_runout_dangerous')) return true;
           }
 
-          // Special handling for "Multi-Pitch, Anchors & Descent" category
-          if (category === "Multi-Pitch, Anchors & Descent") {
-            // Remove special handling for single_pitch as it's now in the manual tags
-            // The tag will be present in the route tags directly
-          }
-          
-          // Filter out exclusion tags for normal handling
           const nonExclusionTags = selectedTags.filter(
-            tag => tag !== "exclude_sandbag" && tag !== "exclude_runout_dangerous"
+            tag => tag !== 'exclude_sandbag' && tag !== 'exclude_runout_dangerous'
           );
-          
-          // If there are no non-exclusion tags left, return true
-          if (nonExclusionTags.length === 0) {
-            return true;
-          }
-          
-          // Normal handling for other tags
+          if (nonExclusionTags.length === 0) return true;
+
           return nonExclusionTags.some(tag => routeTagsForCategory.includes(tag));
         });
       }
 
       return true;
     });
-  }, [areas, selectedAreaIds, currentFilters, selectedRoute]);
+  }, [routes, currentFilters, selectedRoute]);
 
   // Sort routes
   const sortedRoutes = useMemo(() => {
-    // If we have a selected route, don't sort (return as is)
-    if (selectedRoute) {
-      return filteredRoutes;
-    }
+    if (selectedRoute) return filteredRoutes;
 
     return [...filteredRoutes].sort((a, b) => {
-      // Default sort directions without needing the checkbox:
-      // grade: ascending (easy to hard) when unchecked
-      // stars: descending (high to low) when unchecked
-      // votes: descending (high to low) when unchecked
-      // left_to_right: ascending (left to right) when unchecked
       const multiplier = sortConfig.option === 'grade' || sortConfig.option === 'left_to_right'
-        ? (sortConfig.ascending ? -1 : 1)    // For grade and left_to_right
-        : (sortConfig.ascending ? 1 : -1);   // For stars and votes
+        ? (sortConfig.ascending ? -1 : 1)
+        : (sortConfig.ascending ? 1 : -1);
 
       switch (sortConfig.option) {
         case 'grade':
           return multiplier * (
-            GRADE_ORDER.indexOf(normalizeGrade(a.route_grade)) - 
-            GRADE_ORDER.indexOf(normalizeGrade(b.route_grade))
-          )
-        case 'stars':
-          const aStars = a.route_stars || 0
-          const bStars = b.route_stars || 0
-          return -multiplier * (bStars - aStars)  // Note the negative here
-        case 'votes':
-          const aVotes = a.route_votes || 0
-          const bVotes = b.route_votes || 0
-          return -multiplier * (bVotes - aVotes)  // Note the negative here
+            GRADE_ORDER.indexOf(normalizeGrade(a.route_grade ?? '')) -
+            GRADE_ORDER.indexOf(normalizeGrade(b.route_grade ?? ''))
+          );
+        case 'stars': {
+          const aStars = a.route_stars ?? 0;
+          const bStars = b.route_stars ?? 0;
+          return -multiplier * (bStars - aStars);
+        }
+        case 'votes': {
+          const aVotes = a.route_votes ?? 0;
+          const bVotes = b.route_votes ?? 0;
+          return -multiplier * (bVotes - aVotes);
+        }
         case 'left_to_right':
           if (a.area_name === b.area_name) {
-            const aLr = typeof a.route_lr === 'string' ? parseInt(a.route_lr, 10) : (a.route_lr || 0)
-            const bLr = typeof b.route_lr === 'string' ? parseInt(b.route_lr, 10) : (b.route_lr || 0)
-            return multiplier * (aLr - bLr)
+            const aLr = a.route_lr ?? 0;
+            const bLr = b.route_lr ?? 0;
+            return multiplier * (aLr - bLr);
           }
-          return 0
+          return 0;
         default:
-          return 0
+          return 0;
       }
-    })
-  }, [filteredRoutes, sortConfig, selectedRoute])
+    });
+  }, [filteredRoutes, sortConfig, selectedRoute]);
 
-  // Create a sliced version of sorted routes for display
   const displayedRoutes = useMemo(() => {
     return sortedRoutes.slice(0, visibleRoutes);
   }, [sortedRoutes, visibleRoutes]);
 
-  // Observer for infinite scrolling
   const observer = useRef<IntersectionObserver | null>(null);
-  
-  // Set up intersection observer for infinite scrolling
+
   const lastRouteElementRef = useCallback((node: HTMLDivElement | null) => {
     if (loading) return;
-    
     if (observer.current) observer.current.disconnect();
-    
+
     observer.current = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && displayedRoutes.length < sortedRoutes.length) {
-        // Load more routes when we reach the bottom
-        setVisibleRoutes(prev => Math.min(prev + ROUTES_PER_PAGE, sortedRoutes.length));
+      if (entries[0].isIntersecting) {
+        if (displayedRoutes.length < sortedRoutes.length) {
+          // Load more from the local sorted array
+          setVisibleRoutes(prev => Math.min(prev + ROUTES_PER_PAGE, sortedRoutes.length));
+        } else if (hasMore) {
+          // Load next page from API
+          setPage(prev => prev + 1);
+        }
       }
     });
-    
-    if (node) observer.current.observe(node);
-  }, [loading, displayedRoutes.length, sortedRoutes.length]);
 
-  // Reset visible routes when filters or sort changes
+    if (node) observer.current.observe(node);
+  }, [loading, displayedRoutes.length, sortedRoutes.length, hasMore]);
+
+  // Reset visible routes when filters/sort changes
   useEffect(() => {
     setVisibleRoutes(ROUTES_PER_PAGE);
-  }, [currentFilters, sortConfig, selectedAreaIds, selectedRoute]);
-
-  useEffect(() => {
-    const loadAreas = async () => {
-      try {
-        // First, get the list of data files from index.json
-        const indexResponse = await fetch(indexFilePath);
-        if (!indexResponse.ok) {
-          throw new Error(`Failed to load index.json: ${indexResponse.status} ${indexResponse.statusText}`);
-        }
-        
-        const dataFiles = await indexResponse.json();
-        if (!Array.isArray(dataFiles) || dataFiles.length === 0) {
-          throw new Error('No data files found in index.json');
-        }
-        
-        const loadedAreas: Area[] = [];
-        
-        for (const fileName of dataFiles) {
-          const filePath = getDataUrl(fileName);
-          try {
-            const response = await fetch(filePath);
-            if (!response.ok) {
-              console.error(`Failed to load ${filePath}: ${response.status} ${response.statusText}`);
-              continue;
-            }
-            const data = await response.json();
-            
-            if (Array.isArray(data)) {
-              const areasWithContext = data.map(area => ({
-                ...area,
-                routes: area.routes.map((route: Route) => ({
-                  ...route,
-                  area_name: area.area_name,
-                  area_hierarchy: area.area_hierarchy
-                }))
-              }));
-              loadedAreas.push(...areasWithContext);
-            } else {
-              loadedAreas.push({
-                ...data,
-                routes: data.routes.map((route: Route) => ({
-                  ...route,
-                  area_name: data.area_name,
-                  area_hierarchy: data.area_hierarchy
-                }))
-              });
-            }
-          } catch (fileErr) {
-            console.error(`Error loading ${filePath}:`, fileErr);
-          }
-        }
-
-        if (loadedAreas.length === 0) {
-          throw new Error('No areas could be loaded');
-        }
-
-        setAreas(loadedAreas);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error loading data:', err);
-        setError('Error loading area data');
-        setLoading(false);
-      }
-    };
-
-    loadAreas();
-  }, []);
+  }, [currentFilters, sortConfig, selectedAreaId, selectedRoute]);
 
   const handleFilterChange = (filters: RouteFilters) => {
-    setCurrentFilters(filters)
-  }
+    setCurrentFilters(filters);
+  };
 
-  // Handle area selection in the App component
-  const handleAreaSelect = (selectedIds: string[]) => {
-    console.log('App received area selection update:', selectedIds);
-    // Clear any selected route when area selection changes
+  const handleAreaSelect = (areaId: string | null) => {
     setSelectedRoute(null);
-    // Update selected area IDs with the new selection
-    setSelectedAreaIds(selectedIds);
-  }
+    setSelectedAreaId(areaId);
+  };
 
-  // Handle when a route is selected from search
-  const handleRouteSelect = (route: Route) => {
+  const handleRouteSelect = (route: RouteApi) => {
     setSelectedRoute(route);
-    // Clear any area selections when viewing a specific route
-    setSelectedAreaIds([]);
-  }
+    setSelectedAreaId(null);
+  };
 
-  // Function to clear selected route
   const clearSelectedRoute = () => {
     setSelectedRoute(null);
-  }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-gray-900 py-8">
       <div className="max-w-7xl mx-auto px-4">
+        <OfflineIndicator />
+        <InstallPrompt />
+
         <header className="py-4 text-center">
-          {/* Responsive header layout */}
           <div className="flex flex-col items-center">
-            {/* Title row */}
             <h1 className="text-xl font-bold mb-2">
               Awesome Climbing Search
             </h1>
-            
-            {/* Badges row - will stack on mobile, side by side on desktop */}
+
             <div className="flex items-center gap-2 flex-wrap justify-center">
-              <a 
-                href="/docs/README.html" 
-                target="_blank" 
+              <a
+                href="/docs/README.html"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800"
               >
-                <span className="mr-1">ⓘ</span>
+                <span className="mr-1">i</span>
                 INFO
               </a>
             </div>
           </div>
-          
+
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
             {sortedRoutes.length} routes found (showing {displayedRoutes.length})
           </p>
-          
-          {/* Show a clear button when a route is selected */}
+
           {selectedRoute && (
             <div className="mt-2">
-              <button 
+              <button
                 onClick={clearSelectedRoute}
                 className="text-sm px-3 py-1 bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300"
               >
-                ← Back to all routes
+                Back to all routes
               </button>
             </div>
           )}
@@ -394,8 +263,7 @@ function App() {
         <div className="flex flex-col md:flex-row gap-4">
           <div className="md:w-72 flex-shrink-0">
             <div className="sticky top-4">
-              <AreaSearch 
-                areas={areas}
+              <AreaSearch
                 onAreaSelect={handleAreaSelect}
                 onRouteSelect={handleRouteSelect}
               />
@@ -404,7 +272,6 @@ function App() {
                 onChange={handleFilterChange}
                 sortConfig={sortConfig}
                 onSortChange={setSortConfig}
-                areas={areas}
               />
             </div>
           </div>
@@ -416,7 +283,7 @@ function App() {
                   {error}
                 </div>
               </div>
-            ) : loading ? (
+            ) : loading && routes.length === 0 ? (
               <div className="h-[50vh] flex items-center justify-center">
                 <div className="text-center text-gray-500 text-sm">
                   Loading...
@@ -426,28 +293,28 @@ function App() {
               <div className="space-y-3">
                 {displayedRoutes.map((route, index) => (
                   <div key={route.route_url} ref={index === displayedRoutes.length - 1 ? lastRouteElementRef : undefined}>
-                    <RouteCard
-                      route={route}
-                    />
+                    <RouteCard route={route} />
                   </div>
                 ))}
-                {displayedRoutes.length < sortedRoutes.length && (
+                {(displayedRoutes.length < sortedRoutes.length || hasMore) && (
                   <div className="py-4 text-center text-gray-500">
-                    Scroll for more routes...
+                    {loading ? 'Loading more...' : 'Scroll for more routes...'}
                   </div>
                 )}
               </div>
             ) : (
               <div className="h-[50vh] flex items-center justify-center">
                 <div className="text-center text-gray-500 text-sm">
-                  {selectedAreaIds.length === 0 && !selectedRoute ? (
+                  {!selectedAreaId && !selectedRoute ? (
                     <div>
                       <p className="mb-2 font-medium">No areas selected</p>
                       <p>Start by searching for an area or route in the sidebar</p>
-                      <p className="mt-2">↖ Enter a location or route name and click on a result</p>
+                      <p className="mt-2">Enter a location or route name and click on a result</p>
                     </div>
+                  ) : loading ? (
+                    'Loading...'
                   ) : (
-                    "No routes found matching your criteria"
+                    'No routes found matching your criteria'
                   )}
                 </div>
               </div>
@@ -456,7 +323,7 @@ function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default App

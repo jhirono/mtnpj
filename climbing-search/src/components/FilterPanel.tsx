@@ -1,95 +1,22 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import type { RouteFilters, GradeRange, SortConfig, SortOption } from '../types/filters'
-import type { Area } from '../types/area'
-import { GRADE_ORDER, SIMPLE_GRADES } from '../types/filters'
+import { GRADE_ORDER, SIMPLE_GRADES, ROUTE_TYPE_LABELS } from '../types/filters'
+import { ROUTE_TYPES } from '../api/types'
 
-// Add type declaration for the Buy Me a Coffee button
-declare global {
-  interface Window {
-    createBMCButton?: (options: {
-      target: string;
-      data: Record<string, string>;
-    }) => void;
-  }
-}
 
 interface FilterPanelProps {
   filters: RouteFilters;
   onChange: (filters: RouteFilters) => void;
   sortConfig: SortConfig;
   onSortChange: (sort: SortConfig) => void;
-  areas: Area[];
 }
 
-export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas }: FilterPanelProps) {
+export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: FilterPanelProps) {
   // Initialize with categories expanded based on screen size
   const [expandedCategories, setExpandedCategories] = useState<string[]>([])
-  const [availableTags, setAvailableTags] = useState<Record<string, Set<string>>>({})
+  const [availableTags] = useState<Record<string, Set<string>>>({})
   // Add state for grade filter enabled
   const [gradeFilterEnabled, setGradeFilterEnabled] = useState(false);
-
-  // Set expanded categories based on screen size
-  useEffect(() => {
-    const handleResize = () => {
-      const isMobile = window.innerWidth < 768; // Standard mobile breakpoint
-      
-      if (isMobile) {
-        // On mobile, collapse all categories by default to save space
-        setExpandedCategories([]);
-      } else {
-        // On desktop, expand common categories
-        setExpandedCategories([
-          'grades',
-          'Crowds & Popularity',
-          'Difficulty & Safety',
-          'Multi-Pitch, Anchors & Descent'
-        ]);
-      }
-    };
-    
-    // Set initial state
-    handleResize();
-    
-    // Add event listener for window resize
-    window.addEventListener('resize', handleResize);
-    
-    // Clean up
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // First, collect available tags
-  useEffect(() => {
-    const tags: Record<string, Set<string>> = {}
-    
-    // Debug first route's tags
-    console.log('First route tags:', areas[0]?.routes[0]?.route_tags)
-    
-    areas.forEach(area => {
-      area.routes.forEach(route => {
-        // Debug log for these specific categories
-        console.log('Route:', route.route_name)
-        console.log('Difficulty tags:', route.route_tags["Difficulty & Safety"])
-        console.log('Multi-pitch tags:', route.route_tags["Multi-Pitch, Anchors & Descent"])
-        
-        Object.entries(route.route_tags).forEach(([category, tagList]) => {
-          if (!tags[category]) {
-            tags[category] = new Set()
-          }
-          // Each tag item is a string
-          tagList.forEach(tagItem => {
-            console.log('Adding tag:', category, tagItem)
-            tags[category].add(tagItem)
-          })
-        })
-      })
-    })
-
-    // Log the specific categories we're interested in
-    console.log('Available Difficulty tags:', tags["Difficulty & Safety"])
-    console.log('Available Multi-pitch tags:', tags["Multi-Pitch, Anchors & Descent"])
-    
-    setAvailableTags(tags)
-  }, [areas])
 
   // Define tag categories based on availableTags
   const tagCategories = useMemo(() => ({
@@ -210,53 +137,12 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
     )
   }
 
-  const toggleType = (type: 'Trad' | 'Sport') => {
-    const newTypes = filters.types.includes(type)
-      ? filters.types.filter(t => t !== type)
-      : [...filters.types, type]
-    
-    onChange({
-      ...filters,
-      types: newTypes
-    })
-  }
-
   const updateGradeRange = (range: GradeRange) => {
     onChange({
       ...filters,
       grades: range
     })
   }
-
-  // Remove the Buy Me a Book button initialization
-  useEffect(() => {
-    // Check if the BMC script is loaded
-    if (typeof window !== 'undefined' && window.document && document.getElementById('bmc-container')) {
-      // If the BMC button already exists, remove it first to prevent duplicates
-      const existingButton = document.querySelector('#bmc-container .bmc-button');
-      if (existingButton) {
-        existingButton.remove();
-      }
-      
-      // Create the button if the BMC script is loaded
-      if (typeof window.createBMCButton === 'function') {
-        window.createBMCButton({
-          target: '#bmc-container',
-          data: {
-            name: 'bmc-button',
-            slug: 'bonvi',
-            color: '#5F7FFF',
-            emoji: '📖',
-            font: 'Cookie',
-            text: 'Buy me a book',
-            'outline-color': '#000000',
-            'font-color': '#ffffff',
-            'coffee-color': '#FFDD00'
-          }
-        });
-      }
-    }
-  }, []);
 
   return (
     <div className="space-y-2.5 p-2.5 bg-white dark:bg-gray-800 rounded-lg shadow text-sm overflow-y-auto max-h-[calc(100vh-120px)]">
@@ -292,30 +178,26 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange, areas
         </div>
       </div>
 
-      {/* Route Type - In one row */}
+      {/* Route Type - All 9 types */}
       <div className="filter-group">
-        <div className="flex items-center">
-          <h3 className="font-medium text-gray-900 dark:text-gray-100 mr-3">Type</h3>
-          <div className="flex gap-3 text-gray-700 dark:text-gray-300">
-            <label className="flex items-center">
+        <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-1">Type</h3>
+        <div className="flex flex-wrap gap-x-3 gap-y-1 text-gray-700 dark:text-gray-300">
+          {ROUTE_TYPES.map(type => (
+            <label key={type} className="flex items-center gap-1.5 text-sm">
               <input
                 type="checkbox"
-                checked={filters.types.includes('Trad')}
-                onChange={() => toggleType('Trad')}
-                className="mr-1.5"
+                checked={filters.types.includes(type)}
+                onChange={(e) => {
+                  const next = e.target.checked
+                    ? [...filters.types, type]
+                    : filters.types.filter(t => t !== type);
+                  onChange({ ...filters, types: next });
+                }}
+                className="mr-0.5"
               />
-              Trad
+              {ROUTE_TYPE_LABELS[type]}
             </label>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={filters.types.includes('Sport')}
-                onChange={() => toggleType('Sport')}
-                className="mr-1.5"
-              />
-              Sport
-            </label>
-          </div>
+          ))}
         </div>
       </div>
 
