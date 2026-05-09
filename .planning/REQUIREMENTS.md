@@ -7,26 +7,22 @@
 
 ### Data Import
 
-- [ ] **IMPORT-01**: All 4 state pre-tagged JSON files (AZ, CO, OR, UT) imported into D1 without data loss
+- [ ] **IMPORT-01**: All 5 state pre-tagged JSON files (AZ, CA, CO, OR, UT) imported into D1 without data loss
 - [ ] **IMPORT-02**: Post-import validation passes — row counts match source, no duplicate route_ids, required fields populated
 
-### Scraper Validation
-
-- [ ] **SCRAPE-01**: Yosemite NP scraped end-to-end using existing scraper pipeline
-- [ ] **SCRAPE-02**: Yosemite NP scraped data imported into D1 and queryable via API
-
-### Tick Comments
+### Tick Comments (Yosemite NP — Selenium)
 
 - [ ] **TICK-01**: Selenium login session established and stable for MountainProject authenticated pages
-- [ ] **TICK-02**: Tick comments scraped for routes in at least one test area (Yosemite NP)
-- [ ] **TICK-03**: Tick comments stored in D1 and joinable to routes
+- [ ] **TICK-02**: Tick comments scraped for Yosemite NP routes (already in D1 from CA import — no route re-import)
+- [ ] **TICK-03**: Tick comments stored in D1 `comments` table and joinable to routes via route_id
 
 ### Tagging Quality
 
-- [ ] **TAG-01**: Tagging pipeline upgraded to use a high-ROI LLM (e.g. Claude Sonnet or GPT-4o-mini)
-- [ ] **TAG-02**: LLM prompts improved to leverage tick comment data as additional context
-- [ ] **TAG-03**: Tag accuracy audited on a sample before and after prompt improvements
-- [ ] **TAG-04**: Updated tagging pipeline re-run on all newly imported data
+- [ ] **TAG-01**: Grok 4.3 and GPT-5.5 Instant benchmarked on a sample set — winner selected based on tag accuracy vs cost
+- [ ] **TAG-02**: Tagging pipeline migrated to winning model
+- [ ] **TAG-03**: LLM prompts improved to leverage tick comment data as additional context
+- [ ] **TAG-04**: Tag accuracy audited on a sample before and after prompt improvements
+- [ ] **TAG-05**: Updated tagging pipeline re-run on all newly imported data
 
 ## Future Requirements
 
@@ -54,8 +50,6 @@
 |-------------|-------|--------|
 | IMPORT-01 | Phase 2 | Pending |
 | IMPORT-02 | Phase 2 | Pending |
-| SCRAPE-01 | Phase 3 | Pending |
-| SCRAPE-02 | Phase 3 | Pending |
 | TICK-01 | Phase 3 | Pending |
 | TICK-02 | Phase 3 | Pending |
 | TICK-03 | Phase 3 | Pending |
@@ -63,10 +57,11 @@
 | TAG-02 | Phase 4 | Pending |
 | TAG-03 | Phase 4 | Pending |
 | TAG-04 | Phase 4 | Pending |
+| TAG-05 | Phase 4 | Pending |
 
 **Coverage:**
-- v1.1 requirements: 11 total
-- Mapped to phases: 11
+- v1.1 requirements: 10 total
+- Mapped to phases: 10
 - Unmapped: 0 ✓
 
 ---
