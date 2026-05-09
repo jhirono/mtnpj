@@ -1,5 +1,15 @@
 # Mountain Project Climbing Search
 
+## Current Milestone: v1.1 Coverage & Tagging
+
+**Goal:** Import all pre-scraped state data into D1, validate the scraper against Yosemite NP, and improve tag quality and coverage.
+
+**Target features:**
+- Import AZ, CO, OR, UT tagged JSON into D1 (4 new states, ~235MB of pre-tagged data)
+- Scrape Yosemite NP as a real-world scraper validation run
+- Improve tag accuracy (better LLM prompts + logic rules)
+- Add new tag categories to the tagging pipeline
+
 ## What This Is
 
 A climbing route search and discovery app that scrapes MountainProject.com and provides a fast, filterable UI for finding routes across US regions — covering all 9 route types (sport, trad, aid, ice, alpine, mixed, TR, boulder, snow).
@@ -31,10 +41,10 @@ Fast, comprehensive climbing route discovery across all route types and area hie
 
 ### Active
 
-- [ ] More states/regions scraped and imported (currently: Nevada, Washington)
-- [ ] Full-text search exposed in UI
-- [ ] Tick comments and route comments (requires Selenium login session)
-- [ ] Grade-based sorting and filtering (numeric sort for YDS grades)
+- [ ] Import AZ, CO, OR, UT pre-tagged JSON into D1
+- [ ] Scrape Yosemite NP as scraper validation run
+- [ ] Improve tag accuracy (LLM prompts + logic rules)
+- [ ] Add new tag categories to tagging pipeline
 
 ### Out of Scope
 
@@ -65,5 +75,22 @@ Deployed: climbing-search.pages.dev | climbing-search-api.jumpei-hirono.workers.
 - D1 FK enforcement ON by default — must PRAGMA foreign_keys=0 for bulk imports
 - MP scraping: concurrency=3 to avoid rate limiting; --no-selenium for CI/smoke tests
 
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd-transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd-complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
+
 ---
-*Last updated: 2026-05-09 after v1.0 milestone*
+*Last updated: 2026-05-09 after v1.1 milestone start*

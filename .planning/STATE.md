@@ -1,19 +1,26 @@
 ---
-status: milestone_complete
-phase: 01-refactor
+status: planning
+phase: ~
 last_activity: 2026-05-09
-milestone: v1.0
+milestone: v1.1
 ---
 
 # Project State
 
 **Project:** Mountain Project Climbing Search
-**Milestone:** v1.0 Full-Stack Refactor — SHIPPED 2026-05-09
-**Current Focus:** Planning next milestone
+**Milestone:** v1.1 Coverage & Tagging — PLANNING
+**Current Focus:** Defining requirements
+
+## Current Position
+
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-05-09 — Milestone v1.1 started
 
 ## Project Reference
 
 See: .planning/PROJECT.md (updated 2026-05-09)
 
 **Core value:** Fast, comprehensive climbing route discovery across all route types, zero-cost edge stack
-**Current focus:** Planning v1.1 — more regions, UI search, tick comments
+**Current focus:** v1.1 — Coverage expansion + tagging improvements
