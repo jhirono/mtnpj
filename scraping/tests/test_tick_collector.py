@@ -62,7 +62,6 @@ def test_parse_stats_empty_on_noauth():
 # ---------------------------------------------------------------------------
 # TICK-01: login_mp function signature (RED — will fail until Plan 02 lands)
 # ---------------------------------------------------------------------------
-@pytest.mark.xfail(reason="login_mp not yet implemented in scrape_mtnpj_final")
 def test_login_mp_signature():
     """login_mp(driver, email, password) must exist and return bool."""
     from scraping.scrape_mtnpj_final import login_mp

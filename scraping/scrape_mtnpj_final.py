@@ -290,6 +290,48 @@ def cleanup_driver():
             pass
         global_driver = None
 
+def login_mp(driver, email: str, password: str) -> bool:
+    """
+    Log in to Mountain Project via Selenium full-page login.
+
+    Navigates to /user/login (not the modal overlay on stats pages — full-page
+    login is more reliable with headless Chrome).
+    Returns True on successful authentication, False on failure.
+
+    Security: never logs email or password — only logs success/failure status.
+    """
+    LOGIN_URL = "https://www.mountainproject.com/user/login"
+    try:
+        driver.get(LOGIN_URL)
+        time.sleep(2)
+
+        email_field = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "email"))
+        )
+        email_field.clear()
+        email_field.send_keys(email)
+
+        pw_field = driver.find_element(By.NAME, "password")
+        pw_field.clear()
+        pw_field.send_keys(password)
+
+        submit = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
+        submit.click()
+        time.sleep(3)
+
+        # MP redirects away from /user/login on successful authentication.
+        # If URL still contains 'login', credentials were rejected.
+        if "login" not in driver.current_url.lower():
+            logging.info("Login succeeded")
+            return True
+        else:
+            logging.warning("Login failed: still on login page after submit")
+            return False
+
+    except Exception as e:
+        logging.error(f"Login failed: {e}")
+        return False
+
 # ==================== Selenium Dynamic Content Scrapers ====================
 
 def get_comments(page_url, user_email=None, user_pass=None, cookie_file="cookies.json"):
