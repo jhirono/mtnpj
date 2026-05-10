@@ -42,7 +42,7 @@ Full archive: `.planning/milestones/v1.0-ROADMAP.md`
 **Plans:** 4 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Schema migration (comments CHECK constraint + 'tick') + test scaffold
+- [x] 02-01-PLAN.md — Schema migration (comments CHECK constraint + 'tick') + test scaffold
 - [ ] 02-02-PLAN.md — login_mp() implementation + parse_stats() updated to return list[dict]
 - [ ] 02-03-PLAN.md — collect_ticks.py standalone tick collection orchestrator
 - [ ] 02-04-PLAN.md — El Cap validation run + go/no-go gate + full Yosemite NP scrape/import/ticks

@@ -1,6 +1,6 @@
 ---
-status: planning
-phase: ~
+status: executing
+phase: "02"
 last_activity: 2026-05-09
 milestone: v1.1
 ---
@@ -8,15 +8,15 @@ milestone: v1.1
 # Project State
 
 **Project:** Mountain Project Climbing Search
-**Milestone:** v1.1 Coverage & Tagging — PLANNING
-**Current Focus:** Defining requirements
+**Milestone:** v1.1 Coverage & Tagging — EXECUTING
+**Current Focus:** Phase 02 — Executing (Wave 1 of 4)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-05-09 — Milestone v1.1 started
+Phase: 02 Tick Comments — Executing
+Plan: 4 plans in 4 waves (1/4 complete)
+Status: Executing Wave 2 — login_mp + parse_stats list[dict]
+Last activity: 2026-05-09 — 02-01 complete (schema migration + test scaffold)
 
 ## Project Reference
 
