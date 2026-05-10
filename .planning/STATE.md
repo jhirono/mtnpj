@@ -14,9 +14,9 @@ milestone: v1.1
 ## Current Position
 
 Phase: 02 Tick Comments — Executing
-Plan: 4 plans in 4 waves (1/4 complete)
-Status: Executing Wave 2 — login_mp + parse_stats list[dict]
-Last activity: 2026-05-09 — 02-01 complete (schema migration + test scaffold)
+Plan: 4 plans in 4 waves (2/4 complete)
+Status: Executing Wave 3 — collect_ticks.py orchestrator
+Last activity: 2026-05-09 — 02-02 complete (login_mp + parse_stats list[dict])
 
 ## Project Reference
 
