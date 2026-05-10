@@ -23,22 +23,12 @@ LOG_FILE = "tagging_validation.log"  # Log file for tag validation
 
 # Define allowed tags for each category
 ALLOWED_TAGS = {
-    "Weather & Conditions": {"sun_am", "sun_pm", "tree_filtered_sun_am", "tree_filtered_sun_pm", 
-                           "sunny_all_day", "shady_all_day", "dries_fast", "dry_in_rain", 
-                           "seepage_problem", "windy_exposed"},
-    "Access & Restrictions": {"seasonal_closure"},  # Note: seasonal_closure_* variants are handled specially in validate_tags
-    "Crowds & Popularity": {"low_crowds", "classic_route", "polished_rock", "new_routes"},
-    "Difficulty & Safety": {"stick_clip", "loose_rock", "rope_drag_warning", "runout_dangerous", 
-                           "sandbag", "first_in_grade"},
-    "Approach & Accessibility": {"approach_none", "approach_short", "approach_moderate", 
-                                "approach_long"},
-    "Multi-Pitch, Anchors & Descent": {"single_pitch", "short_multipitch", "long_multipitch", "bolted_anchor", "walk_off", "tricky_rappel"},
-    "Route Style & Angle": {"slab", "vertical", "gentle_overhang", "steep_roof", 
-                           "tower_climbing", "sporty_trad"},
+    "Route Style": {"slab", "vertical", "gentle_overhang", "steep_roof", "tower_climbing", "sporty_trad"},
     "Crack Climbing": {"finger", "thin_hand", "wide_hand", "offwidth", "chimney", "layback"},
-    "Hold & Movement Type": {"reachy", "dynamic_moves", "pumpy_sustained", "technical_moves", 
-                            "powerful_bouldery", "pockets_holes", "small_edges", "slopey_holds"},
-    "Rope Length": {"rope_60m", "rope_70m", "rope_80m"}
+    "Movement": {"reachy", "dynamic_moves", "pumpy_sustained", "technical_moves", "powerful_bouldery", "pockets_holes", "small_edges", "slopey_holds"},
+    "Logistics": {"single_pitch", "multi_pitch", "bolted_anchor", "walk_off", "tricky_rappel", "rope_60m", "rope_70m", "rope_80m"},
+    "Safety": {"stick_clip", "loose_rock", "rope_drag_warning", "runout_dangerous", "seasonal_closure"},
+    "Quality": {"classic_route"},
 }
 
 def log_message(message: str):
@@ -65,7 +55,7 @@ def validate_tags(tags_dict: Dict[str, List[str]]) -> Dict[str, List[str]]:
         valid_category_tags = []
         for tag in tags:
             # Special handling for seasonal closure tags
-            if category == "Access & Restrictions" and tag.startswith("seasonal_closure_"):
+            if category == "Safety" and tag.startswith("seasonal_closure_"):
                 valid_category_tags.append(tag)
                 continue
                 
@@ -107,39 +97,31 @@ def is_lower(suggested, official):
 
 def manual_tagging(data):
     """Manual tagging logic implementation"""
-    month_dict = {"Jan":1, "Feb":2, "Mar":3, "Apr":4, "May":5, "Jun":6,
-                  "Jul":7, "Aug":8, "Sep":9, "Oct":10, "Nov":11, "Dec":12}
-    
     for area in data:
         area["manual_tags"] = {}
         for route in area.get("routes", []):
             manual_tags = {}
 
-            # Rule 1: Rope Length
+            # Rule 1: Logistics - rope length tags
             if route.get("route_pitches", 1) == 1 and route.get("route_length_meter") is not None:
                 length = route["route_length_meter"]
                 if length <= 30:
-                    manual_tags.setdefault("Rope Length", []).append("rope_60m")
+                    manual_tags.setdefault("Logistics", []).append("rope_60m")
                 elif 30 < length <= 35:
-                    manual_tags.setdefault("Rope Length", []).append("rope_70m")
+                    manual_tags.setdefault("Logistics", []).append("rope_70m")
                 elif 35 < length <= 40:
-                    manual_tags.setdefault("Rope Length", []).append("rope_80m")
+                    manual_tags.setdefault("Logistics", []).append("rope_80m")
 
-            # Rule 2: Multipitch Tagging
+            # Rule 2: Multipitch Tagging (D-16)
             if route.get("route_pitches", 1) > 1:
-                pitches = route["route_pitches"]
-                if pitches < 5:
-                    manual_tags.setdefault("Multi-Pitch, Anchors & Descent", []).append("short_multipitch")
-                else:
-                    manual_tags.setdefault("Multi-Pitch, Anchors & Descent", []).append("long_multipitch")
+                manual_tags.setdefault("Logistics", []).append("multi_pitch")
             else:
-                # Add single_pitch tag for routes with 1 pitch
-                manual_tags.setdefault("Multi-Pitch, Anchors & Descent", []).append("single_pitch")
+                manual_tags.setdefault("Logistics", []).append("single_pitch")
 
             # Rule 3: Protection Grading
             pg = route.get("route_protection_grading", "").upper()
             if pg in ["PG13", "R", "X"]:
-                manual_tags.setdefault("Difficulty & Safety", []).append("runout_dangerous")
+                manual_tags.setdefault("Safety", []).append("runout_dangerous")
 
             # Rule 4: Rating Analysis
             if route.get("route_votes", 0) >= 5:
@@ -149,25 +131,13 @@ def manual_tagging(data):
                 higher = sum(count for key, count in suggested.items() if key != official and is_higher(key, official))
                 lower = sum(count for key, count in suggested.items() if key != official and is_lower(key, official))
                 if higher > same and higher > lower:
-                    manual_tags.setdefault("Difficulty & Safety", []).append("sandbag")
+                    manual_tags.setdefault("Safety", []).append("sandbag")
                 elif lower > same and lower > higher:
-                    manual_tags.setdefault("Difficulty & Safety", []).append("first_in_grade")
+                    manual_tags.setdefault("Safety", []).append("first_in_grade")
 
             # Rule 5: Classic Route
             if route.get("route_stars", 0) >= 3 and route.get("route_votes", 0) >= 5:
-                manual_tags.setdefault("Crowds & Popularity", []).append("classic_route")
-
-            # Rule 6: New Routes
-            shared = route.get("route_shared_on", "").strip()
-            if shared:
-                try:
-                    month_abbr, year_str = shared.split(",")
-                    year = int(year_str.strip())
-                    month = month_dict.get(month_abbr.strip(), 0)
-                    if (year > 2022) or (year == 2022 and month > 1):
-                        manual_tags.setdefault("Crowds & Popularity", []).append("new_routes")
-                except Exception:
-                    pass
+                manual_tags.setdefault("Quality", []).append("classic_route")
 
             route["manual_tags"] = manual_tags
     return data
@@ -495,12 +465,12 @@ def process_stick_clip_tag(data):
     """Ensure stick_clip tag is only applied to sport routes"""
     for area in data:
         for route in area.get("routes", []):
-            if "route_tags" in route and "Difficulty & Safety" in route["route_tags"]:
+            if "route_tags" in route and "Safety" in route["route_tags"]:
                 # Check if route is not a sport route
-                if "stick_clip" in route["route_tags"]["Difficulty & Safety"]:
+                if "stick_clip" in route["route_tags"]["Safety"]:
                     if "Sport" not in route.get("route_type", ""):
                         # Remove stick_clip tag from non-sport routes
-                        route["route_tags"]["Difficulty & Safety"].remove("stick_clip")
+                        route["route_tags"]["Safety"].remove("stick_clip")
                         log_message(f"Removed stick_clip tag from non-sport route: {route.get('route_name')}")
     
     return data
@@ -636,8 +606,8 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
                         for manual_category, tags in manual_tags.items():
                             llm_category = map_category(manual_category)
                             
-                            # Special handling for Rope Length tags based on route_pitches
-                            if llm_category == "Rope Length":
+                            # Special handling for Logistics (rope length) tags based on route_pitches
+                            if llm_category == "Logistics":
                                 # For single-pitch routes, manual tags take priority
                                 if route.get('route_pitches', 1) == 1:
                                     combined_tags[llm_category] = tags
