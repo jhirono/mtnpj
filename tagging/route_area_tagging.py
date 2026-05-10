@@ -103,9 +103,13 @@ def manual_tagging(data):
         for route in area.get("routes", []):
             manual_tags = {}
 
-            # Rule 1: Logistics - rope length tags (single-pitch non-boulder only)
-            is_boulder = "Boulder" in route.get("route_type", "")
-            if route.get("route_pitches", 1) == 1 and not is_boulder and route.get("route_length_meter") is not None:
+            # Boulders get no tags — tag system is for rope climbing only
+            if "Boulder" in route.get("route_type", ""):
+                route["manual_tags"] = {}
+                continue
+
+            # Rule 1: Logistics - rope length tags (single-pitch only)
+            if route.get("route_pitches", 1) == 1 and route.get("route_length_meter") is not None:
                 length = route["route_length_meter"]
                 if length <= 30:
                     manual_tags.setdefault("Logistics", []).append("rope_60m")
