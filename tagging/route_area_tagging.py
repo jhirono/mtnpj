@@ -412,10 +412,12 @@ def process_stick_clip_tag(data):
 def should_process_route(route):
     """
     Determine if a route should be processed by the LLM tagger.
-    Only process routes that contain 'trad' or 'sport' in their route types.
+    Includes trad, sport, and aid routes. Excludes boulders (rule-based tags only).
     """
     route_type = route.get("route_type", "").lower()
-    return "trad" in route_type or "sport" in route_type
+    if "boulder" in route_type:
+        return False
+    return "trad" in route_type or "sport" in route_type or "aid" in route_type
 
 def process_areas_and_routes(input_file: str, route_prompt_file: str, retrieve_only: bool = False, batch_id: str = None):
     """Process areas and routes for tagging"""
