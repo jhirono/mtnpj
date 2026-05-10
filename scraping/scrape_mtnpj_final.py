@@ -292,56 +292,55 @@ def cleanup_driver():
 
 def login_mp(driver, email: str, password: str) -> bool:
     """
-    Log in to Mountain Project via Selenium full-page login.
+    Authenticate with Mountain Project by injecting saved browser cookies.
 
-    Navigates to /user/login which auto-loads the email form via AJAX into
-    #email-login. Form fields: name="email", name="pass".
-    Returns True on successful authentication, False on failure.
+    Loads cookies from cookies.json (exported from a logged-in browser session)
+    into the Selenium driver. Cookies must be set while on the MP domain.
+    Falls back to form login if cookie file is missing.
 
     Security: never logs email or password — only logs success/failure status.
     """
-    LOGIN_URL = "https://www.mountainproject.com/user/login"
-    try:
-        driver.get(LOGIN_URL)
-        # Wait for AJAX to populate the email login form into #email-login
-        time.sleep(3)
+    import json as _json
 
-        # Dismiss cookie consent if present (blocks form interaction on first visit)
+    COOKIE_FILE = os.path.join(os.path.dirname(os.path.dirname(__file__)), "cookies.json")
+
+    if os.path.exists(COOKIE_FILE):
         try:
-            consent_btn = driver.find_element(By.ID, "cookie-consent-acknowledge")
-            if consent_btn.is_displayed():
-                consent_btn.click()
-                time.sleep(1)
-        except Exception:
-            pass
+            # Must navigate to the domain before setting cookies
+            driver.get("https://www.mountainproject.com")
+            time.sleep(2)
 
-        # Wait for the AJAX-loaded email field (within #email-login div)
-        email_field = WebDriverWait(driver, 15).until(
-            EC.element_to_be_clickable((By.NAME, "email"))
-        )
-        email_field.clear()
-        email_field.send_keys(email)
+            with open(COOKIE_FILE) as f:
+                cookies = _json.load(f)
 
-        pw_field = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.NAME, "pass"))
-        )
-        pw_field.clear()
-        pw_field.send_keys(password)
+            for cookie in cookies:
+                # Selenium only accepts specific keys; strip browser-extension extras
+                c = {k: cookie[k] for k in ("name", "value", "path", "secure") if k in cookie}
+                c["domain"] = cookie.get("domain", "www.mountainproject.com")
+                if "expirationDate" in cookie:
+                    c["expiry"] = int(cookie["expirationDate"])
+                try:
+                    driver.add_cookie(c)
+                except Exception:
+                    pass  # skip any malformed cookies
 
-        submit = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
-        submit.click()
-        time.sleep(4)
+            # Reload to apply cookies
+            driver.get("https://www.mountainproject.com")
+            time.sleep(2)
 
-        # MP redirects away from /user/login on successful authentication.
-        if "login" not in driver.current_url.lower():
-            logging.info("Login succeeded")
-            return True
-        else:
-            logging.warning("Login failed: still on login page after submit")
+            # Verify: logged-in MP pages show a user-specific nav link
+            if "user/login" not in driver.current_url.lower():
+                logging.info("Login succeeded (cookie auth)")
+                return True
+            else:
+                logging.warning("Cookie auth failed — page still shows login")
+                return False
+
+        except Exception as e:
+            logging.error(f"Cookie login failed: {e}")
             return False
-
-    except Exception as e:
-        logging.error(f"Login failed: {e}")
+    else:
+        logging.error(f"Cookie file not found: {COOKIE_FILE}. Export cookies from a logged-in browser session.")
         return False
 
 # ==================== Selenium Dynamic Content Scrapers ====================

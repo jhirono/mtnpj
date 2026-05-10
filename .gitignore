@@ -1,3 +1,4 @@
+.claude
 venv/
 .old/
 node_modules
@@ -22,3 +23,4 @@ r2_config.py
 
 # Generated D1 import SQL (regenerated from data/*.json by scraping/import_to_d1.py)
 worker-api/import_*.sql
+cookies.json
