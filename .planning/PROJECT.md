@@ -2,11 +2,10 @@
 
 ## Current Milestone: v1.1 Coverage & Tagging
 
-**Goal:** Import all pre-scraped state data into D1, validate the scraper against Yosemite NP, and improve tag quality and coverage.
+**Goal:** Scrape Yosemite NP with tick comment collection via Selenium, then benchmark and upgrade the tagging pipeline.
 
 **Target features:**
-- Import AZ, CO, OR, UT tagged JSON into D1 (4 new states, ~235MB of pre-tagged data)
-- Scrape Yosemite NP as a real-world scraper validation run
+- Scrape Yosemite NP routes + tick comments via Selenium authenticated session
 - Improve tag accuracy (better LLM prompts + logic rules)
 - Add new tag categories to the tagging pipeline
 
@@ -38,11 +37,10 @@ Fast, comprehensive climbing route discovery across all route types and area hie
 - ✓ Frontend filtering by all 9 route types — v1.0
 - ✓ Aid/clean-aid/ice/mixed grade parsing (A0-A5+, C0-C5+, WI, AI, M) — v1.0
 - ✓ Tagging pipeline (LLM + logic-based tags synced to D1) — v1.0
+- ✓ Selenium authenticated tick comment collection (Yosemite NP — 4,209 ticks across 174 routes) — v1.1 Phase 02
 
 ### Active
 
-- [ ] Import AZ, CO, OR, UT pre-tagged JSON into D1
-- [ ] Scrape Yosemite NP as scraper validation run
 - [ ] Improve tag accuracy (LLM prompts + logic rules)
 - [ ] Add new tag categories to tagging pipeline
 
@@ -51,11 +49,13 @@ Fast, comprehensive climbing route discovery across all route types and area hie
 - Firebase — replaced by Cloudflare D1
 - Fly.io / R2 — replaced by Cloudflare Pages + Workers
 - Mobile app — PWA via Cloudflare Pages covers mobile
+- Pre-tagged JSON bulk import — data will be scraped fresh and re-tagged instead
 
 ## Context
 
 Shipped v1.0 with ~1,100 LOC TypeScript + ~1,800 LOC Python.
-17,358 routes across Nevada + Washington in production D1.
+17,358 routes across Nevada + Washington in production D1 (v1.0).
+Phase 02 complete: +2,969 Yosemite NP routes + 4,209 tick comments in local D1.
 Deployed: climbing-search.pages.dev | climbing-search-api.jumpei-hirono.workers.dev
 
 ## Key Decisions
@@ -67,7 +67,7 @@ Deployed: climbing-search.pages.dev | climbing-search-api.jumpei-hirono.workers.
 | httpx + asyncio for scraping | ✓ Good | ~10x faster than Selenium for HTML pages |
 | Stable route_id from URL segment | ✓ Good | Prerequisite for incremental diff scraping |
 | Hono for Worker API | ✓ Good | Lightweight, zod validation, great D1 ergonomics |
-| Selenium kept for login-gated content | — Pending | Tick comments/stats still untested at scale |
+| Selenium kept for login-gated content | ✓ Good | Cookie-based auth (MP→onX OAuth migration handled); 4,209 ticks collected |
 
 ## Constraints
 
@@ -93,4 +93,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-09 after v1.1 milestone start*
+*Last updated: 2026-05-10 after Phase 02 completion*
