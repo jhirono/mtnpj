@@ -294,16 +294,17 @@ def login_mp(driver, email: str, password: str) -> bool:
     """
     Log in to Mountain Project via Selenium full-page login.
 
-    Navigates to /auth/login (MP changed from /user/login — full-page login
-    is more reliable with headless Chrome than the modal overlay on stats pages).
+    Navigates to /user/login which auto-loads the email form via AJAX into
+    #email-login. Form fields: name="email", name="pass".
     Returns True on successful authentication, False on failure.
 
     Security: never logs email or password — only logs success/failure status.
     """
-    LOGIN_URL = "https://www.mountainproject.com/auth/login"
+    LOGIN_URL = "https://www.mountainproject.com/user/login"
     try:
         driver.get(LOGIN_URL)
-        time.sleep(3)  # Allow page + any cookie consent overlays to load
+        # Wait for AJAX to populate the email login form into #email-login
+        time.sleep(3)
 
         # Dismiss cookie consent if present (blocks form interaction on first visit)
         try:
@@ -314,8 +315,7 @@ def login_mp(driver, email: str, password: str) -> bool:
         except Exception:
             pass
 
-        # Use element_to_be_clickable — ensures element is visible + interactable.
-        # Note: MP uses name="email" and name="pass" (not name="password") on /auth/login.
+        # Wait for the AJAX-loaded email field (within #email-login div)
         email_field = WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable((By.NAME, "email"))
         )
@@ -332,8 +332,7 @@ def login_mp(driver, email: str, password: str) -> bool:
         submit.click()
         time.sleep(4)
 
-        # MP redirects away from /auth/login on successful authentication.
-        # If URL still contains 'login', credentials were rejected.
+        # MP redirects away from /user/login on successful authentication.
         if "login" not in driver.current_url.lower():
             logging.info("Login succeeded")
             return True
