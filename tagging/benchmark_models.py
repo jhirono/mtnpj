@@ -91,21 +91,24 @@ Route Type: {route.get('route_type', '')}
 Route Protection: {route.get('route_protection', '')}
 Comments: {route.get('route_tick_comments', '')} {' '.join([c.get('comment_text', '') for c in route.get('route_comments', [])])}
 """
+        body: dict = {
+            "model": model,
+            "messages": [
+                {"role": "system", "content": prompt_template},
+                {"role": "user", "content": input_text},
+            ],
+            "max_completion_tokens": 500,
+            "n": 1,
+        }
+        # gpt-5 models only support default temperature/top_p
+        if not model.startswith("gpt-5"):
+            body["temperature"] = 0.3
+            body["top_p"] = 0.95
         request = {
             "custom_id": f"{model}__{route_id}",
             "method": "POST",
             "url": "/v1/chat/completions",
-            "body": {
-                "model": model,
-                "messages": [
-                    {"role": "system", "content": prompt_template},
-                    {"role": "user", "content": input_text},
-                ],
-                "temperature": 0.3,
-                "max_completion_tokens": 500,
-                "top_p": 0.95,
-                "n": 1,
-            },
+            "body": body,
         }
         batch_requests.append(request)
 
