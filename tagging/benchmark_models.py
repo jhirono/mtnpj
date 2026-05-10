@@ -100,10 +100,13 @@ Comments: {route.get('route_tick_comments', '')} {' '.join([c.get('comment_text'
             "max_completion_tokens": 500,
             "n": 1,
         }
-        # gpt-5 models only support default temperature/top_p
+        # gpt-5 models are reasoning models: temperature/top_p unsupported,
+        # and reasoning must be disabled to get visible content output.
         if not model.startswith("gpt-5"):
             body["temperature"] = 0.3
             body["top_p"] = 0.95
+        else:
+            body["reasoning"] = {"effort": "none"}
         request = {
             "custom_id": f"{model}__{route_id}",
             "method": "POST",
