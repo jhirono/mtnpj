@@ -305,52 +305,46 @@ def wait_for_batch_completion(batch_id, check_only=False):
     return None
 
 def process_batch_results(results):
-    """Process batch results, separating area and route tags"""
-    area_tags = {}
+    """Process batch results and return route tags"""
     route_tags = {}
-    
+
     for result in results:
         try:
             custom_id = result.get("custom_id")
             # Navigate through the nested response structure
             response = result.get("response", {}).get("body", {}).get("choices", [{}])[0].get("message", {}).get("content")
-            
+
             if not response:
                 log_message(f"No content found for {custom_id}")
                 continue
-                
+
             try:
                 # Parse the JSON string content
                 tags_data = json.loads(response)
                 llm_tags = tags_data.get("llm_tags", {})
-                
+
                 # Log the raw tags before validation
                 log_message(f"Raw tags for {custom_id}: {json.dumps(llm_tags)}")
-                
+
                 # Validate the tags against allowed tags
                 valid_llm_tags = validate_tags(llm_tags)
-                
+
                 # Log the validated tags
                 log_message(f"Validated tags for {custom_id}: {json.dumps(valid_llm_tags)}")
-                
-                # Check if this is an area or route based on the ID format
-                if custom_id.startswith("area_"):
-                    area_tags[custom_id] = valid_llm_tags
-                    log_message(f"Processed area tags for {custom_id}")
-                else:
-                    route_tags[custom_id] = valid_llm_tags
-                    log_message(f"Processed route tags for {custom_id}")
-                    
+
+                route_tags[custom_id] = valid_llm_tags
+                log_message(f"Processed route tags for {custom_id}")
+
             except json.JSONDecodeError as e:
                 log_message(f"Error parsing JSON content for {custom_id}: {e}")
                 continue
-                
+
         except Exception as e:
             log_message(f"Error processing result for {custom_id}: {e}")
             continue
-    
-    log_message(f"Processed {len(area_tags)} areas and {len(route_tags)} routes")
-    return area_tags, route_tags
+
+    log_message(f"Processed {len(route_tags)} routes")
+    return route_tags
 
 def map_category(manual_category):
     """Map manual tag categories to LLM tag categories"""
@@ -399,68 +393,6 @@ def combine_tags(tags1, tags2):
     
     return [unmake_hashable(tag) for tag in all_tags]
 
-def create_area_batch_requests(areas: List[Dict[str, Any]], prompt_template: str) -> List[Dict[str, Any]]:
-    """Create batch requests for the OpenAI Batch API for areas"""
-    batch_requests = []
-    
-    for area in areas:
-        input_text = f"""
-Area Description: {area.get('area_description', '')}
-Getting There: {area.get('area_getting_there', '')}
-Access Issues: {area.get('area_access_issues', '')}
-Page Views: {area.get('area_page_views', '')}
-Area Share Date: {area.get('area_shared_on', '')}
-Comments: {' '.join([c.get('comment_text', '') for c in area.get('area_comments', [])])}
-"""
-        request = {
-            "custom_id": f"area_{area.get('area_id')}",
-            "method": "POST",
-            "url": "/v1/chat/completions",
-            "body": {
-                "model": "gpt-4o-mini",
-                "messages": [
-                    {"role": "system", "content": prompt_template},
-                    {"role": "user", "content": input_text}
-                ],
-                "temperature": 0.3,
-                "max_tokens": 500,
-                "top_p": 0.95,
-                "n": 1
-            }
-        }
-        batch_requests.append(request)
-    
-    return batch_requests
-
-def inherit_approach_tags(data):
-    """Inherit approach tags from areas to routes"""
-    for area in data:
-        area_approach_tags = []
-        
-        # Extract approach tags from area_tags
-        if "area_tags" in area and "Approach & Accessibility" in area["area_tags"]:
-            area_approach_tags = area["area_tags"]["Approach & Accessibility"]
-        
-        # Apply area approach tags to all routes in the area
-        if area_approach_tags:
-            for route in area.get("routes", []):
-                if "route_tags" not in route:
-                    route["route_tags"] = {}
-                # Ensure route_tags is a dictionary, not a list
-                elif not isinstance(route["route_tags"], dict):
-                    route["route_tags"] = {}
-                
-                if "Approach & Accessibility" not in route["route_tags"]:
-                    route["route_tags"]["Approach & Accessibility"] = []
-                
-                # Add area approach tags to route approach tags (avoiding duplicates)
-                route_approach_tags = route["route_tags"]["Approach & Accessibility"]
-                for tag in area_approach_tags:
-                    if tag not in route_approach_tags:
-                        route_approach_tags.append(tag)
-    
-    return data
-
 def process_stick_clip_tag(data):
     """Ensure stick_clip tag is only applied to sport routes"""
     for area in data:
@@ -483,7 +415,7 @@ def should_process_route(route):
     route_type = route.get("route_type", "").lower()
     return "trad" in route_type or "sport" in route_type
 
-def process_areas_and_routes(input_file: str, route_prompt_file: str, area_prompt_file: str, retrieve_only: bool = False, batch_id: str = None):
+def process_areas_and_routes(input_file: str, route_prompt_file: str, retrieve_only: bool = False, batch_id: str = None):
     """Process areas and routes for tagging"""
     # Load data
     with open(input_file, 'r') as f:
@@ -491,18 +423,15 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
     
     with open(route_prompt_file, 'r') as f:
         route_prompt = f.read()
-    
-    with open(area_prompt_file, 'r') as f:
-        area_prompt = f.read()
-    
+
     if retrieve_only and batch_id:
         # Get batch results
         results = wait_for_batch_completion(batch_id)
         log_message(f"Retrieved {len(results)} results from batch(es)")
         
         # Process batch results
-        area_tags, route_tags = process_batch_results(results)
-        log_message(f"Processed {len(area_tags)} area tags and {len(route_tags)} route tags")
+        route_tags = process_batch_results(results)
+        log_message(f"Processed {len(route_tags)} route tags")
         
         # Create a backup of existing tagged file if it exists
         output_file = input_file.replace('.json', '_tagged.json')
@@ -517,68 +446,44 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
                 try:
                     existing_data = json.load(f)
                     
-                    # Preserve existing tags by merging them with our current data
+                    # Preserve existing route tags by merging them with our current data
                     for area_idx, area in enumerate(data):
                         area_id = area.get('area_id')
                         # Find matching area in existing data
                         for ex_area in existing_data:
                             if ex_area.get('area_id') == area_id:
-                                # If area has existing tags, preserve them
-                                if 'area_tags' in ex_area:
-                                    if 'area_tags' not in area:
-                                        area['area_tags'] = {}
-                                    # Merge existing area tags with new ones
-                                    if isinstance(ex_area['area_tags'], dict):
-                                        for category, tags in ex_area['area_tags'].items():
-                                            if category not in area['area_tags']:
-                                                area['area_tags'][category] = tags
-                                    elif isinstance(ex_area['area_tags'], list):
-                                        # Handle case where area_tags is a list
-                                        log_message(f"Found area tags as list for area {area_id}, converting to dict")
-                                        # For list tags, we don't have category info, so we skip them
-                                    
-                                    # Process routes - preserve existing route tags
-                                    for route in area.get('routes', []):
-                                        route_id = route.get('route_id')
-                                        # Find matching route in existing data
-                                        for ex_route in ex_area.get('routes', []):
-                                            if ex_route.get('route_id') == route_id:
-                                                # If route has existing tags and doesn't have new ones
-                                                if 'route_tags' in ex_route:
-                                                    if 'route_tags' not in route:
-                                                        route['route_tags'] = {}
-                                                    
-                                                    # Merge existing route tags with new ones
-                                                    if isinstance(ex_route['route_tags'], dict):
-                                                        for category, tags in ex_route['route_tags'].items():
-                                                            if category not in route['route_tags']:
-                                                                route['route_tags'][category] = tags
-                                                    elif isinstance(ex_route['route_tags'], list):
-                                                        # Handle case where route_tags is a list
-                                                        log_message(f"Found route tags as list for route {route_id}, converting to dict")
-                                                        # For list tags, we don't have category info, so we skip them
-                                                break
-                                        break
+                                # Process routes - preserve existing route tags
+                                for route in area.get('routes', []):
+                                    route_id = route.get('route_id')
+                                    # Find matching route in existing data
+                                    for ex_route in ex_area.get('routes', []):
+                                        if ex_route.get('route_id') == route_id:
+                                            # If route has existing tags and doesn't have new ones
+                                            if 'route_tags' in ex_route:
+                                                if 'route_tags' not in route:
+                                                    route['route_tags'] = {}
+
+                                                # Merge existing route tags with new ones
+                                                if isinstance(ex_route['route_tags'], dict):
+                                                    for category, tags in ex_route['route_tags'].items():
+                                                        if category not in route['route_tags']:
+                                                            route['route_tags'][category] = tags
+                                                elif isinstance(ex_route['route_tags'], list):
+                                                    # Handle case where route_tags is a list
+                                                    log_message(f"Found route tags as list for route {route_id}, converting to dict")
+                                                    # For list tags, we don't have category info, so we skip them
+                                            break
+                                break
                 except json.JSONDecodeError:
                     log_message(f"Warning: Existing tagged file is not valid JSON. Starting fresh.")
         
         # Apply manual tagging
         data = manual_tagging(data)
         
-        # Update areas and routes with LLM tags
-        areas_updated = 0
+        # Update routes with LLM tags
         routes_updated = 0
-        
+
         for area in data:
-            # Process area tags - directly use the tags
-            area_id = f"area_{area.get('area_id')}"
-            if area_id in area_tags:
-                area['area_tags'] = area_tags[area_id]  # Use area_tags instead of llm_tags
-                log_message(f"Added tags to area: {area_id}")
-                areas_updated += 1
-            else:
-                log_message(f"No tags found for area: {area_id}")
-            
             # Process route tags
             for route in area.get('routes', []):
                 route_id = route.get('route_id')
@@ -644,10 +549,9 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
                                 route['route_tags'][llm_category] = []
                             route['route_tags'][llm_category] = combine_tags(route['route_tags'].get(llm_category, []), tags)
         
-        log_message(f"Updated {areas_updated} areas and {routes_updated} routes with tags")
-        
+        log_message(f"Updated {routes_updated} routes with tags")
+
         # Apply additional tag processing
-        data = inherit_approach_tags(data)
         data = process_stick_clip_tag(data)
         
         # Count routes by type
@@ -671,8 +575,7 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
         return data
     
     else:
-        # Create batch requests for both areas and routes
-        area_requests = create_area_batch_requests(data, area_prompt)
+        # Create batch requests for routes
         route_requests = []
         total_routes = 0
         filtered_routes_count = 0
@@ -687,8 +590,7 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, area_promp
         
         log_message(f"Filtered routes: {filtered_routes_count}/{total_routes} ({filtered_routes_count/total_routes*100:.2f}% of total)")
         
-        # Combine requests
-        all_requests = area_requests + route_requests
+        all_requests = route_requests
         
         if not all_requests:
             log_message("No items to process")
@@ -847,20 +749,15 @@ if __name__ == "__main__":
     
     input_file = args.input_file
     route_prompt_file = "prompt/route_prompt.txt"
-    area_prompt_file = "prompt/area_prompt.txt"
-    
+
     # Validate input file exists
     if not os.path.exists(input_file):
         print(f"Error: Input file '{input_file}' does not exist.")
         sys.exit(1)
-    
+
     # Validate prompt files exist
     if not os.path.exists(route_prompt_file):
         print(f"Error: Route prompt file '{route_prompt_file}' does not exist.")
-        sys.exit(1)
-    
-    if not os.path.exists(area_prompt_file):
-        print(f"Error: Area prompt file '{area_prompt_file}' does not exist.")
         sys.exit(1)
     
     try:
@@ -884,11 +781,11 @@ if __name__ == "__main__":
             else:
                 # Retrieve and process
                 log_message(f"Running in retrieve mode with batch ID(s): {args.batch_id}")
-                process_areas_and_routes(input_file, route_prompt_file, area_prompt_file, retrieve_only=True, batch_id=args.batch_id)
+                process_areas_and_routes(input_file, route_prompt_file, retrieve_only=True, batch_id=args.batch_id)
         else:
             # Submit mode
             log_message(f"Running in submit mode with input file: {input_file}")
-            process_areas_and_routes(input_file, route_prompt_file, area_prompt_file)
+            process_areas_and_routes(input_file, route_prompt_file)
     except Exception as e:
         log_message(f"Error processing batch: {str(e)}")
         traceback.print_exc()
