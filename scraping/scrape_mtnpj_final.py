@@ -405,10 +405,16 @@ def get_comments(page_url, user_email=None, user_pass=None, cookie_file="cookies
         return []
 
 def parse_stats(soup):
-    """Parse stats from BeautifulSoup object"""
+    """Parse stats from BeautifulSoup object.
+
+    Returns:
+        tuple[dict, None, list[dict]]: (suggested_ratings, None, tick_entries)
+        tick_entries is a list of dicts with keys: 'author', 'date', 'text'
+        Only includes entries where text has >= 15 words (D-01 filter).
+    """
     suggested_ratings = {}
-    tick_comments = ""
-    
+    tick_entries = []
+
     try:
         # Find Suggested Ratings table
         h3_suggested = None
@@ -416,7 +422,7 @@ def parse_stats(soup):
             if re.search(r"^Suggested Ratings", h3.get_text(strip=True)):
                 h3_suggested = h3
                 break
-                
+
         if h3_suggested:
             table = h3_suggested.find_next("table", class_="table table-striped")
             if table:
@@ -427,72 +433,102 @@ def parse_stats(soup):
                         rating = cells[1].get_text(strip=True)
                         if rating and not rating.startswith('·'):  # Skip non-grade cells
                             suggested_ratings[rating] = suggested_ratings.get(rating, 0) + 1
-                            
+
         # Find Ticks table
         h3_ticks = None
         for h3 in soup.find_all("h3"):
             if re.search(r"^Ticks", h3.get_text(strip=True)):
                 h3_ticks = h3
                 break
-                
+
         if h3_ticks:
             table = h3_ticks.find_next("table", class_="table table-striped")
             if table:
                 rows = table.find_all("tr")
-                tick_list = []
                 for row in rows:
                     cells = row.find_all("td")
                     if len(cells) >= 2:
-                        tick_text = cells[1].get_text(" ", strip=True)
-                        # Clean up the comment
-                        tick_text = re.sub(r'\b[A-Za-z]{3}\s+\d{1,2},\s*\d{4}\b', '', tick_text)  # Remove date
-                        tick_text = re.sub(r'·.*?·', '', tick_text)  # Remove climb type
+                        # Extract author from cells[0] <a href="/user/..."> tag
+                        author = "Unknown"
+                        author_link = cells[0].find("a", href=lambda h: h and "/user/" in h)
+                        if author_link:
+                            author = author_link.get_text(strip=True)
+
+                        # Extract raw tick text from cells[1]
+                        raw_text = cells[1].get_text(" ", strip=True)
+
+                        # Extract date (e.g., "Jun 12, 2023") — capture, not strip
+                        date = ""
+                        date_match = re.search(r'\b([A-Za-z]{3}\s+\d{1,2},\s*\d{4})\b', raw_text)
+                        if date_match:
+                            date = date_match.group(1)
+
+                        # Remove climb type marker(s): "Lead · Jun 12, 2023 · [text]"
+                        # Split on middle-dot (U+00B7) and take the last segment as the comment
+                        parts = raw_text.split("·")
+                        if len(parts) >= 3:
+                            tick_text = "·".join(parts[2:]).strip()
+                        elif len(parts) == 2:
+                            tick_text = parts[1].strip()
+                        else:
+                            tick_text = raw_text.strip()
+
+                        # Remove any residual date string from the text
+                        tick_text = re.sub(r'\b[A-Za-z]{3}\s+\d{1,2},\s*\d{4}\b', '', tick_text).strip()
                         tick_text = re.sub(r'\s+', ' ', tick_text).strip()
-                        # Only include comments with 15 or more words
+
+                        # Apply >=15 word filter (D-01)
                         if tick_text and len(tick_text.split()) >= 15:
-                            tick_list.append(tick_text)
-                            
-                tick_comments = " ".join(tick_list)
-                
+                            tick_entries.append({
+                                "author": author,
+                                "date": date,
+                                "text": tick_text,
+                            })
+
     except Exception as e:
         logging.error(f"Error parsing stats: {e}")
-        
-    return suggested_ratings, None, tick_comments
+
+    return suggested_ratings, None, tick_entries
 
 def get_route_stats(route_url):
-    """Get route statistics using Selenium with caching"""
+    """Get route statistics using Selenium with caching.
+
+    Returns:
+        tuple[dict, None, list[dict]]: (suggested_ratings, None, tick_entries)
+        tick_entries is a list of dicts with keys: 'author', 'date', 'text'
+    """
     # Check cache first
     cached_stats = get_from_cache(route_url, "stats")
     if cached_stats:
-        return cached_stats.get("suggested_ratings", {}), None, cached_stats.get("tick_comments", "")
-    
+        return cached_stats.get("suggested_ratings", {}), None, cached_stats.get("tick_entries", [])
+
     try:
         stats_url = route_url.replace("/route/", "/route/stats/", 1)
         logging.debug(f"Fetching stats from {stats_url}")
-        
+
         driver = get_driver()
         if not driver:
-            return {}, None, ""
-            
+            return {}, None, []
+
         driver.get(stats_url)
         time.sleep(1)  # Wait for page load
-        
+
         content = driver.page_source
         soup = BeautifulSoup(content, "lxml")
-        suggested_ratings, _, tick_comments = parse_stats(soup)
-        
-        # Save to cache
+        suggested_ratings, _, tick_entries = parse_stats(soup)
+
+        # Save to cache — use 'tick_entries' key (list[dict]) to avoid type mismatch on restart
         stats_data = {
             "suggested_ratings": suggested_ratings,
-            "tick_comments": tick_comments
+            "tick_entries": tick_entries,
         }
         save_to_cache(route_url, stats_data, "stats")
-        
-        return suggested_ratings, None, tick_comments
-        
+
+        return suggested_ratings, None, tick_entries
+
     except Exception as e:
         logging.error(f"Error getting route stats: {e}")
-        return {}, None, ""
+        return {}, None, []
 
 def get_area_comments(area_url, user_email=None, user_pass=None, cookie_file="cookies.json"):
     return get_comments(area_url, user_email=user_email, user_pass=user_pass, cookie_file=cookie_file)
@@ -643,10 +679,14 @@ def get_route_details(route_url):
     # Scrape route comments dynamically
     route_details['route_comments'] = get_comments(route_url, user_email=LOGIN_EMAIL, user_pass=LOGIN_PASSWORD, cookie_file=COOKIE_FILE)
     
-    # Fetch route stats: suggested ratings and tick comments.
-    suggested_ratings, _, tick_comments = get_route_stats(route_url)
+    # Fetch route stats: suggested ratings and tick entries (list[dict]).
+    suggested_ratings, _, tick_entries = get_route_stats(route_url)
     route_details['route_suggested_ratings'] = suggested_ratings
-    route_details['route_tick_comments'] = tick_comments
+    # tick_entries is list[dict]; join text fields for backward compat with route_tick_comments
+    if isinstance(tick_entries, list):
+        route_details['route_tick_comments'] = " ".join(e.get("text", "") for e in tick_entries)
+    else:
+        route_details['route_tick_comments'] = tick_entries or ""
     
     # Save to cache
     save_to_cache(route_url, route_details, "route_details")

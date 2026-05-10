@@ -22,7 +22,6 @@ def load_fixture(name: str) -> BeautifulSoup:
 # ---------------------------------------------------------------------------
 # TICK-02: parse_stats return shape (RED — will fail until Plan 02 lands)
 # ---------------------------------------------------------------------------
-@pytest.mark.xfail(reason="parse_stats not yet updated to return list[dict]")
 def test_parse_stats_returns_entries():
     from scraping.scrape_mtnpj_final import parse_stats
     soup = load_fixture("stats_page_auth.html")
@@ -35,7 +34,6 @@ def test_parse_stats_returns_entries():
     assert "text" in entry, "Each tick entry must have 'text' key"
 
 
-@pytest.mark.xfail(reason="parse_stats not yet updated to return list[dict]")
 def test_parse_stats_word_filter():
     """Entries with fewer than 15 words must be excluded (D-01)."""
     from scraping.scrape_mtnpj_final import parse_stats

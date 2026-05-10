@@ -553,11 +553,15 @@ async def get_route_details(
             logging.warning(f"Comments fetch failed for {route_url}: {e}")
 
         try:
-            suggested_ratings, _, tick_comments = await asyncio.to_thread(
+            suggested_ratings, _, tick_entries = await asyncio.to_thread(
                 get_route_stats, route_url
             )
             route_details["route_suggested_ratings"] = suggested_ratings or {}
-            route_details["route_tick_comments"] = tick_comments or ""
+            # tick_entries is now list[dict]; join text fields for backward compat with route_tick_comments
+            if isinstance(tick_entries, list):
+                route_details["route_tick_comments"] = " ".join(e.get("text", "") for e in tick_entries)
+            else:
+                route_details["route_tick_comments"] = tick_entries or ""
         except Exception as e:
             logging.warning(f"Stats fetch failed for {route_url}: {e}")
 
