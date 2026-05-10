@@ -91,22 +91,23 @@ Route Type: {route.get('route_type', '')}
 Route Protection: {route.get('route_protection', '')}
 Comments: {route.get('route_tick_comments', '')} {' '.join([c.get('comment_text', '') for c in route.get('route_comments', [])])}
 """
+        # gpt-5 models are reasoning models: they burn tokens on internal reasoning
+        # before producing visible output. 500 tokens is too small (all goes to
+        # reasoning, content is empty). 1500 gives ~200 reasoning + ~300 output.
+        # temperature/top_p are also unsupported for gpt-5 models.
+        is_gpt5 = model.startswith("gpt-5")
         body: dict = {
             "model": model,
             "messages": [
                 {"role": "system", "content": prompt_template},
                 {"role": "user", "content": input_text},
             ],
-            "max_completion_tokens": 500,
+            "max_completion_tokens": 1500 if is_gpt5 else 500,
             "n": 1,
         }
-        # gpt-5 models are reasoning models: temperature/top_p unsupported,
-        # and reasoning must be disabled to get visible content output.
-        if not model.startswith("gpt-5"):
+        if not is_gpt5:
             body["temperature"] = 0.3
             body["top_p"] = 0.95
-        else:
-            body["reasoning"] = {"effort": "none"}
         request = {
             "custom_id": f"{model}__{route_id}",
             "method": "POST",
