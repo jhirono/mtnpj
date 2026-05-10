@@ -294,32 +294,45 @@ def login_mp(driver, email: str, password: str) -> bool:
     """
     Log in to Mountain Project via Selenium full-page login.
 
-    Navigates to /user/login (not the modal overlay on stats pages — full-page
-    login is more reliable with headless Chrome).
+    Navigates to /auth/login (MP changed from /user/login — full-page login
+    is more reliable with headless Chrome than the modal overlay on stats pages).
     Returns True on successful authentication, False on failure.
 
     Security: never logs email or password — only logs success/failure status.
     """
-    LOGIN_URL = "https://www.mountainproject.com/user/login"
+    LOGIN_URL = "https://www.mountainproject.com/auth/login"
     try:
         driver.get(LOGIN_URL)
-        time.sleep(2)
+        time.sleep(3)  # Allow page + any cookie consent overlays to load
 
-        email_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.NAME, "email"))
+        # Dismiss cookie consent if present (blocks form interaction on first visit)
+        try:
+            consent_btn = driver.find_element(By.ID, "cookie-consent-acknowledge")
+            if consent_btn.is_displayed():
+                consent_btn.click()
+                time.sleep(1)
+        except Exception:
+            pass
+
+        # Use element_to_be_clickable — ensures element is visible + interactable.
+        # Note: MP uses name="email" and name="pass" (not name="password") on /auth/login.
+        email_field = WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.NAME, "email"))
         )
         email_field.clear()
         email_field.send_keys(email)
 
-        pw_field = driver.find_element(By.NAME, "password")
+        pw_field = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.NAME, "pass"))
+        )
         pw_field.clear()
         pw_field.send_keys(password)
 
         submit = driver.find_element(By.CSS_SELECTOR, "button[type='submit']")
         submit.click()
-        time.sleep(3)
+        time.sleep(4)
 
-        # MP redirects away from /user/login on successful authentication.
+        # MP redirects away from /auth/login on successful authentication.
         # If URL still contains 'login', credentials were rejected.
         if "login" not in driver.current_url.lower():
             logging.info("Login succeeded")
