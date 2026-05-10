@@ -10,6 +10,7 @@ export interface RouteFilters {
   stars_min?: number;
   votes_min?: number;
   area_id?: string;
+  area_path?: string; // resolved path for area_id — avoids subquery inside LIKE
   page: number;
   limit: number;
 }
@@ -36,14 +37,20 @@ export function buildRoutesQuery(f: RouteFilters): { sql: string; params: unknow
   if (f.stars_min !== undefined) { conds.push('r.route_stars >= ?'); params.push(f.stars_min); }
   if (f.votes_min !== undefined) { conds.push('r.route_votes >= ?'); params.push(f.votes_min); }
   if (f.area_id) {
-    // descendants via materialized path: include the area itself and all under its path prefix
-    conds.push(`(r.area_id = ? OR a.path LIKE (SELECT path FROM areas WHERE area_id = ?) || '%')`);
-    params.push(f.area_id, f.area_id);
+    if (f.area_path) {
+      // D1 rejects LIKE/GLOB with long slug paths ("pattern too complex").
+      // INSTR(path, prefix) = 1 is a reliable prefix-match that avoids backtracking.
+      conds.push(`(r.area_id = ? OR INSTR(a.path, ?) = 1)`);
+      params.push(f.area_id, f.area_path);
+    } else {
+      conds.push(`r.area_id = ?`);
+      params.push(f.area_id);
+    }
   }
 
   const offset = (f.page - 1) * f.limit;
   const sql = `
-    SELECT r.*, a.path AS area_path, a.area_name AS area_name
+    SELECT r.*, a.path AS area_path, a.area_name AS area_name, a.area_url AS area_url
     FROM routes r
     JOIN areas a ON r.area_id = a.area_id
     WHERE ${conds.join(' AND ')}
@@ -59,7 +66,12 @@ export function buildAreasQuery(opts: {
 }): { sql: string; params: unknown[] } {
   const conds: string[] = ['1=1'];
   const params: unknown[] = [];
-  if (opts.q) { conds.push('area_name LIKE ?'); params.push(`%${opts.q}%`); }
+  if (opts.q) {
+    // area_name is stored as slugs (e.g. "el-capitan"); normalise user input the same way
+    const slug = opts.q.toLowerCase().replace(/\s+/g, '-');
+    conds.push('(area_name LIKE ? OR path LIKE ?)');
+    params.push(`%${slug}%`, `%${slug}%`);
+  }
   if (opts.region) { conds.push('path LIKE ?'); params.push(`/${opts.region}/%`); }
   if (opts.parent_id) { conds.push('parent_id = ?'); params.push(opts.parent_id); }
   const offset = (opts.page - 1) * opts.limit;

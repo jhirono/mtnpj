@@ -23,17 +23,29 @@ const routeQuerySchema = z.object({
 
 app.get('/routes', zValidator('query', routeQuerySchema), async (c) => {
   const f = c.req.valid('query');
-  const { sql, params } = buildRoutesQuery(f);
-  const { results } = await c.env.DB.prepare(sql).bind(...params).all<RouteRow & { area_path: string; area_name: string }>();
+
+  // Resolve area_path before building the query so we avoid a subquery inside LIKE,
+  // which D1 does not support ("LIKE or GLOB pattern too complex").
+  let resolvedAreaPath: string | undefined;
+  if (f.area_id) {
+    const areaRow = await c.env.DB
+      .prepare('SELECT path FROM areas WHERE area_id = ? LIMIT 1')
+      .bind(f.area_id)
+      .first<{ path: string }>();
+    resolvedAreaPath = areaRow?.path;
+  }
+
+  const { sql, params } = buildRoutesQuery({ ...f, area_path: resolvedAreaPath });
+  const { results } = await c.env.DB.prepare(sql).bind(...params).all<RouteRow & { area_path: string; area_name: string; area_url: string | null }>();
   return c.json({ data: results ?? [], page: f.page, limit: f.limit });
 });
 
 app.get('/routes/:id', async (c) => {
   const id = c.req.param('id');
   const row = await c.env.DB
-    .prepare('SELECT r.*, a.path AS area_path, a.area_name FROM routes r JOIN areas a ON r.area_id = a.area_id WHERE r.route_id = ? LIMIT 1')
+    .prepare('SELECT r.*, a.path AS area_path, a.area_name, a.area_url FROM routes r JOIN areas a ON r.area_id = a.area_id WHERE r.route_id = ? LIMIT 1')
     .bind(id)
-    .first<RouteRow & { area_path: string; area_name: string }>();
+    .first<RouteRow & { area_path: string; area_name: string; area_url: string | null }>();
   if (!row) return c.json({ error: 'route not found' }, 404);
   return c.json({ data: row });
 });

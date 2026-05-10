@@ -10,6 +10,16 @@ import { routeApi } from './api/routeApi'
 import type { RouteApi, ApiFilters, RouteType } from './api/types'
 import { parseRouteTypes } from './api/types'
 
+function gradeToNumeric(grade: string): number | null {
+  const normalized = normalizeGrade(grade);
+  const match = normalized.match(/^5\.(\d+)([abcd]?)$/);
+  if (!match) return null;
+  const num = parseInt(match[1]);
+  const letter = match[2] || '';
+  const letterMap: Record<string, number> = { '': 0, a: 1, b: 2, c: 3, d: 4 };
+  return num >= 10 ? num + (letterMap[letter] ?? 0) * 0.1 : num;
+}
+
 const ROUTES_PER_PAGE = 100;
 
 /**
@@ -28,12 +38,12 @@ function filtersToApi(
   }
 
   if (uiFilters.grades.min) {
-    const idx = GRADE_ORDER.indexOf(normalizeGrade(uiFilters.grades.min));
-    if (idx !== -1) params.grade_min = idx;
+    const n = gradeToNumeric(uiFilters.grades.min);
+    if (n !== null) params.grade_min = n;
   }
   if (uiFilters.grades.max) {
-    const idx = GRADE_ORDER.indexOf(normalizeGrade(uiFilters.grades.max));
-    if (idx !== -1) params.grade_max = idx;
+    const n = gradeToNumeric(uiFilters.grades.max);
+    if (n !== null) params.grade_max = n;
   }
 
   return params;
@@ -111,21 +121,27 @@ function App() {
           catch { return {} as Record<string, string[]>; }
         })();
 
+        // Tags in the Safety category that, when selected, EXCLUDE routes having them.
+        // These match the `exclude: true` options defined in FilterPanel.tsx.
+        const SAFETY_EXCLUDE_TAGS = new Set(['runout_dangerous', 'sandbag']);
+
         return currentFilters.tags.every(({ category, selectedTags }) => {
           const routeTagsForCategory: string[] = parsedTags[category] || [];
 
-          if (category === 'Difficulty & Safety') {
-            if (selectedTags.includes('exclude_sandbag') && routeTagsForCategory.includes('sandbag')) return false;
-            if (selectedTags.includes('exclude_runout_dangerous') && routeTagsForCategory.includes('runout_dangerous')) return false;
-            if (selectedTags.every(tag => tag === 'exclude_sandbag' || tag === 'exclude_runout_dangerous')) return true;
+          if (category === 'Safety') {
+            // Exclusion tags: return false if route has any of the excluded tags.
+            for (const tag of selectedTags) {
+              if (SAFETY_EXCLUDE_TAGS.has(tag) && routeTagsForCategory.includes(tag)) return false;
+            }
           }
 
-          const nonExclusionTags = selectedTags.filter(
-            tag => tag !== 'exclude_sandbag' && tag !== 'exclude_runout_dangerous'
-          );
-          if (nonExclusionTags.length === 0) return true;
+          // Inclusion tags: route must have at least one of the non-exclusion selected tags.
+          const inclusionTags = category === 'Safety'
+            ? selectedTags.filter(tag => !SAFETY_EXCLUDE_TAGS.has(tag))
+            : selectedTags;
 
-          return nonExclusionTags.some(tag => routeTagsForCategory.includes(tag));
+          if (inclusionTags.length === 0) return true;
+          return inclusionTags.some(tag => routeTagsForCategory.includes(tag));
         });
       }
 
@@ -201,6 +217,16 @@ function App() {
     setVisibleRoutes(ROUTES_PER_PAGE);
   }, [currentFilters, sortConfig, selectedAreaId, selectedRoute]);
 
+  // When tag filters are active and the filtered result set is sparse, auto-load the
+  // next API page so the user doesn't have to scroll for each small batch.
+  useEffect(() => {
+    if (currentFilters.tags.length === 0) return;
+    if (loading || !hasMore) return;
+    if (sortedRoutes.length < ROUTES_PER_PAGE) {
+      setPage(prev => prev + 1);
+    }
+  }, [sortedRoutes.length, loading, hasMore, currentFilters.tags.length]);
+
   const handleFilterChange = (filters: RouteFilters) => {
     setCurrentFilters(filters);
   };
@@ -245,7 +271,7 @@ function App() {
           </div>
 
           <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">
-            {sortedRoutes.length} routes found (showing {displayedRoutes.length})
+            {sortedRoutes.length}{hasMore ? '+' : ''} routes{displayedRoutes.length < sortedRoutes.length ? ` (showing ${displayedRoutes.length})` : ''}
           </p>
 
           {selectedRoute && (
@@ -305,17 +331,23 @@ function App() {
             ) : (
               <div className="h-[50vh] flex items-center justify-center">
                 <div className="text-center text-gray-500 text-sm">
-                  {!selectedAreaId && !selectedRoute ? (
-                    <div>
-                      <p className="mb-2 font-medium">No areas selected</p>
-                      <p>Start by searching for an area or route in the sidebar</p>
-                      <p className="mt-2">Enter a location or route name and click on a result</p>
-                    </div>
-                  ) : loading ? (
-                    'Loading...'
-                  ) : (
-                    'No routes found matching your criteria'
-                  )}
+                  {(() => {
+                    const hasActiveFilters =
+                      currentFilters.types.length > 0 ||
+                      currentFilters.tags.length > 0 ||
+                      !!currentFilters.grades.min ||
+                      !!currentFilters.grades.max;
+                    if (!selectedAreaId && !selectedRoute && !hasActiveFilters) {
+                      return (
+                        <div>
+                          <p className="mb-2 font-medium">No areas selected</p>
+                          <p>Start by searching for an area or route in the sidebar</p>
+                          <p className="mt-2">Enter a location or route name and click on a result</p>
+                        </div>
+                      );
+                    }
+                    return loading ? 'Loading...' : 'No routes found matching your criteria';
+                  })()}
                 </div>
               </div>
             )}

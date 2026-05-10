@@ -50,7 +50,19 @@ export function RouteCard({ route }: RouteCardProps) {
             <span className="text-yellow-500"> *</span> {route.route_stars} ({route.route_votes}) |
             {route.route_length_ft && ` ${route.route_length_ft}ft`} |
             {` ${route.route_pitches} ${route.route_pitches === 1 ? 'pitch' : 'pitches'}`} |
-            {` `}{route.area_name}
+            {` `}
+            {route.area_url ? (
+              <a
+                href={route.area_url}
+                className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {route.area_name}
+              </a>
+            ) : (
+              route.area_name
+            )}
             {route.area_path && (
               <span className="text-gray-400 dark:text-gray-500 ml-1 text-xs">
                 ({getShortAreaPath(route.area_path)})

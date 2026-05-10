@@ -28,6 +28,7 @@ export interface RouteApi {
   route_tick_comments: string | null;
   area_path: string;
   area_name: string;
+  area_url: string | null;
 }
 
 export interface AreaApi {
