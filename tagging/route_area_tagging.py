@@ -103,8 +103,9 @@ def manual_tagging(data):
         for route in area.get("routes", []):
             manual_tags = {}
 
-            # Rule 1: Logistics - rope length tags
-            if route.get("route_pitches", 1) == 1 and route.get("route_length_meter") is not None:
+            # Rule 1: Logistics - rope length tags (single-pitch non-boulder only)
+            is_boulder = "Boulder" in route.get("route_type", "")
+            if route.get("route_pitches", 1) == 1 and not is_boulder and route.get("route_length_meter") is not None:
                 length = route["route_length_meter"]
                 if length <= 30:
                     manual_tags.setdefault("Logistics", []).append("rope_60m")
@@ -512,12 +513,23 @@ def process_areas_and_routes(input_file: str, route_prompt_file: str, retrieve_o
                         for manual_category, tags in manual_tags.items():
                             llm_category = map_category(manual_category)
                             
-                            # Special handling for Logistics (rope length) tags based on route_pitches
+                            # Special handling for Logistics tags
                             if llm_category == "Logistics":
-                                # For single-pitch routes, manual tags take priority
-                                if route.get('route_pitches', 1) == 1:
-                                    combined_tags[llm_category] = tags
-                                # For multi-pitch routes, LLM tags take priority (already added)
+                                _pitch_tags = {"single_pitch", "multi_pitch"}
+                                _rope_tags = {"rope_60m", "rope_70m", "rope_80m"}
+                                existing = list(combined_tags.get(llm_category, []))
+
+                                # Pitch classification: always rule-based — strip LLM pitch tags, add manual ones
+                                _manual_pitch = [t for t in tags if t in _pitch_tags]
+                                if _manual_pitch:
+                                    existing = [t for t in existing if t not in _pitch_tags] + _manual_pitch
+
+                                # Rope length: rule-based for single-pitch, LLM for multi-pitch
+                                _manual_rope = [t for t in tags if t in _rope_tags]
+                                if _manual_rope and route.get('route_pitches', 1) == 1:
+                                    existing = [t for t in existing if t not in _rope_tags] + _manual_rope
+
+                                combined_tags[llm_category] = existing
                                 continue
                             
                             # For all other categories, combine tags
