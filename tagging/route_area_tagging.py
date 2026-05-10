@@ -20,6 +20,7 @@ MAX_BATCH_SIZE = 50000  # Batch API limit
 MAX_RETRIES = 3
 RETRY_DELAY = 5  # seconds
 LOG_FILE = "tagging_validation.log"  # Log file for tag validation
+TAGGING_MODEL = "gpt-4o-mini"  # Set by Phase 03 benchmark (03-02). Options: gpt-4o-mini, gpt-5-nano, gpt-5-mini
 
 # Define allowed tags for each category
 ALLOWED_TAGS = {
@@ -159,7 +160,7 @@ Comments: {route.get('route_tick_comments', '')} {' '.join([c.get('comment_text'
             "method": "POST",
             "url": "/v1/chat/completions",
             "body": {
-                "model": "gpt-4o-mini",
+                "model": TAGGING_MODEL,
                 "messages": [
                     {"role": "system", "content": prompt_template},
                     {"role": "user", "content": input_text}
