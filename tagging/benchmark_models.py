@@ -102,7 +102,7 @@ Comments: {route.get('route_tick_comments', '')} {' '.join([c.get('comment_text'
                     {"role": "user", "content": input_text},
                 ],
                 "temperature": 0.3,
-                "max_tokens": 500,
+                "max_completion_tokens": 500,
                 "top_p": 0.95,
                 "n": 1,
             },
