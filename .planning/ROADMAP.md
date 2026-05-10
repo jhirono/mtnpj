@@ -45,7 +45,7 @@ Plans:
 - [x] 02-01-PLAN.md — Schema migration (comments CHECK constraint + 'tick') + test scaffold
 - [x] 02-02-PLAN.md — login_mp() implementation + parse_stats() updated to return list[dict]
 - [x] 02-03-PLAN.md — collect_ticks.py standalone tick collection orchestrator
-- [ ] 02-04-PLAN.md — El Cap validation run + go/no-go gate + full Yosemite NP scrape/import/ticks
+- [x] 02-04-PLAN.md — El Cap validation run + go/no-go gate + full Yosemite NP scrape/import/ticks
 
 **Success criteria:**
 1. Selenium login session authenticated and stable — MP authenticated pages load without redirect
@@ -90,5 +90,5 @@ Plans:
 | Phase | Milestone | Plans | Status | Completed |
 |-------|-----------|-------|--------|-----------|
 | 01 Full-Stack Refactor | v1.0 | 5/5 | Complete | 2026-05-09 |
-| 02 Tick Comments | v1.1 | 4/4 | Planned | — |
+| 02 Tick Comments | v1.1 | 4/4 | Complete | 2026-05-10 |
 | 03 Tagging Upgrade | v1.1 | 0/? | Pending | — |

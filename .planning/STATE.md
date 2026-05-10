@@ -15,7 +15,7 @@ milestone: v1.1
 
 Phase: 02 Tick Comments — COMPLETE
 Plan: 4 plans in 4 waves (4/4 complete)
-Status: All plans complete — Yosemite NP scraped + imported + tick collection running
+Status: All plans complete — Yosemite NP scraped (2966 routes), imported into D1, 4,209 ticks collected
 Last activity: 2026-05-10 — 02-04 complete (Yosemite NP full run)
 
 ## Project Reference
