@@ -84,7 +84,7 @@ CREATE INDEX IF NOT EXISTS idx_routes_snow ON routes(is_snow);
 CREATE TABLE IF NOT EXISTS comments (
   comment_id TEXT PRIMARY KEY,
   parent_id TEXT NOT NULL,
-  parent_type TEXT NOT NULL CHECK(parent_type IN ('route', 'area')),
+  parent_type TEXT NOT NULL CHECK(parent_type IN ('route', 'area', 'tick')),
   comment_author TEXT,
   comment_text TEXT,
   comment_time TEXT
