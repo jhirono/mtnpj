@@ -44,7 +44,34 @@ export function AreaSearch({ onAreaSelect, onRouteSelect }: AreaSearchProps) {
           routeApi.fetchAreas({ q: trimmed, limit: 5 }),
           routeApi.fetchRoutes({ q: trimmed, limit: 5 }),
         ]);
-        setAreaResults(areasRes.data);
+
+        const slug = trimmed.toLowerCase().replace(/\s+/g, '-');
+        const areas = areasRes.data;
+
+        // If no exact name match but any result has /${slug}/ as an exact path segment,
+        // inject a synthetic "All routes in [slug]" entry at the top.
+        // Scan all results (not just first) because shorter-path results may be for
+        // a different area (e.g. "mount-index" results masking "index" area).
+        const hasExact = areas.some(a => a.area_name === slug);
+        const syntheticEntry = (() => {
+          if (hasExact || areas.length === 0) return null;
+          const matchingArea = areas.find(a => a.path.includes(`/${slug}/`));
+          if (!matchingArea) return null;
+          const idx = matchingArea.path.indexOf(`/${slug}/`);
+          const prefix = matchingArea.path.slice(0, idx + slug.length + 2);
+          return {
+            area_id: `path_prefix:${prefix}`,
+            area_name: slug,
+            area_url: '',
+            parent_id: null,
+            area_gps: null, area_description: null, area_getting_there: null,
+            area_access_issues: null, area_page_views: null, area_shared_on: null, area_tags: null,
+            path: prefix,
+            synthetic: true,
+          };
+        })();
+
+        setAreaResults(syntheticEntry ? [syntheticEntry, ...areas] : areas);
         setRouteResults(routesRes.data);
       } catch {
         setAreaResults([]);
@@ -135,17 +162,26 @@ export function AreaSearch({ onAreaSelect, onRouteSelect }: AreaSearchProps) {
                     key={area.area_id}
                     className={`py-1 px-2 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 ${
                       selectedArea?.area_id === area.area_id ? 'bg-blue-100 dark:bg-blue-900' : ''
-                    }`}
+                    } ${area.synthetic ? 'border-b border-gray-200 dark:border-gray-700' : ''}`}
                     onClick={() => handleAreaSelect(area)}
                     title={area.path}
                   >
-                    <span className="text-gray-900 dark:text-gray-100 text-xs flex items-center">
-                      <span className="inline-block w-4 text-gray-500 mr-1">F</span>
-                      <span>{formatAreaPath(area.path || area.area_name)}</span>
-                      <span className="ml-auto text-blue-500 dark:text-blue-400">
-                        {selectedArea?.area_id === area.area_id ? 'V' : '+'}
+                    {area.synthetic ? (
+                      <span className="text-gray-900 dark:text-gray-100 text-xs flex items-center">
+                        <span className="inline-block w-4 mr-1">📁</span>
+                        <span className="font-medium">{area.area_name}</span>
+                        <span className="ml-1 text-gray-500">(all sub-areas)</span>
+                        <span className="ml-auto text-blue-500 dark:text-blue-400">+</span>
                       </span>
-                    </span>
+                    ) : (
+                      <span className="text-gray-900 dark:text-gray-100 text-xs flex items-center">
+                        <span className="inline-block w-4 text-gray-500 mr-1">F</span>
+                        <span>{formatAreaPath(area.path || area.area_name)}</span>
+                        <span className="ml-auto text-blue-500 dark:text-blue-400">
+                          {selectedArea?.area_id === area.area_id ? 'V' : '+'}
+                        </span>
+                      </span>
+                    )}
                   </div>
                 ))}
 
@@ -190,7 +226,7 @@ export function AreaSearch({ onAreaSelect, onRouteSelect }: AreaSearchProps) {
           </div>
           <div className="flex flex-wrap gap-1">
             <div className="flex items-center gap-0.5 py-0.5 px-1.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded text-xs">
-              <span>{selectedArea.area_name}</span>
+              <span>{selectedArea.area_name}{selectedArea.synthetic ? ' (all)' : ''}</span>
               <button
                 onClick={handleClearArea}
                 className="inline-flex items-center justify-center w-3 h-3 ml-0.5 rounded-full bg-gray-200 dark:bg-gray-600 hover:bg-gray-300 dark:hover:bg-gray-500 text-gray-500 dark:text-gray-400 text-[10px] leading-none"

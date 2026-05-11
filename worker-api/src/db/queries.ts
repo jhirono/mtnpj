@@ -36,7 +36,11 @@ export function buildRoutesQuery(f: RouteFilters): { sql: string; params: unknow
   if (f.region) { conds.push('a.path LIKE ?'); params.push(`/${f.region}/%`); }
   if (f.stars_min !== undefined) { conds.push('r.route_stars >= ?'); params.push(f.stars_min); }
   if (f.votes_min !== undefined) { conds.push('r.route_votes >= ?'); params.push(f.votes_min); }
-  if (f.area_id) {
+  if (f.area_path && !f.area_id) {
+    // Virtual path-prefix filter (no DB area row — path_prefix: synthetic areas)
+    conds.push(`INSTR(a.path, ?) = 1`);
+    params.push(f.area_path);
+  } else if (f.area_id) {
     if (f.area_path) {
       // D1 rejects LIKE/GLOB with long slug paths ("pattern too complex").
       // INSTR(path, prefix) = 1 is a reliable prefix-match that avoids backtracking.
@@ -66,16 +70,22 @@ export function buildAreasQuery(opts: {
 }): { sql: string; params: unknown[] } {
   const conds: string[] = ['1=1'];
   const params: unknown[] = [];
+  let slug = '';
   if (opts.q) {
     // area_name is stored as slugs (e.g. "el-capitan"); normalise user input the same way
-    const slug = opts.q.toLowerCase().replace(/\s+/g, '-');
+    slug = opts.q.toLowerCase().replace(/\s+/g, '-');
     conds.push('(area_name LIKE ? OR path LIKE ?)');
     params.push(`%${slug}%`, `%${slug}%`);
   }
   if (opts.region) { conds.push('path LIKE ?'); params.push(`/${opts.region}/%`); }
   if (opts.parent_id) { conds.push('parent_id = ?'); params.push(opts.parent_id); }
   const offset = (opts.page - 1) * opts.limit;
-  const sql = `SELECT * FROM areas WHERE ${conds.join(' AND ')} ORDER BY area_name LIMIT ? OFFSET ?`;
+  // Sort: exact area_name match first, then by path depth (shorter = higher in hierarchy)
+  const orderBy = slug
+    ? `CASE WHEN area_name = ? THEN 0 ELSE 1 END, LENGTH(path), area_name`
+    : `area_name`;
+  if (slug) params.push(slug);
+  const sql = `SELECT * FROM areas WHERE ${conds.join(' AND ')} ORDER BY ${orderBy} LIMIT ? OFFSET ?`;
   params.push(opts.limit, offset);
   return { sql, params };
 }

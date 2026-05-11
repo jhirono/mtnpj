@@ -26,8 +26,13 @@ app.get('/routes', zValidator('query', routeQuerySchema), async (c) => {
 
   // Resolve area_path before building the query so we avoid a subquery inside LIKE,
   // which D1 does not support ("LIKE or GLOB pattern too complex").
+  // Special prefix "path_prefix:" allows virtual path-based filtering without a DB area row.
   let resolvedAreaPath: string | undefined;
-  if (f.area_id) {
+  let resolvedAreaId: string | undefined = f.area_id;
+  if (f.area_id?.startsWith('path_prefix:')) {
+    resolvedAreaPath = f.area_id.slice('path_prefix:'.length);
+    resolvedAreaId = undefined;
+  } else if (f.area_id) {
     const areaRow = await c.env.DB
       .prepare('SELECT path FROM areas WHERE area_id = ? LIMIT 1')
       .bind(f.area_id)
@@ -35,7 +40,7 @@ app.get('/routes', zValidator('query', routeQuerySchema), async (c) => {
     resolvedAreaPath = areaRow?.path;
   }
 
-  const { sql, params } = buildRoutesQuery({ ...f, area_path: resolvedAreaPath });
+  const { sql, params } = buildRoutesQuery({ ...f, area_id: resolvedAreaId, area_path: resolvedAreaPath });
   const { results } = await c.env.DB.prepare(sql).bind(...params).all<RouteRow & { area_path: string; area_name: string; area_url: string | null }>();
   return c.json({ data: results ?? [], page: f.page, limit: f.limit });
 });

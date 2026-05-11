@@ -44,6 +44,7 @@ export interface AreaApi {
   area_shared_on: string | null;
   area_tags: string | null;
   path: string;
+  synthetic?: boolean;
 }
 
 export interface ApiFilters {
