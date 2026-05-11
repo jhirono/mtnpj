@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Awesome Climbing Search</title>
     
@@ -18,6 +18,22 @@
   </head>
   <body>
     <div id="root"></div>
+    <!-- SW bust: unregister stale workers and reload once if necessary -->
+    <script>
+      (function() {
+        var CACHE_KEY = 'sw-bust-1e1b295';
+        if ('serviceWorker' in navigator && !sessionStorage.getItem(CACHE_KEY)) {
+          sessionStorage.setItem(CACHE_KEY, '1');
+          navigator.serviceWorker.getRegistrations().then(function(regs) {
+            if (regs.length > 0) {
+              Promise.all(regs.map(function(r) { return r.unregister(); })).then(function() {
+                window.location.reload();
+              });
+            }
+          });
+        }
+      })();
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
