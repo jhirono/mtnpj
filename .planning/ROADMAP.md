@@ -94,6 +94,37 @@ Plans:
 
 ---
 
+---
+
+### Phase 04: Specialty Grade Sort
+
+**Goal:** Add discipline-specific sort options (Aid Grade, Ice Grade, Mixed Grade) to the Sort By dropdown so aid/ice/mixed climbers can order routes by their relevant grade system instead of YDS only.
+
+**Requirements:** SORT-01, SORT-02, SORT-03
+
+**Plans:** 1 plan
+
+Plans:
+- [x] 04-01-PLAN.md — Parse A/C, WI/AI, M grades from route_grade; add sort options to UI
+
+**Success criteria:**
+1. Aid routes can be sorted A0→A6+/C0→C6+ (or reverse) — grade extracted from combined route_grade string
+2. Ice routes can be sorted WI1→WI7+/AI1→AI5+ (or reverse)
+3. Mixed routes can be sorted M1→M12+ (or reverse) — extracted from route_grade or route_protection_grading
+4. Routes without a relevant specialty grade sort to the end (not interleaved as 0)
+5. Sort options appear in the dropdown and work in both ascending and descending direction
+
+**Build notes:**
+- No API changes — all sorting is client-side (existing pattern)
+- route_grade stores combined strings: "5.9 A3", "WI4", "5.8 C2", "5.9 A3+", "WI3-4"
+- Aid grade also appears in route_protection_grading: "A3+", "A2+", "A0"
+- Mixed M-grade in route_protection_grading: "M4", "M5-", "M6+"
+- A grades and C grades share the same numeric scale (C2 ≈ A2 in difficulty, just gear style differs)
+- WI and AI share the same numeric scale (AI is alpine ice, WI is waterfall ice)
+- Routes missing a grade for the selected sort dimension sort to the bottom (null last)
+
+---
+
 ## Progress
 
 | Phase | Milestone | Plans | Status | Completed |
@@ -101,3 +132,4 @@ Plans:
 | 01 Full-Stack Refactor | v1.0 | 5/5 | Complete | 2026-05-09 |
 | 02 Tick Comments | v1.1 | 4/4 | Complete | 2026-05-10 |
 | 03 Tagging Upgrade | v1.1 | 5/5 | Pending | — |
+| 04 Specialty Grade Sort | v1.2 | 1/1 | Complete | 2026-05-16 |
