@@ -155,6 +155,7 @@ function App() {
 
     return [...filteredRoutes].sort((a, b) => {
       const multiplier = sortConfig.option === 'grade' || sortConfig.option === 'left_to_right'
+        || sortConfig.option === 'aid_grade' || sortConfig.option === 'ice_grade' || sortConfig.option === 'mixed_grade'
         ? (sortConfig.ascending ? -1 : 1)
         : (sortConfig.ascending ? 1 : -1);
 
