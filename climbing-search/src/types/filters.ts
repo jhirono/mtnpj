@@ -105,7 +105,55 @@ export function normalizeGrade(grade: string): string {
   return grade;
 }
 
-export type SortOption = 'grade' | 'stars' | 'left_to_right' | 'votes';
+/**
+ * Extract a numeric sort key for aid grade from route_grade and/or route_protection_grading.
+ * Regex: /([AC])(\d+)(\+?)/ — matches A0-A6+, C0-C6+.
+ * A and C share the same numeric scale (C2 ≈ A2, gear style differs only).
+ * Returns level + 0.5 for + suffix (e.g. A3+ → 3.5).
+ * Returns null if no aid grade found in either field.
+ */
+export function extractAidGradeNumeric(routeGrade: string | null, protectionGrading: string | null): number | null {
+  const AID_RE = /([AC])(\d+)(\+?)/;
+  for (const src of [routeGrade, protectionGrading]) {
+    if (!src) continue;
+    const m = src.match(AID_RE);
+    if (m) return parseInt(m[2]) + (m[3] === '+' ? 0.5 : 0);
+  }
+  return null;
+}
+
+/**
+ * Extract a numeric sort key for ice grade from route_grade.
+ * Regex: /(WI|AI)(\d+)(\+?)/ — matches WI1-WI7+, AI1-AI5+.
+ * WI and AI share the same numeric scale.
+ * Returns level + 0.5 for + suffix (e.g. WI4+ → 4.5).
+ * Returns null if no ice grade found.
+ */
+export function extractIceGradeNumeric(routeGrade: string | null): number | null {
+  const ICE_RE = /(WI|AI)(\d+)(\+?)/;
+  if (!routeGrade) return null;
+  const m = routeGrade.match(ICE_RE);
+  if (m) return parseInt(m[2]) + (m[3] === '+' ? 0.5 : 0);
+  return null;
+}
+
+/**
+ * Extract a numeric sort key for mixed grade from route_grade and/or route_protection_grading.
+ * Regex: /M(\d+)(\+?)/ — matches M1-M12+.
+ * Returns level + 0.5 for + suffix (e.g. M6+ → 6.5).
+ * Returns null if no mixed grade found in either field.
+ */
+export function extractMixedGradeNumeric(routeGrade: string | null, protectionGrading: string | null): number | null {
+  const MIXED_RE = /M(\d+)(\+?)/;
+  for (const src of [routeGrade, protectionGrading]) {
+    if (!src) continue;
+    const m = src.match(MIXED_RE);
+    if (m) return parseInt(m[1]) + (m[2] === '+' ? 0.5 : 0);
+  }
+  return null;
+}
+
+export type SortOption = 'grade' | 'stars' | 'left_to_right' | 'votes' | 'aid_grade' | 'ice_grade' | 'mixed_grade';
 
 export interface SortConfig {
   option: SortOption;

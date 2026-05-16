@@ -11,14 +11,14 @@ interface BeforeInstallPromptEvent extends Event {
 const InstallPrompt: React.FC = () => {
   const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isInstalled, setIsInstalled] = useState(false);
-  
+
   useEffect(() => {
     // Check if app is already installed
     if (window.matchMedia('(display-mode: standalone)').matches) {
       setIsInstalled(true);
       return;
     }
-    
+
     // Listen for the beforeinstallprompt event
     const handleBeforeInstallPrompt = (e: Event) => {
       // Prevent Chrome 76+ from automatically showing the prompt
@@ -26,44 +26,44 @@ const InstallPrompt: React.FC = () => {
       // Store the event for later use
       setInstallPrompt(e as BeforeInstallPromptEvent);
     };
-    
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    
+
     // Listen for app installation
     window.addEventListener('appinstalled', () => {
       setIsInstalled(true);
       setInstallPrompt(null);
     });
-    
+
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
-  
+
   const handleInstallClick = async () => {
     if (!installPrompt) return;
-    
+
     // Show the install prompt
     await installPrompt.prompt();
-    
+
     // Wait for the user to respond to the prompt
     const choiceResult = await installPrompt.userChoice;
-    
+
     if (choiceResult.outcome === 'accepted') {
       console.log('User accepted the install prompt');
     } else {
       console.log('User dismissed the install prompt');
     }
-    
+
     // Clear the saved prompt as it can't be used again
     setInstallPrompt(null);
   };
-  
+
   // Don't show anything if the app is already installed or can't be installed
   if (isInstalled || !installPrompt) {
     return null;
   }
-  
+
   return (
     <div className="fixed bottom-4 left-4 z-50">
       <button
@@ -79,4 +79,4 @@ const InstallPrompt: React.FC = () => {
   );
 };
 
-export default InstallPrompt; 
+export default InstallPrompt;

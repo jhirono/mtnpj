@@ -26,7 +26,7 @@ export function registerServiceWorker() {
 export function setupOfflineDetection(callback: (isOnline: boolean) => void) {
   // Initial status
   callback(navigator.onLine);
-  
+
   // Listen for changes
   window.addEventListener('online', () => callback(true));
   window.addEventListener('offline', () => callback(false));
@@ -38,4 +38,4 @@ export function setupOfflineDetection(callback: (isOnline: boolean) => void) {
  */
 export function isOnline(): boolean {
   return navigator.onLine;
-} 
+}

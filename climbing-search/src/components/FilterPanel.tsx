@@ -267,6 +267,9 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: Fil
             <option value="stars">Stars</option>
             <option value="votes"># of Votes</option>
             <option value="left_to_right">Left to Right</option>
+            <option value="aid_grade">Aid Grade (A/C)</option>
+            <option value="ice_grade">Ice Grade (WI/AI)</option>
+            <option value="mixed_grade">Mixed Grade (M)</option>
           </select>
           <label className="flex items-center text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
             <input
