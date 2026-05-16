@@ -8,8 +8,8 @@ const OfflineIndicator: React.FC = () => {
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
 
   useEffect(() => {
-    // Setup offline detection
-    setupOfflineDetection((isOnline) => {
+    // Setup offline detection and return cleanup to remove listeners on unmount
+    return setupOfflineDetection((isOnline) => {
       setIsOffline(!isOnline);
     });
   }, []);

@@ -22,14 +22,23 @@ export function registerServiceWorker() {
 /**
  * Setup offline detection and callback when online status changes
  * @param callback Function to call when online status changes
+ * @returns Cleanup function that removes the event listeners
  */
-export function setupOfflineDetection(callback: (isOnline: boolean) => void) {
+export function setupOfflineDetection(callback: (isOnline: boolean) => void): () => void {
   // Initial status
   callback(navigator.onLine);
 
-  // Listen for changes
-  window.addEventListener('online', () => callback(true));
-  window.addEventListener('offline', () => callback(false));
+  // Store handler references so they can be removed later
+  const onOnline = () => callback(true);
+  const onOffline = () => callback(false);
+
+  window.addEventListener('online', onOnline);
+  window.addEventListener('offline', onOffline);
+
+  return () => {
+    window.removeEventListener('online', onOnline);
+    window.removeEventListener('offline', onOffline);
+  };
 }
 
 /**
