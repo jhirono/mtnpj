@@ -5,7 +5,7 @@ import { RouteCard } from './components/RouteCard'
 import OfflineIndicator from './components/OfflineIndicator'
 import InstallPrompt from './components/InstallPrompt'
 import type { RouteFilters, SortConfig } from './types/filters'
-import { GRADE_ORDER, normalizeGrade, extractAidGradeNumeric, extractIceGradeNumeric, extractMixedGradeNumeric } from './types/filters'
+import { GRADE_ORDER, normalizeGrade, extractAidGradeNumeric, extractIceGradeNumeric, extractMixedGradeNumeric, extractBoulderGradeNumeric } from './types/filters'
 import { routeApi } from './api/routeApi'
 import type { RouteApi, ApiFilters, RouteType } from './api/types'
 import { parseRouteTypes } from './api/types'
@@ -155,7 +155,7 @@ function App() {
 
     return [...filteredRoutes].sort((a, b) => {
       const multiplier = sortConfig.option === 'grade' || sortConfig.option === 'left_to_right'
-        || sortConfig.option === 'aid_grade' || sortConfig.option === 'ice_grade' || sortConfig.option === 'mixed_grade'
+        || sortConfig.option === 'aid_grade' || sortConfig.option === 'ice_grade' || sortConfig.option === 'mixed_grade' || sortConfig.option === 'boulder_grade'
         ? (sortConfig.ascending ? -1 : 1)
         : (sortConfig.ascending ? 1 : -1);
 
@@ -202,6 +202,14 @@ function App() {
         case 'mixed_grade': {
           const aVal = extractMixedGradeNumeric(a.route_grade, a.route_protection_grading) ?? Infinity;
           const bVal = extractMixedGradeNumeric(b.route_grade, b.route_protection_grading) ?? Infinity;
+          if (aVal === Infinity && bVal === Infinity) return 0;
+          if (aVal === Infinity) return 1;
+          if (bVal === Infinity) return -1;
+          return multiplier * (aVal - bVal);
+        }
+        case 'boulder_grade': {
+          const aVal = extractBoulderGradeNumeric(a.route_grade) ?? Infinity;
+          const bVal = extractBoulderGradeNumeric(b.route_grade) ?? Infinity;
           if (aVal === Infinity && bVal === Infinity) return 0;
           if (aVal === Infinity) return 1;
           if (bVal === Infinity) return -1;

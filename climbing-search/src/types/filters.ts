@@ -153,7 +153,22 @@ export function extractMixedGradeNumeric(routeGrade: string | null, protectionGr
   return null;
 }
 
-export type SortOption = 'grade' | 'stars' | 'left_to_right' | 'votes' | 'aid_grade' | 'ice_grade' | 'mixed_grade';
+/**
+ * Extract a numeric sort key for boulder grade from route_grade.
+ * Regex: /V(-?\d+)(\+?)/ — matches VB (as V-1), V0–V17+.
+ * VB maps to -1. Range grades (V3-4) capture lower bound (3).
+ * Returns level + 0.5 for + suffix (e.g. V8+ → 8.5).
+ * Returns null if no V-grade found.
+ */
+export function extractBoulderGradeNumeric(routeGrade: string | null): number | null {
+  if (!routeGrade) return null;
+  if (/VB/i.test(routeGrade)) return -1;
+  const m = routeGrade.match(/V(\d+)(\+?)/i);
+  if (m) return parseInt(m[1]) + (m[2] === '+' ? 0.5 : 0);
+  return null;
+}
+
+export type SortOption = 'grade' | 'stars' | 'left_to_right' | 'votes' | 'aid_grade' | 'ice_grade' | 'mixed_grade' | 'boulder_grade';
 
 export interface SortConfig {
   option: SortOption;
