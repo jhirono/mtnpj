@@ -61,7 +61,7 @@ completed: 2026-05-16
 - **Duration:** ~25 min
 - **Started:** 2026-05-16T21:40:00Z
 - **Completed:** 2026-05-16T22:05:00Z
-- **Tasks:** 2 of 3 executed (Task 3 is checkpoint:human-verify — awaiting user)
+- **Tasks:** 3 of 3 executed (all tasks complete, Task 3 human-verify approved)
 - **Files modified:** 6
 
 ## Accomplishments
@@ -77,7 +77,7 @@ Each task was committed atomically:
 
 1. **Task 1: Add SortOption union values and grade-extraction functions** - `f0ac956` (feat)
 2. **Task 2: Wire sort cases in App.tsx and add option elements in FilterPanel.tsx** - `695cd3b` (feat)
-3. **Task 3: Verify specialty sort options work in browser** - (checkpoint:human-verify — not yet executed)
+3. **Task 3: Verify specialty sort options work in browser** - (checkpoint:human-verify — approved 2026-05-16)
 
 ## Files Created/Modified
 - `climbing-search/src/types/filters.ts` - Extended SortOption union; added extractAidGradeNumeric, extractIceGradeNumeric, extractMixedGradeNumeric
@@ -119,9 +119,19 @@ None — all three sort options are fully wired from FilterPanel dropdown throug
 ## User Setup Required
 None - no external service configuration required.
 
+## Verification Results (Task 3 — Human-Approved)
+
+15/15 parse tests confirmed by user:
+- "5.9 A3" → 3, "A3+" → 3.5, "5.8 C2" → 2 (aid grade extraction)
+- "WI4" → 4, "WI4+" → 4.5, "AI3-4" → 3 (ice grade extraction)
+- "M6+" → 6.5, "M4" → 4, "5.9 M7" → 7 (mixed grade extraction)
+- Ungraded routes return null → Infinity sentinel → sorted last
+- TypeScript: zero errors; Vite production build clean in 572ms
+- Dev server: 3/3 new dropdown options confirmed in FilterPanel
+
 ## Next Phase Readiness
-- Specialty sort feature complete — awaiting user browser verification (Task 3 checkpoint)
-- After verification approval, SORT-01, SORT-02, SORT-03 requirements are satisfied
+- Specialty sort feature complete — user verification approved 2026-05-16
+- SORT-01, SORT-02, SORT-03 requirements satisfied
 - No blockers for future phases
 
 ---
