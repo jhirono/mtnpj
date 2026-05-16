@@ -38,11 +38,17 @@ Fast, comprehensive climbing route discovery across all route types and area hie
 - ✓ Aid/clean-aid/ice/mixed grade parsing (A0-A5+, C0-C5+, WI, AI, M) — v1.0
 - ✓ Tagging pipeline (LLM + logic-based tags synced to D1) — v1.0
 - ✓ Selenium authenticated tick comment collection (Yosemite NP — 4,209 ticks across 174 routes) — v1.1 Phase 02
+- ✓ Improved tag accuracy — 6-category taxonomy, gpt-4o-mini, logic rules for pitch/rope/boulder — v1.1 Phase 03
+- ✓ Tag categories: Route Style, Crack Climbing, Movement, Logistics, Safety, Quality — v1.1 Phase 03
+- ✓ Working grade filter, area search, tag filter pagination, area link in route cards — v1.1 Phase 03
+- ✓ Specialty grade sort (Aid A/C, Ice WI/AI, Mixed M) — client-side regex parsing, Infinity sentinel, no API changes — v1.2 Phase 04
 
 ### Active
 
-- [ ] Improve tag accuracy (LLM prompts + logic rules)
-- [ ] Add new tag categories to tagging pipeline
+- [ ] Tag Nevada + Washington routes (pipeline only ran on Yosemite so far)
+- [ ] Add more regions (Red Rock, Tuolumne, Joshua Tree, Smith Rock)
+- [ ] Area hierarchy: El Capitan parent area missing from DB — search returns sub-areas only
+- [ ] True total route count in API (currently shows loaded batch + `+` indicator)
 
 ### Out of Scope
 
@@ -54,8 +60,10 @@ Fast, comprehensive climbing route discovery across all route types and area hie
 ## Context
 
 Shipped v1.0 with ~1,100 LOC TypeScript + ~1,800 LOC Python.
-17,358 routes across Nevada + Washington in production D1 (v1.0).
-Phase 02 complete: +2,969 Yosemite NP routes + 4,209 tick comments in local D1.
+Phase 02 complete: +2,969 Yosemite NP routes + 4,209 tick comments.
+Phase 03 complete: 6-category tagging pipeline (gpt-4o-mini), 2,216 Yosemite routes tagged in D1; UI overhauled (FilterPanel, grade filter, area search, area links, route count).
+Phase 04 complete: specialty grade sort (Aid A/C, Ice WI/AI, Mixed M) — SORT-01, SORT-02, SORT-03 satisfied.
+20,324+ routes in production D1 (Yosemite + Nevada + Washington).
 Deployed: climbing-search.pages.dev | climbing-search-api.jumpei-hirono.workers.dev
 
 ## Key Decisions
@@ -93,4 +101,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-05-10 after Phase 02 completion*
+*Last updated: 2026-05-10 after Phase 03 completion*
