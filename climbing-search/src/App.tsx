@@ -5,7 +5,7 @@ import { RouteCard } from './components/RouteCard'
 import OfflineIndicator from './components/OfflineIndicator'
 import InstallPrompt from './components/InstallPrompt'
 import type { RouteFilters, SortConfig } from './types/filters'
-import { GRADE_ORDER, normalizeGrade } from './types/filters'
+import { GRADE_ORDER, normalizeGrade, extractAidGradeNumeric, extractIceGradeNumeric, extractMixedGradeNumeric } from './types/filters'
 import { routeApi } from './api/routeApi'
 import type { RouteApi, ApiFilters, RouteType } from './api/types'
 import { parseRouteTypes } from './api/types'
@@ -181,6 +181,31 @@ function App() {
             return multiplier * (aLr - bLr);
           }
           return 0;
+        case 'aid_grade': {
+          const aVal = extractAidGradeNumeric(a.route_grade, a.route_protection_grading) ?? Infinity;
+          const bVal = extractAidGradeNumeric(b.route_grade, b.route_protection_grading) ?? Infinity;
+          // Always sort Infinity last regardless of direction
+          if (aVal === Infinity && bVal === Infinity) return 0;
+          if (aVal === Infinity) return 1;
+          if (bVal === Infinity) return -1;
+          return multiplier * (aVal - bVal);
+        }
+        case 'ice_grade': {
+          const aVal = extractIceGradeNumeric(a.route_grade) ?? Infinity;
+          const bVal = extractIceGradeNumeric(b.route_grade) ?? Infinity;
+          if (aVal === Infinity && bVal === Infinity) return 0;
+          if (aVal === Infinity) return 1;
+          if (bVal === Infinity) return -1;
+          return multiplier * (aVal - bVal);
+        }
+        case 'mixed_grade': {
+          const aVal = extractMixedGradeNumeric(a.route_grade, a.route_protection_grading) ?? Infinity;
+          const bVal = extractMixedGradeNumeric(b.route_grade, b.route_protection_grading) ?? Infinity;
+          if (aVal === Infinity && bVal === Infinity) return 0;
+          if (aVal === Infinity) return 1;
+          if (bVal === Infinity) return -1;
+          return multiplier * (aVal - bVal);
+        }
         default:
           return 0;
       }
