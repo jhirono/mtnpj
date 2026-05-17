@@ -105,6 +105,8 @@ export async function seedDB(db: D1Database): Promise<void> {
     db.prepare("INSERT INTO routes (route_id, area_id, route_name, route_url, route_grade, route_grade_numeric, route_stars, route_votes, is_trad, is_aid, route_description) VALUES ('12345', '300', 'The Nose', 'https://example.com/route/12345/the-nose', '5.14a', 14.1, 4.0, 500, 1, 1, 'Iconic big wall with crack systems')"),
     db.prepare("INSERT INTO routes (route_id, area_id, route_name, route_url, route_grade, route_grade_numeric, route_stars, route_votes, is_boulder) VALUES ('1004', '300', 'Boulder Problem', 'https://example.com/route/1004/boulder-problem', 'V3', NULL, 3.0, 25, 1)"),
     db.prepare("INSERT INTO routes (route_id, area_id, route_name, route_url, route_grade, route_grade_numeric, route_stars, route_votes, is_ice) VALUES ('1005', '300', 'Frozen Pillar', 'https://example.com/route/1005/frozen-pillar', 'WI4', NULL, 3.5, 40, 1)"),
+    db.prepare("INSERT INTO routes (route_id, area_id, route_name, route_url, route_grade, route_protection_grading, route_grade_numeric, route_stars, route_votes, is_trad, is_aid) VALUES ('1006', '300', 'The Shield', 'https://example.com/route/1006/the-shield', 'A3', 'C2', NULL, 4.0, 80, 1, 1)"),
+    db.prepare("INSERT INTO routes (route_id, area_id, route_name, route_url, route_grade, route_grade_numeric, route_stars, route_votes, is_mixed) VALUES ('1007', '300', 'Octopussy', 'https://example.com/route/1007/octopussy', 'M6', NULL, 3.5, 30, 1)"),
     // FTS rebuild after inserting routes
     db.prepare("INSERT INTO routes_fts(routes_fts) VALUES('rebuild')"),
   ]);
