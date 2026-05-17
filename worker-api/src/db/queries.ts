@@ -5,6 +5,8 @@ export interface RouteFilters {
   grade?: string;
   grade_min?: number;
   grade_max?: number;
+  grade_system?: 'yds' | 'boulder' | 'aid' | 'ice' | 'mixed';
+  grade_list?: string;
   type?: AllowedType;
   region?: string;
   stars_min?: number;
@@ -27,6 +29,28 @@ export function buildRoutesQuery(f: RouteFilters): { sql: string; params: unknow
   if (f.grade) { conds.push('r.route_grade = ?'); params.push(f.grade); }
   if (f.grade_min !== undefined) { conds.push('r.route_grade_numeric >= ?'); params.push(f.grade_min); }
   if (f.grade_max !== undefined) { conds.push('r.route_grade_numeric <= ?'); params.push(f.grade_max); }
+  // Non-YDS grade filtering via LIKE prefix matching (D-18, D-19)
+  // grade_min/grade_max are not sent by the client when grade_system !== 'yds' (D-20)
+  // All grade values are bound as parameterized params — never interpolated into SQL (T-05-01)
+  if (f.grade_list && f.grade_system && f.grade_system !== 'yds') {
+    const grades = f.grade_list.split(',').map((g: string) => g.trim()).filter(Boolean);
+    if (grades.length > 0) {
+      if (f.grade_system === 'aid' || f.grade_system === 'mixed') {
+        // Aid and Mixed: filter route_grade OR route_protection_grading (D-19)
+        // Note: 'M1%' LIKE also matches M10/M11/M12 — accepted MVP tradeoff (RESEARCH Pitfall 4)
+        const orClauses = grades.map(() =>
+          `(r.route_grade LIKE ? OR r.route_protection_grading LIKE ?)`
+        ).join(' OR ');
+        conds.push(`(${orClauses})`);
+        for (const g of grades) { params.push(`${g}%`, `${g}%`); }
+      } else {
+        // boulder, ice: filter route_grade only (D-19)
+        const orClauses = grades.map(() => `r.route_grade LIKE ?`).join(' OR ');
+        conds.push(`(${orClauses})`);
+        for (const g of grades) { params.push(`${g}%`); }
+      }
+    }
+  }
   if (f.type) {
     // type is enum-validated; column name is sourced from ALLOWED_TYPE_COLUMNS,
     // never from raw user input. Static-known column name = safe to interpolate.
