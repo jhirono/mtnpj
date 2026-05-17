@@ -12,6 +12,8 @@ const routeQuerySchema = z.object({
   grade: z.string().optional(),
   grade_min: z.coerce.number().optional(),
   grade_max: z.coerce.number().optional(),
+  grade_system: z.enum(['yds', 'boulder', 'aid', 'ice', 'mixed']).optional(),
+  grade_list: z.string().max(200).regex(/^[A-Z0-9,+\-]+$/i).optional(),
   type: z.enum(ALLOWED_TYPES).optional(),
   region: z.string().regex(/^[a-z0-9-]+$/, 'region must be slug').optional(),
   stars_min: z.coerce.number().min(0).max(4).optional(),
