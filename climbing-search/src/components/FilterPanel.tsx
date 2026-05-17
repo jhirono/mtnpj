@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
-import type { RouteFilters, GradeRange, SortConfig, SortOption } from '../types/filters'
-import { GRADE_ORDER, SIMPLE_GRADES, ROUTE_TYPE_LABELS } from '../types/filters'
+import type { RouteFilters, GradeRange, SortConfig, SortOption, GradeSystem } from '../types/filters'
+import { GRADE_ORDER, SIMPLE_GRADES, GRADE_LISTS, ROUTE_TYPE_LABELS } from '../types/filters'
 import { ROUTE_TYPES } from '../api/types'
 
 interface FilterPanelProps {
@@ -140,6 +140,16 @@ const FILTER_SECTIONS: FilterSection[] = [
   },
 ]
 
+// ─── Grade System Picker data ────────────────────────────────────────────────
+
+const GRADE_SYSTEMS: { value: GradeSystem; label: string }[] = [
+  { value: 'yds', label: 'YDS' },
+  { value: 'boulder', label: 'V' },
+  { value: 'aid', label: 'Aid' },
+  { value: 'ice', label: 'Ice' },
+  { value: 'mixed', label: 'Mixed' },
+];
+
 // ─── Component ──────────────────────────────────────────────────────────────
 
 export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: FilterPanelProps) {
@@ -197,6 +207,12 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: Fil
 
   const updateGradeRange = (range: GradeRange) =>
     onChange({ ...filters, grades: range })
+
+  const handleGradeSystemChange = (newSystem: GradeSystem) => {
+    setGradeFilterEnabled(false);
+    // Reset grades.min/max to empty — prevents stale values from previous system reaching API (RESEARCH Pitfall 2)
+    onChange({ ...filters, gradeSystem: newSystem, grades: { min: '', max: '' } });
+  };
 
   // ── render helpers ────────────────────────────────────────────────────────
 
@@ -267,10 +283,6 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: Fil
             <option value="stars">Stars</option>
             <option value="votes"># of Votes</option>
             <option value="left_to_right">Left to Right</option>
-            <option value="aid_grade">Aid Grade (A/C)</option>
-            <option value="ice_grade">Ice Grade (WI/AI)</option>
-            <option value="mixed_grade">Mixed Grade (M)</option>
-            <option value="boulder_grade">Boulder Grade (V)</option>
           </select>
           <label className="flex items-center text-sm text-gray-700 dark:text-gray-300 whitespace-nowrap">
             <input
@@ -304,6 +316,35 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: Fil
               {ROUTE_TYPE_LABELS[type]}
             </label>
           ))}
+        </div>
+      </div>
+
+      {/* Grade System — dedicated top-level row, above Grade Filter (D-01, D-02) */}
+      <div className="filter-group">
+        <div className="flex items-center gap-2">
+          <h3 className="font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap text-sm">
+            Grade System
+          </h3>
+          <div className="flex flex-1 gap-1 min-w-0" role="group" aria-label="Grade System">
+            {GRADE_SYSTEMS.map(({ value, label }) => {
+              const isActive = filters.gradeSystem === value;
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => handleGradeSystemChange(value)}
+                  className={`flex-1 py-2 px-1 text-sm font-medium rounded border transition-colors whitespace-nowrap overflow-hidden text-ellipsis ${
+                    isActive
+                      ? 'bg-blue-600 text-white border-blue-600 dark:bg-blue-600 dark:text-white dark:border-blue-600'
+                      : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
