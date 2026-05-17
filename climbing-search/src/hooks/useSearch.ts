@@ -10,7 +10,8 @@ export function useSearch() {
   const [filters, setFilters] = useState<RouteFilters>({
     grades: { min: '5.6', max: '5.13d' },
     types: [],
-    tags: []
+    tags: [],
+    gradeSystem: 'yds'
   })
 
   return {

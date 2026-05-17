@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import type { RouteFilters, GradeRange, SortConfig, SortOption, GradeSystem } from '../types/filters'
-import { GRADE_ORDER, SIMPLE_GRADES, GRADE_LISTS, ROUTE_TYPE_LABELS } from '../types/filters'
+import { GRADE_ORDER, GRADE_LISTS, ROUTE_TYPE_LABELS } from '../types/filters'
 import { ROUTE_TYPES } from '../api/types'
 
 interface FilterPanelProps {
