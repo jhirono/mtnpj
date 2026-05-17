@@ -5,7 +5,8 @@ import { RouteCard } from './components/RouteCard'
 import OfflineIndicator from './components/OfflineIndicator'
 import InstallPrompt from './components/InstallPrompt'
 import type { RouteFilters, SortConfig } from './types/filters'
-import { GRADE_ORDER, normalizeGrade, extractAidGradeNumeric, extractIceGradeNumeric, extractMixedGradeNumeric, extractBoulderGradeNumeric } from './types/filters'
+import { GRADE_ORDER, GRADE_LISTS, normalizeGrade, extractAidGradeNumeric, extractIceGradeNumeric, extractMixedGradeNumeric, extractBoulderGradeNumeric } from './types/filters'
+import type { GradeSystem } from './types/filters'
 import { routeApi } from './api/routeApi'
 import type { RouteApi, ApiFilters, RouteType } from './api/types'
 import { parseRouteTypes } from './api/types'
@@ -37,13 +38,27 @@ function filtersToApi(
     params.type = uiFilters.types[0];
   }
 
-  if (uiFilters.grades.min) {
-    const n = gradeToNumeric(uiFilters.grades.min);
-    if (n !== null) params.grade_min = n;
-  }
-  if (uiFilters.grades.max) {
-    const n = gradeToNumeric(uiFilters.grades.max);
-    if (n !== null) params.grade_max = n;
+  if (uiFilters.gradeSystem === 'yds' || !uiFilters.gradeSystem) {
+    // YDS path — existing numeric filtering unchanged (D-17, D-20)
+    params.grade_system = 'yds';
+    if (uiFilters.grades.min) {
+      const n = gradeToNumeric(uiFilters.grades.min);
+      if (n !== null) params.grade_min = n;
+    }
+    if (uiFilters.grades.max) {
+      const n = gradeToNumeric(uiFilters.grades.max);
+      if (n !== null) params.grade_max = n;
+    }
+  } else if (uiFilters.grades.min && uiFilters.grades.max) {
+    // Non-YDS: expand min→max into grade_list (D-16)
+    // grade_min/grade_max are NOT sent — mutually exclusive with grade_list (D-20)
+    const list = GRADE_LISTS[uiFilters.gradeSystem as GradeSystem];
+    const minIdx = list.indexOf(uiFilters.grades.min);
+    const maxIdx = list.indexOf(uiFilters.grades.max);
+    if (minIdx !== -1 && maxIdx !== -1 && minIdx <= maxIdx) {
+      params.grade_list = list.slice(minIdx, maxIdx + 1).join(',');
+    }
+    params.grade_system = uiFilters.gradeSystem;
   }
 
   return params;
@@ -58,7 +73,8 @@ function App() {
   const [currentFilters, setCurrentFilters] = useState<RouteFilters>({
     grades: { min: '', max: '' },
     types: [],
-    tags: []
+    tags: [],
+    gradeSystem: 'yds',    // D-04: YDS is default grade system on load
   });
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     option: 'votes',
