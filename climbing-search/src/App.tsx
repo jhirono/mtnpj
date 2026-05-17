@@ -171,16 +171,41 @@ function App() {
 
     return [...filteredRoutes].sort((a, b) => {
       const multiplier = sortConfig.option === 'grade' || sortConfig.option === 'left_to_right'
-        || sortConfig.option === 'aid_grade' || sortConfig.option === 'ice_grade' || sortConfig.option === 'mixed_grade' || sortConfig.option === 'boulder_grade'
         ? (sortConfig.ascending ? -1 : 1)
         : (sortConfig.ascending ? 1 : -1);
 
       switch (sortConfig.option) {
-        case 'grade':
-          return multiplier * (
-            GRADE_ORDER.indexOf(normalizeGrade(a.route_grade ?? '')) -
-            GRADE_ORDER.indexOf(normalizeGrade(b.route_grade ?? ''))
-          );
+        case 'grade': {
+          const sys = currentFilters.gradeSystem ?? 'yds';
+          if (sys === 'yds') {
+            return multiplier * (
+              GRADE_ORDER.indexOf(normalizeGrade(a.route_grade ?? '')) -
+              GRADE_ORDER.indexOf(normalizeGrade(b.route_grade ?? ''))
+            );
+          }
+          let aVal: number | null = null;
+          let bVal: number | null = null;
+          if (sys === 'boulder') {
+            aVal = extractBoulderGradeNumeric(a.route_grade);
+            bVal = extractBoulderGradeNumeric(b.route_grade);
+          } else if (sys === 'aid') {
+            aVal = extractAidGradeNumeric(a.route_grade, a.route_protection_grading);
+            bVal = extractAidGradeNumeric(b.route_grade, b.route_protection_grading);
+          } else if (sys === 'ice') {
+            aVal = extractIceGradeNumeric(a.route_grade);
+            bVal = extractIceGradeNumeric(b.route_grade);
+          } else if (sys === 'mixed') {
+            aVal = extractMixedGradeNumeric(a.route_grade, a.route_protection_grading);
+            bVal = extractMixedGradeNumeric(b.route_grade, b.route_protection_grading);
+          }
+          // Null-last: routes without a grade for the active system sort to bottom (D-12)
+          const aFinal = aVal ?? Infinity;
+          const bFinal = bVal ?? Infinity;
+          if (aFinal === Infinity && bFinal === Infinity) return 0;
+          if (aFinal === Infinity) return 1;
+          if (bFinal === Infinity) return -1;
+          return multiplier * (aFinal - bFinal);
+        }
         case 'stars': {
           const aStars = a.route_stars ?? 0;
           const bStars = b.route_stars ?? 0;
@@ -198,44 +223,11 @@ function App() {
             return multiplier * (aLr - bLr);
           }
           return 0;
-        case 'aid_grade': {
-          const aVal = extractAidGradeNumeric(a.route_grade, a.route_protection_grading) ?? Infinity;
-          const bVal = extractAidGradeNumeric(b.route_grade, b.route_protection_grading) ?? Infinity;
-          // Always sort Infinity last regardless of direction
-          if (aVal === Infinity && bVal === Infinity) return 0;
-          if (aVal === Infinity) return 1;
-          if (bVal === Infinity) return -1;
-          return multiplier * (aVal - bVal);
-        }
-        case 'ice_grade': {
-          const aVal = extractIceGradeNumeric(a.route_grade) ?? Infinity;
-          const bVal = extractIceGradeNumeric(b.route_grade) ?? Infinity;
-          if (aVal === Infinity && bVal === Infinity) return 0;
-          if (aVal === Infinity) return 1;
-          if (bVal === Infinity) return -1;
-          return multiplier * (aVal - bVal);
-        }
-        case 'mixed_grade': {
-          const aVal = extractMixedGradeNumeric(a.route_grade, a.route_protection_grading) ?? Infinity;
-          const bVal = extractMixedGradeNumeric(b.route_grade, b.route_protection_grading) ?? Infinity;
-          if (aVal === Infinity && bVal === Infinity) return 0;
-          if (aVal === Infinity) return 1;
-          if (bVal === Infinity) return -1;
-          return multiplier * (aVal - bVal);
-        }
-        case 'boulder_grade': {
-          const aVal = extractBoulderGradeNumeric(a.route_grade) ?? Infinity;
-          const bVal = extractBoulderGradeNumeric(b.route_grade) ?? Infinity;
-          if (aVal === Infinity && bVal === Infinity) return 0;
-          if (aVal === Infinity) return 1;
-          if (bVal === Infinity) return -1;
-          return multiplier * (aVal - bVal);
-        }
         default:
           return 0;
       }
     });
-  }, [filteredRoutes, sortConfig, selectedRoute]);
+  }, [filteredRoutes, sortConfig, selectedRoute, currentFilters]);
 
   const displayedRoutes = useMemo(() => {
     return sortedRoutes.slice(0, visibleRoutes);
