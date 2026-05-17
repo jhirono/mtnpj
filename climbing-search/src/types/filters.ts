@@ -11,6 +11,8 @@ export interface GradeRange {
   max: string;
 }
 
+export type GradeSystem = 'yds' | 'boulder' | 'aid' | 'ice' | 'mixed';
+
 export interface RouteFilters {
   grades: {
     min: string;
@@ -18,6 +20,7 @@ export interface RouteFilters {
   };
   types: RouteType[];
   tags: { category: string; selectedTags: string[] }[];
+  gradeSystem: GradeSystem;
 }
 
 export const GRADE_ORDER = [
@@ -63,6 +66,15 @@ export const SIMPLE_GRADES = [
   "5.15a", "5.15b", "5.15c", "5.15d",
   "5.16a", "5.16b", "5.16c", "5.16d"
 ];
+
+export const GRADE_LISTS: Record<GradeSystem, string[]> = {
+  yds: SIMPLE_GRADES,
+  boulder: ['VB', 'V0', 'V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7',
+            'V8', 'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17'],
+  aid: ['A0', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6'],
+  ice: ['WI1', 'WI2', 'WI3', 'WI4', 'WI5', 'WI6', 'WI7'],
+  mixed: ['M1', 'M2', 'M3', 'M4', 'M5', 'M6', 'M7', 'M8', 'M9', 'M10', 'M11', 'M12'],
+};
 
 // Helper function to normalize grade
 export function normalizeGrade(grade: string): string {
@@ -168,7 +180,7 @@ export function extractBoulderGradeNumeric(routeGrade: string | null): number | 
   return null;
 }
 
-export type SortOption = 'grade' | 'stars' | 'left_to_right' | 'votes' | 'aid_grade' | 'ice_grade' | 'mixed_grade' | 'boulder_grade';
+export type SortOption = 'grade' | 'stars' | 'left_to_right' | 'votes';
 
 export interface SortConfig {
   option: SortOption;

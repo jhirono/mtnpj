@@ -52,6 +52,8 @@ export interface ApiFilters {
   grade?: string;
   grade_min?: number;
   grade_max?: number;
+  grade_system?: 'yds' | 'boulder' | 'aid' | 'ice' | 'mixed';
+  grade_list?: string;
   type?: RouteType;
   region?: string;
   stars_min?: number;
