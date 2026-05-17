@@ -356,11 +356,18 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: Fil
             type="checkbox"
             checked={gradeFilterEnabled}
             onChange={(e) => {
-              setGradeFilterEnabled(e.target.checked)
+              setGradeFilterEnabled(e.target.checked);
+              const systemDefaults: Record<GradeSystem, { min: string; max: string }> = {
+                yds:    { min: '5.10a', max: '5.11a' },
+                boulder: { min: 'V0',   max: 'V5' },
+                aid:    { min: 'A0',   max: 'A3' },
+                ice:    { min: 'WI1',  max: 'WI4' },
+                mixed:  { min: 'M1',   max: 'M6' },
+              };
               onChange({
                 ...filters,
-                grades: e.target.checked ? { min: '5.10a', max: '5.11a' } : { min: '', max: '' },
-              })
+                grades: e.target.checked ? systemDefaults[filters.gradeSystem] : { min: '', max: '' },
+              });
             }}
           />
         </div>
@@ -372,32 +379,40 @@ export function FilterPanel({ filters, onChange, sortConfig, onSortChange }: Fil
                 <label className="block text-sm font-medium mb-0.5">Min Grade</label>
                 <select
                   value={filters.grades.min}
-                  onChange={(e) => updateGradeRange({
-                    ...filters.grades,
-                    min: e.target.value,
-                    max: GRADE_ORDER.indexOf(e.target.value) <= GRADE_ORDER.indexOf(filters.grades.max)
-                      ? filters.grades.max
-                      : e.target.value,
-                  })}
+                  onChange={(e) => {
+                    const list = filters.gradeSystem === 'yds' ? GRADE_ORDER : GRADE_LISTS[filters.gradeSystem];
+                    const newMin = e.target.value;
+                    const maxIdx = list.indexOf(filters.grades.max);
+                    const minIdx = list.indexOf(newMin);
+                    updateGradeRange({
+                      ...filters.grades,
+                      min: newMin,
+                      max: minIdx <= maxIdx ? filters.grades.max : newMin,
+                    });
+                  }}
                   className="w-full p-1.5 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 >
-                  {SIMPLE_GRADES.map(grade => <option key={grade} value={grade}>{grade}</option>)}
+                  {GRADE_LISTS[filters.gradeSystem].map(grade => <option key={grade} value={grade}>{grade}</option>)}
                 </select>
               </div>
               <div className="flex-1">
                 <label className="block text-sm font-medium mb-0.5">Max Grade</label>
                 <select
                   value={filters.grades.max}
-                  onChange={(e) => updateGradeRange({
-                    ...filters.grades,
-                    max: e.target.value,
-                    min: GRADE_ORDER.indexOf(e.target.value) >= GRADE_ORDER.indexOf(filters.grades.min)
-                      ? filters.grades.min
-                      : e.target.value,
-                  })}
+                  onChange={(e) => {
+                    const list = filters.gradeSystem === 'yds' ? GRADE_ORDER : GRADE_LISTS[filters.gradeSystem];
+                    const newMax = e.target.value;
+                    const minIdx = list.indexOf(filters.grades.min);
+                    const maxIdx = list.indexOf(newMax);
+                    updateGradeRange({
+                      ...filters.grades,
+                      max: newMax,
+                      min: maxIdx >= minIdx ? filters.grades.min : newMax,
+                    });
+                  }}
                   className="w-full p-1.5 border rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                 >
-                  {SIMPLE_GRADES.map(grade => <option key={grade} value={grade}>{grade}</option>)}
+                  {GRADE_LISTS[filters.gradeSystem].map(grade => <option key={grade} value={grade}>{grade}</option>)}
                 </select>
               </div>
             </div>
