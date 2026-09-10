@@ -1,8 +1,15 @@
 ---
-status: complete
-phase: "04-specialty-grade-sort"
-last_activity: 2026-05-16
+gsd_state_version: 1.0
 milestone: v1.2
+milestone_name: milestone
+status: complete
+last_updated: "2026-05-16T23:47:36.790Z"
+progress:
+  total_phases: 3
+  completed_phases: 3
+  total_plans: 11
+  completed_plans: 11
+  percent: 100
 ---
 
 # Project State
@@ -55,15 +62,18 @@ Production: https://climbing-search.pages.dev (live, all fixes deployed)
 | D1 Database | climbing-search (4183c756) | ✅ 15,746 routes (Yosemite + Washington) |
 
 **Route coverage:**
+
 - Yosemite NP: 2,966 routes
 - Washington: 12,780 routes (fresh scrape 2026-05-10)
 - Nevada: removed (was stale data)
 
 **Tag coverage:**
+
 - Yosemite NP: 2,216 routes tagged (6 categories)
 - Washington: 12,070 of 12,780 routes tagged (6 categories, gpt-4o-mini)
 
 **Comment coverage:**
+
 - Yosemite: 4,209 tick comments across 174 routes (synced to remote D1 2026-05-10)
 - Washington: tick collection running in background (PID 47856, ~10,951 routes, log: /tmp/wa_ticks.log)
 - Note: remote comments table was missing 'tick' type in CHECK constraint — migrated 2026-05-10

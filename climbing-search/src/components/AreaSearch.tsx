@@ -40,9 +40,10 @@ export function AreaSearch({ onAreaSelect, onRouteSelect }: AreaSearchProps) {
     debounceRef.current = setTimeout(async () => {
       setIsSearching(true);
       try {
+        // Run independently so a routes FTS error doesn't clear area results.
         const [areasRes, routesRes] = await Promise.all([
-          routeApi.fetchAreas({ q: trimmed, limit: 5 }),
-          routeApi.fetchRoutes({ q: trimmed, limit: 5 }),
+          routeApi.fetchAreas({ q: trimmed, limit: 5 }).catch(() => ({ data: [] as AreaApi[], page: 1, limit: 5 })),
+          routeApi.fetchRoutes({ q: trimmed, limit: 5 }).catch(() => ({ data: [] as RouteApi[], page: 1, limit: 5 })),
         ]);
 
         const slug = trimmed.toLowerCase().replace(/\s+/g, '-');

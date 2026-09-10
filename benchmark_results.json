@@ -1,0 +1,1970 @@
+[
+  {
+    "route_id": "119941686",
+    "route_name": "The S. S. Minnow",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Logistics": [
+            "walk_off"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "106663077",
+    "route_name": "The Octagon",
+    "route_type": "Boulder",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Movement": [
+            "slopey_holds",
+            "small_edges"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Movement": [
+            "small_edges",
+            "technical_moves"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "106510747",
+    "route_name": "Bull Dozier",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "wide_hand"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "rope_60m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "106883592",
+    "route_name": "Ugly Duckling",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "hand",
+            "wide_hand"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "106141375",
+    "route_name": "Perfect Vision",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "126636127",
+    "route_name": "Warmup Problem",
+    "route_type": "Boulder",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "llm_tags": {
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "111968179",
+    "route_name": "Direct North Face",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "finger",
+            "wide_hand",
+            "offwidth",
+            "chimney",
+            "layback"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "105874557",
+    "route_name": "Direct North Buttress (DNB)",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "chimney"
+          ],
+          "Crack Climbing": [
+            "offwidth"
+          ],
+          "Movement": [
+            "reachy"
+          ],
+          "Logistics": [
+            "tricky_rappel"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "105847471",
+    "route_name": "South Face",
+    "route_type": "Trad, Aid",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "tower_climbing"
+          ],
+          "Crack Climbing": [
+            "chimney",
+            "offwidth"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "105877594",
+    "route_name": "Mirage",
+    "route_type": "Trad, Aid",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "tower_climbing"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Logistics": [
+            "tricky_rappel"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "layback",
+            "wide_hand"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105874680",
+    "route_name": "The Cookie-Right",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "finger",
+            "chimney",
+            "offwidth"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "108071292",
+    "route_name": "The Re-Animator",
+    "route_type": "Aid",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "offwidth",
+            "chimney"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "112885602",
+    "route_name": "North Face (Pegasus 5.12)",
+    "route_type": "Trad, Aid",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "tower_climbing"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "chimney"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "109356674",
+    "route_name": "Chvchichaschtli",
+    "route_type": "Sport",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Movement": [
+            "technical_moves",
+            "small_edges"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105991831",
+    "route_name": "Hardd",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "offwidth"
+          ],
+          "Crack Climbing": [
+            "wide_hand",
+            "finger",
+            "layback"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "offwidth",
+            "finger",
+            "layback"
+          ],
+          "Movement": [
+            "reachy",
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105979094",
+    "route_name": "Alimony Cracks",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_60m"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "wide_hand"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_60m"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105862890",
+    "route_name": "Crest Jewel (and Crest Jewel Direct)",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "layback"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "thin_hand",
+            "layback",
+            "chimney"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained",
+            "slopey_holds"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "walk_off",
+            "rope_drag_warning"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "200745987",
+    "route_name": "Green Face",
+    "route_type": "Boulder",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {}
+      },
+      "gpt-5-nano": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ]
+        }
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "119075204",
+    "route_name": "Unnamed",
+    "route_type": "Boulder",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {}
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {}
+      }
+    }
+  },
+  {
+    "route_id": "108281299",
+    "route_name": "Higher than you",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "finger",
+            "wide_hand"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "wide_hand"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "124800622",
+    "route_name": "Push-Push",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "gentle_overhang"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "steep_roof"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "wide_hand"
+          ],
+          "Logistics": [
+            "walk_off"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "119064237",
+    "route_name": "One Eyed Jack",
+    "route_type": "Sport, TR",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105915955",
+    "route_name": "North Buttress",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "gentle_overhang"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "rope_60m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "108104346",
+    "route_name": "V-Crack",
+    "route_type": "Trad, TR",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "offwidth",
+            "chimney"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "tricky_rappel"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "offwidth",
+            "chimney"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Safety": [
+            "rope_drag_warning",
+            "loose_rock"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "107428580",
+    "route_name": "Ninety-six Degrees in the Shade",
+    "route_type": "Sport",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {}
+      }
+    }
+  },
+  {
+    "route_id": "109287304",
+    "route_name": "Lock, Stock, and Barrel",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "llm_tags": {
+          "Route Style": [
+            "sporty_trad"
+          ]
+        }
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical",
+            "sporty_trad"
+          ],
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105964137",
+    "route_name": "Goodrich Pinnacle-Right Side",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "chimney"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "chimney"
+          ],
+          "Movement": [
+            "technical_moves",
+            "slopey_holds"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "126595619",
+    "route_name": "East Face",
+    "route_type": "Trad, Alpine",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab",
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical",
+            "slab"
+          ],
+          "Crack Climbing": [
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "119925066",
+    "route_name": "The Last Crusade",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "rope_60m",
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "202018629",
+    "route_name": "Cat's Squirrel p2",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "thin_hand"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "112913761",
+    "route_name": "Together Forever",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "thin_hand"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "rope_60m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "111857045",
+    "route_name": "Pink Panther",
+    "route_type": "Sport",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves",
+            "small_edges",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "106026258",
+    "route_name": "Red Zinger",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "thin_hand",
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "201534789",
+    "route_name": "Unknown",
+    "route_type": "Trad, Alpine",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Logistics": [
+            "walk_off"
+          ],
+          "Route Style": [
+            "slab"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Logistics": [
+            "walk_off"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105860641",
+    "route_name": "Crescent Arch",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "chimney",
+            "finger",
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_60m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "127007183",
+    "route_name": "Miyagi's Right",
+    "route_type": "TR",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Logistics": [
+            "walk_off"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Safety": [
+            "rope_drag_warning"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "118007757",
+    "route_name": "Wings of Steel",
+    "route_type": "Trad, Aid",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "126292261",
+    "route_name": "Flyin' High",
+    "route_type": "Trad, Alpine",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "thin_hand"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "thin_hand"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "111207113",
+    "route_name": "Angelic Upstart",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "sporty_trad"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Safety": [
+            "rope_drag_warning"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "106208614",
+    "route_name": "Wild in the Streaks",
+    "route_type": "Trad, Alpine",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "tricky_rappel"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves",
+            "small_edges"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Safety": [
+            "tricky_rappel"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105992951",
+    "route_name": "Waverly Wafer",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "offwidth"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "layback",
+            "offwidth"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "offwidth",
+            "finger",
+            "thin_hand",
+            "wide_hand",
+            "layback",
+            "chimney"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105833505",
+    "route_name": "The Nutcracker Suite (aka Nutcracker)",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "gentle_overhang"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "chimney",
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "106613468",
+    "route_name": "Corn Corner",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Crack Climbing": [
+            "wide_hand"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Logistics": [
+            "tricky_rappel"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "wide_hand"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "walk_off"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "109275454",
+    "route_name": "Father Time",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "gentle_overhang"
+          ],
+          "Crack Climbing": [
+            "layback"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pumpy_sustained"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_80m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "106224325",
+    "route_name": "Spaceballs",
+    "route_type": "Trad",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Logistics": [
+            "tricky_rappel",
+            "rope_60m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Logistics": [
+            "bolted_anchor",
+            "tricky_rappel"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "122345567",
+    "route_name": "Warmup Arete",
+    "route_type": "Boulder",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "llm_tags": {}
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Movement": [
+            "technical_moves"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "112833955",
+    "route_name": "Patio Cracks - Left",
+    "route_type": "",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "walk_off"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "no result"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "vertical"
+          ],
+          "Crack Climbing": [
+            "wide_hand"
+          ],
+          "Movement": [
+            "technical_moves",
+            "pockets_holes"
+          ],
+          "Logistics": [
+            "walk_off"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "119254167",
+    "route_name": "Mercury Falling",
+    "route_type": "Sport",
+    "has_ticks": false,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ],
+          "Safety": [
+            "loose_rock"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves",
+            "slopey_holds"
+          ],
+          "Logistics": [
+            "bolted_anchor"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "route_id": "105874465",
+    "route_name": "Outer Limits",
+    "route_type": "Trad",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Crack Climbing": [
+            "finger",
+            "layback"
+          ],
+          "Movement": [
+            "pumpy_sustained",
+            "technical_moves"
+          ],
+          "Logistics": [
+            "bolted_anchor",
+            "rope_70m"
+          ],
+          "Safety": [
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "error": "empty_content"
+      }
+    }
+  },
+  {
+    "route_id": "106021233",
+    "route_name": "Rainbow bridge",
+    "route_type": "Sport",
+    "has_ticks": true,
+    "models": {
+      "gpt-4o-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves"
+          ],
+          "Safety": [
+            "stick_clip",
+            "loose_rock"
+          ],
+          "Quality": [
+            "classic_route"
+          ]
+        }
+      },
+      "gpt-5-nano": {
+        "error": "empty_content"
+      },
+      "gpt-5-mini": {
+        "llm_tags": {
+          "Route Style": [
+            "slab"
+          ],
+          "Movement": [
+            "technical_moves",
+            "small_edges"
+          ],
+          "Safety": [
+            "stick_clip"
+          ]
+        }
+      }
+    }
+  }
+]

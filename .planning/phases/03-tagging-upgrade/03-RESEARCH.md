@@ -485,22 +485,25 @@ This is not a rename/refactor phase — no runtime state changes involving renam
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Does the current OpenAI project have batch access to gpt-5-nano and gpt-5-mini?**
    - What we know: The batch provisioning error exists for some projects. No way to verify without attempting the API call.
    - What's unclear: Whether the user's specific project key has access.
    - Recommendation: The benchmark script should be the discovery point. If gpt-5-mini fails, the script should report clearly and fall back to just comparing gpt-4o-mini vs gpt-5-nano.
+   - RESOLVED: benchmark script catches openai.PermissionDeniedError; batch access discovery deferred to runtime per plan design (03-02 Task 1).
 
 2. **How large will the Yosemite import SQL file be?**
    - What we know: Nevada had 6,407 routes → 8.3MB SQL. Yosemite has 2,966 routes → estimate ~3.5MB.
    - What's unclear: Whether chunking at 100KB per statement produces a file wrangler can execute in one shot.
    - Recommendation: `import_to_d1.py` already handles chunking; the resulting file will be ~90 statements similar to Nevada. The existing pattern works.
+   - RESOLVED: ~3.5MB estimated from NV precedent (6,407 routes → 8.3MB; 2,966 routes → ~3.5MB); import_to_d1.py chunking handles any size.
 
 3. **Will local D1 tick data correctly match Yosemite route IDs?**
    - What we know: 174 routes have tick comments in local D1; route IDs are numeric MP IDs. Yosemite route JSON also uses numeric MP IDs in `route_id`.
    - What's unclear: Whether any route_id mismatch exists (e.g., routes where the JSON has a different ID format than what `collect_ticks.py` stored).
    - Recommendation: The enrichment script should log how many of the 174 D1 tick routes successfully matched to JSON routes. Expected: ~174 matches if IDs are consistent.
+   - RESOLVED: str() cast in build_tick_map() + test_enrich_routes_route_id_cast_to_str test cover this (03-01 Task 2).
 
 ---
 

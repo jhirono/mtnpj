@@ -21,10 +21,14 @@ export function buildRoutesQuery(f: RouteFilters): { sql: string; params: unknow
   const conds: string[] = ['1=1'];
   const params: unknown[] = [];
 
-  // FTS5 full-text search
+  // FTS5 full-text search — strip special chars so hyphens/punctuation don't
+  // cause FTS5 syntax errors (e.g. "yosemite-valley" → "yosemite valley").
   if (f.q) {
-    conds.push(`r.rowid IN (SELECT rowid FROM routes_fts WHERE routes_fts MATCH ?)`);
-    params.push(f.q);
+    const ftsQ = f.q.replace(/[^\w\s]/g, ' ').trim().replace(/\s+/g, ' ');
+    if (ftsQ) {
+      conds.push(`r.rowid IN (SELECT rowid FROM routes_fts WHERE routes_fts MATCH ?)`);
+      params.push(ftsQ);
+    }
   }
   if (f.grade) { conds.push('r.route_grade = ?'); params.push(f.grade); }
   if (f.grade_min !== undefined) { conds.push('r.route_grade_numeric >= ?'); params.push(f.grade_min); }

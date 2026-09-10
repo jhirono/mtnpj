@@ -599,27 +599,31 @@ def extract_mp_route_id(route_url: str) -> str:
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **What is the MP rate limit policy?**
    - What we know: Current scraper uses synchronous requests with no explicit throttle (relies on sequential latency as natural throttle)
    - What's unclear: Whether MP enforces IP-based rate limiting and at what threshold
    - Recommendation: Start with `asyncio.Semaphore(5)` during Yosemite test case and observe; increase conservatively
+   - **RESOLVED:** Plan 01-01 sets `CONCURRENCY_LIMIT = 5` with `asyncio.Semaphore(5)` and 0.4s per-request delay. The Yosemite smoke test (T03) empirically validates this threshold before full Western US scrape proceeds.
 
 2. **Does D1 FTS5 content table auto-sync on INSERT or require manual trigger?**
    - What we know: Standard SQLite FTS5 content tables do NOT auto-sync — triggers required [CITED: SQLite FTS5 docs]
    - What's unclear: Whether Cloudflare D1's implementation adds auto-trigger behavior
    - Recommendation: Assume manual rebuild required; add `INSERT INTO routes_fts(routes_fts) VALUES('rebuild')` at end of import SQL
+   - **RESOLVED:** Plan 01-02 adopts manual rebuild. `import_to_d1.py` appends `INSERT INTO routes_fts(routes_fts) VALUES('rebuild')` as the final statement in every generated SQL file. Verified by acceptance criteria in T03.
 
 3. **Where does the Worker API live relative to the Pages app?**
    - What we know: Two deployment options: (a) separate Worker service with Pages calling it via external URL, (b) Pages Functions (`functions/` directory) which colocate API with the Pages project
    - What's unclear: Which pattern is easier to manage with wrangler for this use case
    - Recommendation: Use separate Worker service (option a) — simpler wrangler.toml per project, easier to develop and deploy independently; Pages calls `https://climbing-search-api.{account}.workers.dev/api/...`
+   - **RESOLVED:** Plan 01-03 uses separate Worker service deployed from `worker-api/` with its own `wrangler.toml`. Pages app (Plan 01-04) calls the Worker via external URL configured in `VITE_API_BASE_URL`.
 
 4. **How to handle the 6 existing state JSON files that lack California?**
    - What we know: CA was excluded from existing tagged data because it exceeded OpenAI batch limits (force_split logic in tagging script). The data directory has: AZ, CO, NV, OR, UT, WA.
    - What's unclear: Whether a CA scrape needs to happen before the D1 import, or if CA is added in a follow-up run.
    - Recommendation: Import the 6 existing states first to validate the pipeline; treat CA as the first new scrape using the async scraper.
+   - **RESOLVED:** Plan 01-02 T04 generates import SQL for the 6 existing states only (AZ, CO, NV, OR, UT, WA). CA is explicitly deferred — it will be the first new scrape run using the async scraper from Plan 01-01, consistent with D-02 ("existing tagged JSON files in `data/` are the starting point").
 
 ---
 

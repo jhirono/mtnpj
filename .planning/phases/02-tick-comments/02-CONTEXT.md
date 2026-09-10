@@ -25,6 +25,7 @@ Validation follows a two-step approach: El Cap sub-area first, then full Yosemit
 ### Tick Data Parsing
 - **D-03:** Update `parse_stats` to **preserve author and date** — extract user name → `comment_author`, tick date → `comment_time`. Current code strips these; Phase 2 must capture them for full row fidelity.
 - **D-04:** **No schema changes needed** — the existing `comments` table columns (`comment_id`, `parent_id`, `parent_type`, `comment_author`, `comment_text`, `comment_time`) are sufficient. No `tick_type` column needed (tick type is out of scope per text-only decision).
+  > **SUPERSEDED by live schema verification in RESEARCH.md** — the D1 comments table CHECK constraint restricts parent_type to ('route', 'area'). Schema migration to add 'tick' is required (see Plan 02-01).
 - **D-05:** Use `INSERT OR IGNORE` with `route_id` as dedup key for tick comments (consistent with existing pattern).
 
 ### Selenium Session Management
